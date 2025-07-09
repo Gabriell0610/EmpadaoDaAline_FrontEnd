@@ -2,6 +2,11 @@ export interface CreateCartInteface {
   itemId: string;
   userId: string;
 }
+
+export interface DecrementOrIncrementInterface {
+  itemId: string;
+}
+
 export interface ItemCarrinho {
   id: string;
   itemId: string;

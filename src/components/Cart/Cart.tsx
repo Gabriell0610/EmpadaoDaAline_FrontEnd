@@ -20,15 +20,23 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     itemsLocal,
     isLoading,
     quantity,
+    itemsCartApi,
     incrementOrDecrementItem,
     removeItem,
+    session,
   } = useCart();
 
   const getTotalPrice = () => {
-    return itemsLocal.reduce(
-      (total, item) => total + parseFloat(item.item?.preco) * item.quantity,
-      0,
-    );
+    if (!session?.user.id) {
+      return itemsLocal
+        .reduce(
+          (total, item) => total + parseFloat(item.item?.preco) * item.quantity,
+          0,
+        )
+        .toFixed(2);
+    }
+
+    return itemsCartApi?.valorTotal || '00';
   };
 
   return (
@@ -50,53 +58,120 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
               </TitleH4>
             </Drawer.Header>
             <Drawer.Body className="h-2 overflow-y-auto bg-neutral-offWhite px-3 py-5">
-              {itemsLocal.map((item, index) => (
-                <div className="mb-5 flex gap-2 bg-white px-2 py-2" key={index}>
-                  <Image
-                    src={item.item?.image || ImageFood}
-                    alt="imagem do produto"
-                    quality={100}
-                    className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
-                  />
-                  <div className="flex flex-col gap-3">
-                    <p>{item.item?.descricao}</p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold">
-                        {normalizeCurrency(item.item?.preco)}
-                      </p>
-                      <div className="flex items-center gap-4">
-                        <ButtonDefault
-                          onClick={() =>
-                            incrementOrDecrementItem('increment', item.item?.id)
-                          }
-                        >
-                          <FaPlus />
-                        </ButtonDefault>
-                        <span className="font-semibold">{item.quantity}</span>
-                        <ButtonDefault
-                          onClick={() =>
-                            incrementOrDecrementItem('decrement', item.item?.id)
-                          }
-                        >
-                          <FaMinus />
-                        </ButtonDefault>
-                        <ButtonDefault
-                          onClick={() => removeItem(item.item?.id)}
-                        >
-                          <FaRegTrashAlt />
-                        </ButtonDefault>
+              {!session?.user.id ? (
+                itemsLocal.map((content, index) => (
+                  <div
+                    className="mb-5 flex gap-2 bg-white px-2 py-2"
+                    key={index}
+                  >
+                    <Image
+                      src={content.item?.image || ImageFood}
+                      alt="imagem do produto"
+                      quality={100}
+                      className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
+                    />
+                    <div className="flex flex-col gap-3">
+                      <p>{content.item?.descricao}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold">
+                          {normalizeCurrency(content.item?.preco)}
+                        </p>
+                        <div className="flex items-center gap-4">
+                          <ButtonDefault
+                            onClick={() =>
+                              incrementOrDecrementItem(
+                                'increment',
+                                content.item?.id,
+                              )
+                            }
+                          >
+                            <FaPlus />
+                          </ButtonDefault>
+                          <span className="font-semibold">
+                            {content.quantity}
+                          </span>
+                          <ButtonDefault
+                            onClick={() =>
+                              incrementOrDecrementItem(
+                                'decrement',
+                                content.item?.id,
+                              )
+                            }
+                          >
+                            <FaMinus />
+                          </ButtonDefault>
+                          <ButtonDefault
+                            onClick={() => removeItem(content.item?.id)}
+                          >
+                            <FaRegTrashAlt />
+                          </ButtonDefault>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <>
+                  {itemsCartApi?.carrinhoItens.map((content, index) => (
+                    <div
+                      className="mb-5 flex gap-2 bg-white px-2 py-2"
+                      key={index}
+                    >
+                      <Image
+                        src={content.Item.image || ImageFood}
+                        alt="imagem do produto"
+                        quality={100}
+                        className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
+                      />
+                      <div className="flex flex-col gap-3">
+                        <p>{content.Item.descricao}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold">
+                            {normalizeCurrency(content.precoAtual)}
+                          </p>
+                          <div className="flex items-center gap-4">
+                            <ButtonDefault
+                              onClick={() =>
+                                incrementOrDecrementItem(
+                                  'increment',
+                                  content.itemId,
+                                )
+                              }
+                            >
+                              <FaPlus />
+                            </ButtonDefault>
+                            <span className="font-semibold">
+                              {content.quantidade}
+                            </span>
+                            <ButtonDefault
+                              onClick={() =>
+                                incrementOrDecrementItem(
+                                  'decrement',
+                                  content.itemId,
+                                )
+                              }
+                            >
+                              <FaMinus />
+                            </ButtonDefault>
+                            <ButtonDefault
+                              onClick={() => removeItem(content.itemId)}
+                            >
+                              <FaRegTrashAlt />
+                            </ButtonDefault>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </Drawer.Body>
             <Drawer.Footer className="flex flex-col border-t border-gray-200 px-4 py-5">
               <div className="flex w-full flex-col">
                 <div className="mb-4 flex items-center justify-between">
                   <TitleH4 className="font-semibold">Subtotal</TitleH4>
                   <p className="font-semibold">
-                    {normalizeCurrency(getTotalPrice().toFixed(2))}
+                    {normalizeCurrency(getTotalPrice())}
                   </p>
                 </div>
               </div>

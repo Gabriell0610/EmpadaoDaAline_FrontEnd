@@ -2,15 +2,13 @@
 'use client';
 import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
-import ImageFood from '../../public/image5.png';
 import { Footer } from '@/components/Footer/Footer';
-import { TitleH1, TitleH3 } from '@/components/Titles/Titles';
+import { TitleH1 } from '@/components/Titles/Titles';
 import { useState } from 'react';
 import { ListActiveItemsInterface } from '@/utils/types/items.type';
-import { normalizeCurrency } from '@/utils/helpers/normalizeCurrency';
 import { Cart } from '@/components/Cart/Cart';
-import { ButtonDefault } from '@/components/Button/Button';
 import { useCart } from '@/providers/cartContext/cartProvider';
+import { Card } from '@/components/Card/card';
 
 interface PropsHome {
   data: ListActiveItemsInterface[];
@@ -24,6 +22,7 @@ export default function Home({ data }: PropsHome) {
     setOpenCart(true);
     addItemById(itemId);
   }
+
   return (
     <main className="mx-auto w-full">
       <section className="w-full px-8 py-10">
@@ -56,34 +55,11 @@ export default function Home({ data }: PropsHome) {
           {data
             ?.filter((_, index) => index === 0 || index === 5 || index === 11)
             .map((value, index) => (
-              <div
-                className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white shadow-md"
+              <Card
+                content={value}
                 key={index}
-              >
-                <Image
-                  src={value.image || ImageFood}
-                  alt="Empadão"
-                  className="h-40 w-full object-cover"
-                />
-                <div className="flex h-full flex-col justify-between p-4">
-                  <TitleH3 className="md:text-sm">{value.nome}</TitleH3>
-                  <p className="font mb-3 min-h-[72px] text-gray-700 md:text-sm lg:text-base">
-                    {value.descricao}
-                  </p>
-                  <div className="flex items-center justify-between text-gray-700 md:text-sm lg:text-base">
-                    <span>{normalizeCurrency(value.preco)}</span>
-                    <span>{value.pesoReal}</span>
-                  </div>
-                  <ButtonDefault
-                    type="button"
-                    variant="third"
-                    className="mt-4 outline-none"
-                    onClick={() => handleOpenCart(value.id)}
-                  >
-                    Adicionar
-                  </ButtonDefault>
-                </div>
-              </div>
+                handleOpenCart={() => handleOpenCart(value.id)}
+              />
             ))}
         </div>
       </section>

@@ -43,3 +43,44 @@ export async function GET() {
 
   return NextResponse.json({ ...res, success: true });
 }
+
+export async function PATCH(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const itemId = searchParams.get('itemId');
+  const act = searchParams.get('action');
+  const token = headers().get('authorization');
+
+  if (act && act === 'increment') {
+    const req = await fetch(`${baseUrl()}/cart/item/${itemId}/increment`, {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const res = await req.json();
+
+    if (req.status >= 400) {
+      return NextResponse.json({ ...res, success: false });
+    }
+
+    return NextResponse.json({ ...res, success: true });
+  } else {
+    const req = await fetch(`${baseUrl()}/cart/item/${itemId}/decrement`, {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const res = await req.json();
+
+    if (req.status >= 400) {
+      return NextResponse.json({ ...res, success: false });
+    }
+
+    return NextResponse.json({ ...res, success: true });
+  }
+}

@@ -14,6 +14,7 @@ import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useCartHook } from '@/hooks/useCart';
 import toast from 'react-hot-toast';
 import { ItemCarrinho } from '@/utils/types/cart.type';
+import { Session } from 'next-auth';
 
 interface CartItemLocal {
   item: ListActiveItemsByIdInterface;
@@ -36,6 +37,7 @@ interface CartContextType {
   removeItem: (itemId: string) => Promise<void> | void;
   isLoading: boolean;
   quantity: number;
+  session: Session | null;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(
@@ -45,7 +47,8 @@ export const CartContext = createContext<CartContextType | undefined>(
 export const CartProvider = ({ children }: SomeChildrenInterface) => {
   const { data: session } = useSession();
   const { listItemById } = useItems();
-  const { createUserCart, listCartByUser } = useCartHook();
+  const { createUserCart, listCartByUser, incrementOrDecrementItemInCart } =
+    useCartHook();
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const [quantity, setQuantity] = useState(0);
   const [itemsLocal, setItemsLocal] = useState<CartItemLocal[]>([]);
@@ -63,25 +66,37 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      localStorage.setItem('cart-items', JSON.stringify(itemsLocal));
-      const quantity = itemsLocal.reduce((acc, curr) => acc + curr.quantity, 0);
-      setQuantity(quantity > 0 ? quantity : 0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [itemsLocal]);
+    if (!session?.user.id) {
+      const timeout = setTimeout(() => {
+        localStorage.setItem('cart-items', JSON.stringify(itemsLocal));
+        const quantity = itemsLocal.reduce(
+          (acc, curr) => acc + curr.quantity,
+          0,
+        );
+        setQuantity(quantity > 0 ? quantity : 0);
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      const quantity = itemsCartApi?.carrinhoItens.reduce(
+        (acc, curr) => acc + curr.quantidade,
+        0,
+      );
+      console.log('quantidade', quantity);
+      setQuantity(quantity || 0);
+    }
+  }, [itemsLocal, itemsCartApi, session]);
 
   useEffect(() => {
     listCart();
   }, [session]);
 
-  const listCart = async () => {
+  const listCart = useCallback(async () => {
     const token = session?.user?.accessToken || '';
 
     const res = await listCartByUser({ token });
 
     if (!res.data) {
-      console.warn('Sem dados no carrinho.');
+      console.warn('Usuário sem dados no carrinho.');
       return;
     }
 
@@ -105,10 +120,9 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     };
 
     console.log('ANTES do set:', itemsCartApi);
-    console.log('Novo carrinhoSimplificado:', carrinhoSimplificado);
-
     setItemsCartApi(carrinhoSimplificado);
-  };
+    console.log('Novo carrinhoSimplificado:', carrinhoSimplificado);
+  }, [listCartByUser, itemsCartApi, session?.user?.accessToken]);
 
   // Função para adicionar item ao carrinho
   const addItemById = useCallback(
@@ -144,9 +158,9 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
 
           if (!res.success) {
             toast.error('Erro ao criar Carrinho. Entre em contato com suporte');
+          } else {
+            await listCart();
           }
-          console.log(res);
-          setIsLoading(false);
         } catch (error) {
           console.error(error);
         } finally {
@@ -160,11 +174,12 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
       listItemById,
       createUserCart,
       setIsLoading,
+      listCart,
       itemsLocal,
     ],
   );
 
-  const incrementOrDecrementItem = (act: string, itemId: string) => {
+  const incrementOrDecrementItem = async (act: string, itemId: string) => {
     if (!session?.user.id) {
       const updatedItems = itemsLocal.map((item) => {
         if (item.item.id === itemId) {
@@ -175,6 +190,37 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         return item;
       });
       setItemsLocal(updatedItems);
+    } else {
+      if (act === 'increment') {
+        setIsLoading(true);
+        const res = await incrementOrDecrementItemInCart(
+          {
+            token: session.user.accessToken,
+            body: { itemId: itemId },
+          },
+          act,
+        );
+
+        if (res.success) {
+          await listCart();
+          console.log(res.message);
+        }
+        setIsLoading(false);
+      } else {
+        const res = await incrementOrDecrementItemInCart(
+          {
+            token: session.user.accessToken,
+            body: { itemId: itemId },
+          },
+          act,
+        );
+
+        if (res.success) {
+          await listCart();
+          console.log(res.message);
+        }
+        setIsLoading(false);
+      }
     }
   };
 
@@ -188,6 +234,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   return (
     <CartContext.Provider
       value={{
+        session,
         itemsLocal,
         itemsCartApi,
         isLoading,

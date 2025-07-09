@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CreateCartInteface, Carrinho } from '@/utils/types/cart.type';
+import {
+  CreateCartInteface,
+  Carrinho,
+  DecrementOrIncrementInterface,
+} from '@/utils/types/cart.type';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { RequestInterface } from '@/utils/types/generics/request.type';
 
@@ -33,8 +37,28 @@ export function useCartHook() {
     return res;
   }
 
+  async function incrementOrDecrementItemInCart(
+    data: RequestInterface<DecrementOrIncrementInterface>,
+    act: string,
+  ) {
+    const req = await fetch(
+      `/api/cart?itemId=${data.body?.itemId}&action=${act}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `${data.token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const res: ApiResponse<string> = await req.json();
+
+    return res;
+  }
+
   return {
     createUserCart,
     listCartByUser,
+    incrementOrDecrementItemInCart,
   };
 }

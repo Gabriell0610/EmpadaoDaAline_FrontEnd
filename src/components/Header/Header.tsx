@@ -21,7 +21,7 @@ export function Header(props: HeaderProps) {
   const { login } = props;
   const [openCart, setOpenCart] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const { itemsLocal, quantity } = useCart();
+  const { quantity } = useCart();
 
   useEffect(() => {
     setHasMounted(true);
@@ -43,7 +43,7 @@ export function Header(props: HeaderProps) {
 
         {/* BOTÕES LOGIN / CADASTRO */}
         <div className="flex items-center gap-2">
-          {hasMounted && itemsLocal.length > 0 && (
+          {hasMounted && (
             <ButtonDefault
               className="relative"
               onClick={() => setOpenCart(true)}
