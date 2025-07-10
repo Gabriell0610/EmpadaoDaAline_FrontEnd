@@ -1,6 +1,5 @@
 'use client';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
-import { ListActiveItemsByIdInterface } from '@/utils/types/items.type';
 import {
   createContext,
   useCallback,
@@ -13,32 +12,12 @@ import { useSession } from 'next-auth/react';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useCartHook } from '@/hooks/useCart';
 import toast from 'react-hot-toast';
-import { ItemCarrinho } from '@/utils/types/cart.type';
-import { Session } from 'next-auth';
-
-interface CartItemLocal {
-  item: ListActiveItemsByIdInterface;
-  quantity: number;
-}
-
-interface CartApiResponse {
-  valorTotal: string;
-  carrinhoItens: ItemCarrinho[];
-}
-
-interface CartContextType {
-  itemsLocal: CartItemLocal[];
-  itemsCartApi: CartApiResponse | null;
-  addItemById: (itemId: string) => Promise<void>;
-  incrementOrDecrementItem: (
-    itemId: string,
-    act: string,
-  ) => Promise<void> | void;
-  removeItem: (itemId: string) => Promise<void> | void;
-  isLoading: boolean;
-  quantity: number;
-  session: Session | null;
-}
+import { Carrinho } from '@/utils/types/cart.type';
+import { getSafeErrorMessage } from '@/utils/helpers';
+import {
+  CartContextType,
+  CartItemLocal,
+} from '@/utils/types/providers/cartProvider.type';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -47,14 +26,16 @@ export const CartContext = createContext<CartContextType | undefined>(
 export const CartProvider = ({ children }: SomeChildrenInterface) => {
   const { data: session } = useSession();
   const { listItemById } = useItems();
-  const { createUserCart, listCartByUser, incrementOrDecrementItemInCart } =
-    useCartHook();
+  const {
+    createUserCart,
+    listCartByUser,
+    incrementOrDecrementItemInCart,
+    removeItemCart,
+  } = useCartHook();
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const [quantity, setQuantity] = useState(0);
   const [itemsLocal, setItemsLocal] = useState<CartItemLocal[]>([]);
-  const [itemsCartApi, setItemsCartApi] = useState<CartApiResponse | null>(
-    null,
-  );
+  const [itemsCartApi, setItemsCartApi] = useState<Carrinho | null>(null);
 
   useEffect(() => {
     try {
@@ -81,7 +62,6 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         (acc, curr) => acc + curr.quantidade,
         0,
       );
-      console.log('quantidade', quantity);
       setQuantity(quantity || 0);
     }
   }, [itemsLocal, itemsCartApi, session]);
@@ -100,28 +80,9 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
       return;
     }
 
-    const carrinhoSimplificado: CartApiResponse = {
-      valorTotal: res.data.valorTotal,
-      carrinhoItens: res.data.carrinhoItens.map((ci: ItemCarrinho) => ({
-        id: ci.id,
-        precoAtual: ci.precoAtual,
-        itemId: ci.itemId,
-        carrinhoId: ci.carrinhoId,
-        quantidade: ci.quantidade,
-        Item: {
-          nome: ci.Item.nome,
-          preco: ci.Item.preco,
-          image: ci.Item.image,
-          descricao: ci.Item.descricao,
-          disponivel: ci.Item.disponivel,
-          tamanho: ci.Item.tamanho,
-        },
-      })),
-    };
-
     console.log('ANTES do set:', itemsCartApi);
-    setItemsCartApi(carrinhoSimplificado);
-    console.log('Novo carrinhoSimplificado:', carrinhoSimplificado);
+    setItemsCartApi(res.data);
+    console.log('Novo carrinhoSimplificado:', res.data);
   }, [listCartByUser, itemsCartApi, session?.user?.accessToken]);
 
   // Função para adicionar item ao carrinho
@@ -191,43 +152,42 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
       });
       setItemsLocal(updatedItems);
     } else {
-      if (act === 'increment') {
-        setIsLoading(true);
-        const res = await incrementOrDecrementItemInCart(
-          {
-            token: session.user.accessToken,
-            body: { itemId: itemId },
-          },
-          act,
-        );
+      setIsLoading(true);
+      const res = await incrementOrDecrementItemInCart(
+        {
+          token: session.user.accessToken,
+          body: { itemId: itemId },
+        },
+        act,
+      );
 
-        if (res.success) {
-          await listCart();
-          console.log(res.message);
-        }
-        setIsLoading(false);
+      if (res.success) {
+        await listCart();
       } else {
-        const res = await incrementOrDecrementItemInCart(
-          {
-            token: session.user.accessToken,
-            body: { itemId: itemId },
-          },
-          act,
-        );
-
-        if (res.success) {
-          await listCart();
-          console.log(res.message);
-        }
-        setIsLoading(false);
+        toast.error(getSafeErrorMessage(res.message));
       }
+      setIsLoading(false);
     }
   };
 
-  const removeItem = (itemId: string) => {
+  const removeItem = async (itemId: string) => {
     if (!session?.user.id) {
       const updatedItems = itemsLocal.filter((item) => item.item.id !== itemId);
       setItemsLocal(updatedItems);
+    } else {
+      setIsLoading(true);
+      const res = await removeItemCart({
+        token: session.user.accessToken,
+        body: { itemId: itemId },
+      });
+
+      if (res.success) {
+        await listCart();
+        console.log(res.message);
+      } else {
+        toast.error(getSafeErrorMessage(res.message));
+      }
+      setIsLoading(false);
     }
   };
 

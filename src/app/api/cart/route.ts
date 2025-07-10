@@ -84,3 +84,25 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ...res, success: true });
   }
 }
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const itemId = searchParams.get('itemId');
+  const token = headers().get('authorization');
+
+  const req = await fetch(`${baseUrl()}/cart/item/${itemId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const res = await req.json();
+
+  if (req.status >= 400) {
+    return NextResponse.json({ ...res, success: false });
+  }
+
+  return NextResponse.json({ ...res, success: true });
+}

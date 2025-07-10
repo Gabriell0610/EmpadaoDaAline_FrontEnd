@@ -2,7 +2,7 @@
 import {
   CreateCartInteface,
   Carrinho,
-  DecrementOrIncrementInterface,
+  DecrementOrIncrementOrRemoveInterface,
 } from '@/utils/types/cart.type';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { RequestInterface } from '@/utils/types/generics/request.type';
@@ -38,7 +38,7 @@ export function useCartHook() {
   }
 
   async function incrementOrDecrementItemInCart(
-    data: RequestInterface<DecrementOrIncrementInterface>,
+    data: RequestInterface<DecrementOrIncrementOrRemoveInterface>,
     act: string,
   ) {
     const req = await fetch(
@@ -56,9 +56,25 @@ export function useCartHook() {
     return res;
   }
 
+  async function removeItemCart(
+    data: RequestInterface<DecrementOrIncrementOrRemoveInterface>,
+  ) {
+    const req = await fetch(`/api/cart?itemId=${data.body?.itemId}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: `${data.token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const res: ApiResponse<string> = await req.json();
+
+    return res;
+  }
+
   return {
     createUserCart,
     listCartByUser,
     incrementOrDecrementItemInCart,
+    removeItemCart,
   };
 }

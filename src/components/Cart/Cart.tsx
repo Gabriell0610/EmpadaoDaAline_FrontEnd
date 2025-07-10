@@ -59,10 +59,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
             </Drawer.Header>
             <Drawer.Body className="h-2 overflow-y-auto bg-neutral-offWhite px-3 py-5">
               {!session?.user.id ? (
-                itemsLocal.map((content, index) => (
+                itemsLocal.map((content) => (
                   <div
                     className="mb-5 flex gap-2 bg-white px-2 py-2"
-                    key={index}
+                    key={content.item.id}
                   >
                     <Image
                       src={content.item?.image || ImageFood}
@@ -112,10 +112,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 ))
               ) : (
                 <>
-                  {itemsCartApi?.carrinhoItens.map((content, index) => (
+                  {itemsCartApi?.carrinhoItens.map((content) => (
                     <div
                       className="mb-5 flex gap-2 bg-white px-2 py-2"
-                      key={index}
+                      key={content.itemId}
                     >
                       <Image
                         src={content.Item.image || ImageFood}

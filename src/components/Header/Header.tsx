@@ -21,11 +21,19 @@ export function Header(props: HeaderProps) {
   const { login } = props;
   const [openCart, setOpenCart] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const { quantity } = useCart();
+  const { quantity, itemsCartApi, itemsLocal } = useCart();
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  function validItemsCartApi() {
+    if (itemsCartApi?.carrinhoItens) {
+      return itemsCartApi?.carrinhoItens;
+    }
+
+    return [];
+  }
 
   return (
     <header className="px-8 py-4">
@@ -43,17 +51,18 @@ export function Header(props: HeaderProps) {
 
         {/* BOTÕES LOGIN / CADASTRO */}
         <div className="flex items-center gap-2">
-          {hasMounted && (
-            <ButtonDefault
-              className="relative"
-              onClick={() => setOpenCart(true)}
-            >
-              <FaBagShopping size={25} />
-              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
-                {quantity}
-              </span>
-            </ButtonDefault>
-          )}
+          {(hasMounted && itemsLocal.length > 0) ||
+            (validItemsCartApi()?.length > 0 && (
+              <ButtonDefault
+                className="relative"
+                onClick={() => setOpenCart(true)}
+              >
+                <FaBagShopping size={25} />
+                <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                  {quantity}
+                </span>
+              </ButtonDefault>
+            ))}
           {!login?.user.id ? (
             <div className="flex gap-2">
               <ButtonDefault

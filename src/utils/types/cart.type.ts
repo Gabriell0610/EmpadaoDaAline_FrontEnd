@@ -3,7 +3,7 @@ export interface CreateCartInteface {
   userId: string;
 }
 
-export interface DecrementOrIncrementInterface {
+export interface DecrementOrIncrementOrRemoveInterface {
   itemId: string;
 }
 
