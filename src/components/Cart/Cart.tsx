@@ -118,13 +118,13 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                       key={content.itemId}
                     >
                       <Image
-                        src={content.Item.image || ImageFood}
+                        src={content.item.image || ImageFood}
                         alt="imagem do produto"
                         quality={100}
                         className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
                       />
                       <div className="flex flex-col gap-3">
-                        <p>{content.Item.descricao}</p>
+                        <p>{content.item.descricao}</p>
                         <div className="flex items-center justify-between">
                           <p className="text-sm font-semibold">
                             {normalizeCurrency(content.precoAtual)}

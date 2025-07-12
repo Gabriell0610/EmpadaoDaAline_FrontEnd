@@ -13,7 +13,7 @@ export interface ItemCarrinho {
   carrinhoId: string;
   quantidade: number;
   precoAtual: string;
-  Item: {
+  item: {
     nome: string;
     preco: string;
     image: string;
