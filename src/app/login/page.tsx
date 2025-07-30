@@ -1,4 +1,4 @@
-import { ClientPageLogin } from './clientPage';
+import ClientPageLogin from './clientPage';
 import imageLogin from '../../../public/image_login.png';
 import { AuthLayout } from '@/components/AuthLayout/AuthLayout';
 export default function LoginPage() {

@@ -2,7 +2,7 @@
 import { CloseButton, Drawer, Portal } from '@chakra-ui/react';
 import { ButtonDefault } from '../Button/Button';
 import { TitleH4 } from '../Titles/Titles';
-import { normalizeCurrency } from '@/utils/helpers/normalizeCurrency';
+import { normalizeCurrency } from '@/utils/helpers';
 import Image from 'next/image';
 import ImageFood from '../../../public/image_food2.png';
 import { FaPlus } from 'react-icons/fa6';
@@ -17,18 +17,18 @@ interface CartProps {
 
 const Cart = ({ openCart, setOpenCart }: CartProps) => {
   const {
-    itemsLocal,
+    itemsWithGuestUser,
+    itemsWithLoggedUser,
     isLoading,
     quantity,
-    itemsCartApi,
     incrementOrDecrementItem,
     removeItem,
     session,
   } = useCart();
 
   const getTotalPrice = () => {
-    if (!session?.user.id) {
-      return itemsLocal
+    if (!session?.user.accessToken) {
+      return itemsWithGuestUser
         .reduce(
           (total, item) => total + parseFloat(item.item?.preco) * item.quantity,
           0,
@@ -36,7 +36,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
         .toFixed(2);
     }
 
-    return itemsCartApi?.valorTotal || '00';
+    return itemsWithLoggedUser?.valorTotal || '0.00';
   };
 
   return (
@@ -58,23 +58,26 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
               </TitleH4>
             </Drawer.Header>
             <Drawer.Body className="h-2 overflow-y-auto bg-neutral-offWhite px-3 py-5">
-              {!session?.user.id ? (
-                itemsLocal.map((content) => (
+              {!session?.user.accessToken ? (
+                itemsWithGuestUser.map((content) => (
                   <div
                     className="mb-5 flex gap-2 bg-white px-2 py-2"
                     key={content.item.id}
                   >
                     <Image
-                      src={content.item?.image || ImageFood}
+                      src={content.item.itemDescription.image || ImageFood}
                       alt="imagem do produto"
                       quality={100}
-                      className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
+                      className="h-25 w-28 flex-shrink-0 rounded-sm object-cover"
                     />
                     <div className="flex flex-col gap-3">
-                      <p>{content.item?.descricao}</p>
+                      <p className="font-semibold">
+                        {content.item.itemDescription.nome}
+                      </p>
+                      <p>{content.item.itemDescription.descricao}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">
-                          {normalizeCurrency(content.item?.preco)}
+                          {normalizeCurrency(content.item.preco)}
                         </p>
                         <div className="flex items-center gap-4">
                           <ButtonDefault
@@ -112,19 +115,19 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 ))
               ) : (
                 <>
-                  {itemsCartApi?.carrinhoItens.map((content) => (
+                  {itemsWithLoggedUser?.carrinhoItens.map((content) => (
                     <div
                       className="mb-5 flex gap-2 bg-white px-2 py-2"
                       key={content.itemId}
                     >
                       <Image
-                        src={content.item.image || ImageFood}
+                        src={content.item.itemDescription.image || ImageFood}
                         alt="imagem do produto"
                         quality={100}
                         className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
                       />
                       <div className="flex flex-col gap-3">
-                        <p>{content.item.descricao}</p>
+                        <p>{content.item.itemDescription.descricao}</p>
                         <div className="flex items-center justify-between">
                           <p className="text-sm font-semibold">
                             {normalizeCurrency(content.precoAtual)}

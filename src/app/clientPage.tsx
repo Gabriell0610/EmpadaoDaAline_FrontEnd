@@ -4,24 +4,26 @@ import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
 import { Footer } from '@/components/Footer/Footer';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { useState } from 'react';
-import { ListActiveItemsInterface } from '@/utils/types/items.type';
+import { useEffect, useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/Card/card';
+import { useRouter } from 'next/navigation';
+import { PropsHome } from '@/utils/types/generics/listItemComponent.type';
 
-interface PropsHome {
-  data: ListActiveItemsInterface[];
-}
 /* eslint-disable prettier/prettier */
 export default function Home({ data }: PropsHome) {
   const [openCart, setOpenCart] = useState(false);
-  const { addItemById } = useCart();
-
+  const { addItemInCart } = useCart();
+  const navigate = useRouter();
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
-    addItemById(itemId);
+    addItemInCart(itemId);
   }
+
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   return (
     <main className="mx-auto w-full">
@@ -38,7 +40,10 @@ export default function Home({ data }: PropsHome) {
               selecionados, preparo artesanal e muito sabor. Surpreenda-se e
               transforme cada refeição em um momento especial.
             </p>
-            <button className="w-fit rounded-md bg-primary-greenLight px-4 py-2 text-neutral-white hover:bg-green-800">
+            <button
+              onClick={() => navigate.push('/menu')}
+              className="w-fit rounded-md bg-primary-greenLight px-4 py-2 text-neutral-white hover:bg-green-800"
+            >
               Veja nosso Menu
             </button>
           </div>
@@ -52,15 +57,13 @@ export default function Home({ data }: PropsHome) {
       <section className="w-full px-8 py-6">
         <TitleH1>Os mais pedidos</TitleH1>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {data
-            ?.filter((_, index) => index === 0 || index === 5 || index === 11)
-            .map((value, index) => (
-              <Card
-                content={value}
-                key={index}
-                handleOpenCart={() => handleOpenCart(value.id)}
-              />
-            ))}
+          {data.map((value, index) => (
+            <Card
+              content={value}
+              key={index}
+              handleOpenCart={(itemId) => handleOpenCart(itemId)}
+            />
+          ))}
         </div>
       </section>
       <Cart openCart={openCart} setOpenCart={setOpenCart} />

@@ -7,14 +7,14 @@ import {
   sendEmailSchema,
   validateTokenDto,
   validateTokenSchema,
-} from '@/utils/zod/forgetPassword';
+} from '@/utils/schemas/forgetPassword';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 import { setCookie } from 'nookies';
 import { getSafeErrorMessage } from '@/utils/helpers';
 
-export const ClientPageForgetPassword = () => {
+export default function ClientPageForgetPassword() {
   const [tokenNotGenerated, setTokenNotGenerated] = useState(true);
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const { generateToken, validateToken } = useForgetPassword();
@@ -117,4 +117,4 @@ export const ClientPageForgetPassword = () => {
       )}
     </>
   );
-};
+}

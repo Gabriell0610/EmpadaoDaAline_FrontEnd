@@ -6,7 +6,7 @@ import { getSafeErrorMessage } from '@/utils/helpers';
 import {
   resetPasswordSchema,
   resetPasswordDto,
-} from '@/utils/zod/forgetPassword';
+} from '@/utils/schemas/forgetPassword';
 import { useRouter } from 'next/navigation';
 import { destroyCookie, parseCookies } from 'nookies';
 import { useContext } from 'react';
@@ -18,7 +18,7 @@ export interface NewPasswordData {
   token: string;
 }
 
-export const ClientPageNewPassword = () => {
+export default function ClientPageNewPassword() {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const { resetPassword } = useForgetPassword();
   const router = useRouter();
@@ -79,4 +79,4 @@ export const ClientPageNewPassword = () => {
       />
     </div>
   );
-};
+}

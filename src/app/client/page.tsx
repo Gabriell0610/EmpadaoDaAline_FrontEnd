@@ -10,7 +10,7 @@ export default async function ClientDefaultPage() {
   const res = await listActiveItem();
   return (
     <div className="flex min-h-screen flex-col">
-      <Header login={session} />
+      <Header session={session} />
       <ClientPage session={session} data={res.data} />
       <Footer />
     </div>

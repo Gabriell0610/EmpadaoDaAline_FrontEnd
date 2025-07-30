@@ -1,12 +1,11 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { Header } from '@/components/Header/Header';
-import Home from './clientPage';
-import { getServerSession } from 'next-auth';
-import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import { authOptions } from '@/libs/auth';
 import { listActiveItem } from '@/services/itemService';
+import { ListActiveItemsInterface } from '@/utils/types/items.type';
+import { getServerSession } from 'next-auth';
+import MenuClient from './clientPage';
 
-export default async function HomePage() {
+export default async function HomeMenu() {
   const session = await getServerSession(authOptions);
   const res = await listActiveItem();
 
@@ -14,7 +13,7 @@ export default async function HomePage() {
   return (
     <>
       <Header session={session} />
-      <Home data={data} />
+      <MenuClient data={data} />
     </>
   );
 }

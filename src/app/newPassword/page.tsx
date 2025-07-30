@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ClientPageNewPassword } from './clientPage';
+import ClientPageNewPassword from './clientPage';
 import imageNewPassword from '../../../public/image_newPassword3.png';
 import { AuthLayout } from '@/components/AuthLayout/AuthLayout';
 export default function NewPasswordPage() {

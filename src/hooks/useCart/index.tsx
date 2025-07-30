@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+//import { refreshAccessToken } from '@/libs/axios';
 import {
   CreateCartInteface,
   Carrinho,
@@ -19,6 +20,11 @@ export function useCartHook() {
     });
 
     const res: ApiResponse<any> = await req.json();
+
+    // if (res.code > 400) {
+    //   const data = await refreshAccessToken();
+    //   console.log(data);
+    // }
 
     return res;
   }

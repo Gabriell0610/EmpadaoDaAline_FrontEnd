@@ -1,29 +1,37 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import NextAuth from 'next-auth';
+import NextAuth, { DefaultSession, DefaultUser } from 'next-auth';
 
 declare module 'next-auth' {
-  interface User {
-    id: string;
-    email: string;
-    role: AccessProfile;
-    accessToken: string;
-    expiresAt: number;
-  }
-
   interface Session {
     user: {
       id: string;
       email: string;
       role: AccessProfile;
       accessToken: string;
+      refreshToken: string;
+      refreshTokenExpired: boolean;
     };
-    expiresAt: number;
+    exp: number;
   }
 
+  interface User {
+    id: string;
+    email: string;
+    role: AccessProfile;
+    accessToken: string;
+    refreshToken: string;
+    exp: number;
+  }
+}
+
+declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     email: string;
     role: AccessProfile;
-    expiresAt: number;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExpired: boolean;
+    exp: number;
   }
 }

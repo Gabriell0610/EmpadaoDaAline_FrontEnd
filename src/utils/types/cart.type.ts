@@ -14,10 +14,12 @@ export interface ItemCarrinho {
   quantidade: number;
   precoAtual: string;
   item: {
-    nome: string;
     preco: string;
-    image: string;
-    descricao: string;
+    itemDescription: {
+      image: string;
+      descricao: string;
+      nome: string;
+    };
     disponivel: string;
     tamanho: string;
   };

@@ -13,26 +13,25 @@ import { FaRegCircleUser } from 'react-icons/fa6';
 import { FaBagShopping } from 'react-icons/fa6';
 
 interface HeaderProps {
-  login?: Session | null;
+  session?: Session | null;
 }
 
-export function Header(props: HeaderProps) {
+export function Header({ session }: HeaderProps) {
   const navigate = useRouter();
-  const { login } = props;
   const [openCart, setOpenCart] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const { quantity, itemsCartApi, itemsLocal } = useCart();
+  const { quantity, itemsWithLoggedUser, itemsWithGuestUser } = useCart();
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  function validItemsCartApi() {
-    if (itemsCartApi?.carrinhoItens) {
-      return itemsCartApi?.carrinhoItens;
+  function validtemsWithLoggedUser() {
+    if (itemsWithLoggedUser && itemsWithLoggedUser.carrinhoItens) {
+      return itemsWithLoggedUser.carrinhoItens;
     }
 
-    return [];
+    return itemsWithGuestUser;
   }
 
   return (
@@ -51,19 +50,18 @@ export function Header(props: HeaderProps) {
 
         {/* BOTÕES LOGIN / CADASTRO */}
         <div className="flex items-center gap-2">
-          {(hasMounted && itemsLocal.length > 0) ||
-            (validItemsCartApi()?.length > 0 && (
-              <ButtonDefault
-                className="relative"
-                onClick={() => setOpenCart(true)}
-              >
-                <FaBagShopping size={25} />
-                <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
-                  {quantity}
-                </span>
-              </ButtonDefault>
-            ))}
-          {!login?.user.id ? (
+          {hasMounted && validtemsWithLoggedUser().length > 0 && (
+            <ButtonDefault
+              className="relative"
+              onClick={() => setOpenCart(true)}
+            >
+              <FaBagShopping size={25} />
+              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                {quantity}
+              </span>
+            </ButtonDefault>
+          )}
+          {!session?.user.accessToken ? (
             <div className="flex gap-2">
               <ButtonDefault
                 variant="secondary"
@@ -80,11 +78,10 @@ export function Header(props: HeaderProps) {
             </div>
           ) : (
             <div className="flex gap-6">
+              <ButtonDefault variant="link">Menu</ButtonDefault>
               <ButtonDefault variant="link" className="text-text-primary">
                 <FaRegCircleUser size={25} />
               </ButtonDefault>
-              <ButtonDefault variant="link">Menu</ButtonDefault>
-              <ButtonDefault variant="link">Meus Pedidos</ButtonDefault>
             </div>
           )}
         </div>

@@ -3,13 +3,13 @@ import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-import { loginDto, loginSchema } from '@/utils/zod/login.schema';
+import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import toast from 'react-hot-toast';
 
-export const ClientPageLogin = () => {
+export default function ClientPageLogin() {
   const router = useRouter();
 
   const { isLoading, setIsLoading } = useContext(LoadingContext);
@@ -33,11 +33,12 @@ export const ClientPageLogin = () => {
         }
         toast.success('Login efetuado com sucesso');
       } else {
+        console.error(res.error);
         toast.error(res.error);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -87,4 +88,4 @@ export const ClientPageLogin = () => {
       </div>
     </div>
   );
-};
+}

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ClientPageForgetPassword } from './clientPage';
+import ClientPageForgetPassword from './clientPage';
 import imageForgetPassword from '../../../public/image_forgetPassword.png';
 import { AuthLayout } from '@/components/AuthLayout/AuthLayout';
 export default function ForgetPasswordPage() {

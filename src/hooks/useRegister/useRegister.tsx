@@ -1,4 +1,4 @@
-import { RegisterData } from '@/utils/zod/register.schema';
+import { RegisterData } from '@/utils/schemas/register.schema';
 
 export function useRegister() {
   async function register(data: RegisterData) {

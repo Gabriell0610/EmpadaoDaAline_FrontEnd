@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { passwordValidation } from '../validators/';
+import { passwordValidation } from '../validators';
 
 export const registerSchema = z.object({
   name: z.string().min(1, 'Campo obrigatório'),

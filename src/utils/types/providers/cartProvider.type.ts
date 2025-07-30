@@ -8,9 +8,9 @@ export interface CartItemLocal {
 }
 
 export interface CartContextType {
-  itemsLocal: CartItemLocal[];
-  itemsCartApi: Carrinho | null;
-  addItemById: (itemId: string) => Promise<void>;
+  itemsWithGuestUser: CartItemLocal[];
+  itemsWithLoggedUser: Carrinho | null;
+  addItemInCart: (itemId: string) => Promise<void>;
   incrementOrDecrementItem: (
     itemId: string,
     act: string,

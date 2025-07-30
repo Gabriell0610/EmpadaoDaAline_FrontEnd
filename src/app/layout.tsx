@@ -6,6 +6,8 @@ import { LoadingProvider } from '@/providers/loadingProvider/loadingProvider';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from '@/components/ui/provider';
 import { CartProvider } from '@/providers/cartContext/cartProvider';
+//import { SessionWatcher } from '@/providers/sessionWatcher';
+//import { AuthProvider } from '@/providers/refresh';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: SomeChildrenInterface) {
   return (
-    <html lang="en">
+    <html lang="pt-br">
       <body suppressHydrationWarning={true} className={`antialiased`}>
         <SessionProvider>
           <LoadingProvider>

@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const res = await req.json();
 
   if (req.status >= 400) {
-    return NextResponse.json({ ...res, success: false });
+    return NextResponse.json({ ...res, success: false, code: req.status });
   }
 
   return NextResponse.json({ ...res, success: true });
@@ -38,7 +38,7 @@ export async function GET() {
   const res = await req.json();
 
   if (req.status >= 400) {
-    return NextResponse.json({ ...res, success: false });
+    return NextResponse.json({ ...res, success: false, code: req.status });
   }
 
   return NextResponse.json({ ...res, success: true });

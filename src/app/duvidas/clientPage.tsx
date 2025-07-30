@@ -6,7 +6,7 @@ export default function DoubtClientPage() {
     {
       value: 'a',
       title: '1. Como fazer o pedido?',
-      text: 'Faça login ou se cadastre. Navegue pelu menu e selecione o produto de sua preferência. Ao finalizar, cadastre ou selecione o seu endereço (casp ja tenha um endereço cadastrado) e escolha o meio de pagamento e confirme os produtos do carrinho',
+      text: 'Faça login ou se cadastre. Navegue pelo menu e selecione o produto de sua preferência. Ao finalizar, cadastre ou selecione o seu endereço (casp ja tenha um endereço cadastrado) e escolha o meio de pagamento e confirme os produtos do carrinho',
     },
     {
       value: 'b',
