@@ -14,9 +14,6 @@ body {
   background-color: #f8f8f8;
   color: #222;
   font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 /* Remover setas do input number para todos os navegadores */

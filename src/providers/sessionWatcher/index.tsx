@@ -15,7 +15,7 @@ export function SessionWatcher() {
     if (status !== 'authenticated') return;
     if (hasHandledSession.current) return;
 
-    const timeout = setTimeout(async () => {
+    async function checkSession() {
       const newSession = await update();
       const tokenVazio = newSession?.user?.accessToken === '';
       const refreshExpired = newSession?.user?.refreshTokenExpired;
@@ -25,8 +25,9 @@ export function SessionWatcher() {
         toast.error('Sessão expirada. Faça login novamente.');
         signOut({ callbackUrl: '/login' });
       }
-    }, 1000); // espera 1s para evitar corrida com o carregamento
-    return () => clearTimeout(timeout);
+    }
+
+    checkSession();
   }, [status, pathname]);
 
   return null;

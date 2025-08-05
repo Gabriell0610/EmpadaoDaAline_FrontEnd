@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { Session } from 'next-auth';
 import { Cart } from '../Cart/Cart';
 import { useEffect, useState } from 'react';
-import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegCircleUser } from 'react-icons/fa6';
 import { FaBagShopping } from 'react-icons/fa6';
 
@@ -20,19 +19,11 @@ export function Header({ session }: HeaderProps) {
   const navigate = useRouter();
   const [openCart, setOpenCart] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const { quantity, itemsWithLoggedUser, itemsWithGuestUser } = useCart();
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
-  function validtemsWithLoggedUser() {
-    if (itemsWithLoggedUser && itemsWithLoggedUser.carrinhoItens) {
-      return itemsWithLoggedUser.carrinhoItens;
-    }
-
-    return itemsWithGuestUser;
-  }
+  // useEffect(() => {
+  //   setHasMounted(true);
+  // }, []);
 
   return (
     <header className="px-8 py-4">
@@ -50,17 +41,6 @@ export function Header({ session }: HeaderProps) {
 
         {/* BOTÕES LOGIN / CADASTRO */}
         <div className="flex items-center gap-2">
-          {hasMounted && validtemsWithLoggedUser().length > 0 && (
-            <ButtonDefault
-              className="relative"
-              onClick={() => setOpenCart(true)}
-            >
-              <FaBagShopping size={25} />
-              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
-                {quantity}
-              </span>
-            </ButtonDefault>
-          )}
           {!session?.user.accessToken ? (
             <div className="flex gap-2">
               <ButtonDefault
@@ -77,10 +57,15 @@ export function Header({ session }: HeaderProps) {
               </ButtonDefault>
             </div>
           ) : (
-            <div className="flex gap-6">
-              <ButtonDefault variant="link">Menu</ButtonDefault>
-              <ButtonDefault variant="link" className="text-text-primary">
-                <FaRegCircleUser size={25} />
+            <div className="flex gap-4 items-center">
+              <ButtonDefault variant="link" href='/menu' className='text-text-primary'>Menu</ButtonDefault>
+
+              <ButtonDefault variant="link" href='/client/profile' className="text-text-primary">
+                <FaRegCircleUser size={22} />
+              </ButtonDefault>
+
+              <ButtonDefault className="relative bg-text-green px-3 py-3 rounded-lg text-neutral-white" onClick={() => setOpenCart(true)}>
+                <span className='flex gap-2'> <FaBagShopping size={22} /> Sua sacola </span>
               </ButtonDefault>
             </div>
           )}

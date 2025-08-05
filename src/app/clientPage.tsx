@@ -2,14 +2,13 @@
 'use client';
 import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
-import { Footer } from '@/components/Footer/Footer';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useEffect, useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/Card/card';
 import { useRouter } from 'next/navigation';
-import { PropsHome } from '@/utils/types/generics/listItemComponent.type';
+import { PropsHome } from '@/utils/types/components/listItemComponent.type';
 
 /* eslint-disable prettier/prettier */
 export default function Home({ data }: PropsHome) {
@@ -67,7 +66,6 @@ export default function Home({ data }: PropsHome) {
         </div>
       </section>
       <Cart openCart={openCart} setOpenCart={setOpenCart} />
-      <Footer />
     </main>
   );
 }

@@ -88,9 +88,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         return;
       }
 
-      console.log('ANTES do set:', itemsWithLoggedUser);
       setItemsWithLoggedUser(res.data);
-      console.log('Novo carrinhoSimplificado:', res.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -112,6 +110,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     session,
     listCart,
   });
+
   const addItemInCart = useCallback(
     async (itemId: string) => {
       if (!session?.user?.accessToken) {

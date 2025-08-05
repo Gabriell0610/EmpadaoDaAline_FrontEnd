@@ -1,3 +1,5 @@
+import { formatCellphoneNumber } from '../validators';
+
 export const normalizeCurrency = (value: string) => {
   return `R$${value}`;
 };
@@ -23,6 +25,11 @@ export const getSafeErrorMessage = (errorMessage?: string): string => {
   }
 
   return errorMessage;
+};
+
+export const normalizeCellphoneNumber = (cellphoneNumber: string) => {
+  const digitsOnly = cellphoneNumber.replace(/\D/g, '');
+  return digitsOnly.replace(formatCellphoneNumber, '($1) $2-$3');
 };
 
 export const baseUrl = () => {

@@ -16,7 +16,7 @@ const Footer = () => {
           <CustomLink type="footer" href="/register">
             Cadastro
           </CustomLink>
-          <CustomLink type="footer" href="/login">
+          <CustomLink type="footer" href="/menu">
             Menu
           </CustomLink>
         </div>

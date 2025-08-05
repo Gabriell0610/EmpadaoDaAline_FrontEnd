@@ -1,21 +1,21 @@
 'use client';
 import { Card } from '@/components/Card/card';
 import { Cart } from '@/components/Cart/Cart';
-import { Footer } from '@/components/Footer/Footer';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useCart } from '@/providers/cartContext/cartProvider';
-import { PropsHome } from '@/utils/types/generics/listItemComponent.type';
-//import { useRouter } from 'next/router';
+import { PropsHome } from '@/utils/types/components/listItemComponent.type';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 export default function MenuClient({ data }: PropsHome) {
+  const { data: session } = useSession();
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
-  //const navigate = useRouter();
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
     addItemInCart(itemId);
+    console.log(session?.user.accessToken);
   }
 
   return (
@@ -33,7 +33,6 @@ export default function MenuClient({ data }: PropsHome) {
         </div>
       </section>
       <Cart openCart={openCart} setOpenCart={setOpenCart} />
-      <Footer />
     </main>
   );
 }

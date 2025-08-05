@@ -1,22 +1,22 @@
 'use client';
 import { Card } from '@/components/Card/card';
 import { Cart } from '@/components/Cart/Cart';
-//import { LoadingComponent } from '@/components/Loading/LoadingComponent';
+//import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useCart } from '@/providers/cartContext/cartProvider';
-//import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import { Session } from 'next-auth';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 interface ClienPageProps {
-  session: Session | null;
+  session?: Session | null;
   data: ListActiveItemsInterface[];
 }
 
-export default function ClientPage({ session, data }: ClienPageProps) {
+export default function ClientPage({ data }: ClienPageProps) {
   //const { isLoading, setIsLoading } = useContext(LoadingContext);
+  const { data: session } = useSession();
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const [dataUser, setDataUser] = useState(session);
