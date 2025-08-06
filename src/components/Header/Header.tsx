@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Session } from 'next-auth';
 import { Cart } from '../Cart/Cart';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaRegCircleUser } from 'react-icons/fa6';
 import { FaBagShopping } from 'react-icons/fa6';
 
@@ -18,12 +18,6 @@ interface HeaderProps {
 export function Header({ session }: HeaderProps) {
   const navigate = useRouter();
   const [openCart, setOpenCart] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-
-
-  // useEffect(() => {
-  //   setHasMounted(true);
-  // }, []);
 
   return (
     <header className="px-8 py-4">

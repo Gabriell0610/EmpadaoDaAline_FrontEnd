@@ -1,8 +1,4 @@
-import {
-  cellphoneNumberRegex,
-  cepRegex,
-  formatCellphoneNumber,
-} from '../validators';
+import { cellphoneNumberRegex, cepRegex } from '../validators';
 
 export const normalizeCurrency = (value: string) => {
   return `R$${value}`;
