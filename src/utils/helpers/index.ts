@@ -1,4 +1,8 @@
-import { formatCellphoneNumber } from '../validators';
+import {
+  cellphoneNumberRegex,
+  cepRegex,
+  formatCellphoneNumber,
+} from '../validators';
 
 export const normalizeCurrency = (value: string) => {
   return `R$${value}`;
@@ -29,7 +33,11 @@ export const getSafeErrorMessage = (errorMessage?: string): string => {
 
 export const normalizeCellphoneNumber = (cellphoneNumber: string) => {
   const digitsOnly = cellphoneNumber.replace(/\D/g, '');
-  return digitsOnly.replace(formatCellphoneNumber, '($1) $2-$3');
+  return digitsOnly.replace(cellphoneNumberRegex, '($1) $2-$3');
+};
+
+export const formatCep = (cep: string) => {
+  return cep.replace(cepRegex, '$1-$2');
 };
 
 export const baseUrl = () => {

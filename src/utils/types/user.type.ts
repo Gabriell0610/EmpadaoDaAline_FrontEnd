@@ -17,15 +17,17 @@ export interface ListDataUserLogged {
   email: string;
   telefone: string;
   enderecos: {
-    endereco: {
-      rua: string;
-      numero: string;
-      cidade: string;
-      estado: string;
-      bairro: string;
-      cep: string;
-      complemento: string;
-      id: string;
-    };
+    endereco: addressUser;
   }[];
+}
+
+export interface addressUser {
+  rua: string;
+  numero: string;
+  cidade: string;
+  estado: string;
+  bairro: string;
+  cep: string;
+  complemento: string;
+  id: string;
 }

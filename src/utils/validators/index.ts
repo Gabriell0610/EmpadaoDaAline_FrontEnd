@@ -10,4 +10,5 @@ export const passwordValidation = z
   .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
   .regex(/[\W_]/, 'A senha deve conter pelo menos um caractere especial');
 
-export const formatCellphoneNumber = /^(\d{2})(\d{5})(\d{4})$/;
+export const cellphoneNumberRegex = /^(\d{2})(\d{5})(\d{4})$/;
+export const cepRegex = /^(\d{5})(\d{3})$/;

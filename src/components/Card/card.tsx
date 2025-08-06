@@ -6,16 +6,12 @@ import { TitleH3 } from '../Titles/Titles';
 import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import { useState } from 'react';
 
-interface CardProps<T> {
-  content: T;
-  key: number;
+interface CardProps {
+  content: ListActiveItemsInterface;
   handleOpenCart: (itemId: string) => void;
 }
 
-export const Card = ({
-  content,
-  handleOpenCart,
-}: CardProps<ListActiveItemsInterface>) => {
+export const Card = ({ content, handleOpenCart }: CardProps) => {
   const [selectedItemId, setSelectedItemId] = useState(content.item[0]?.id);
   const selectedItem = content.item.find((item) => item.id === selectedItemId);
 
