@@ -8,7 +8,7 @@ export interface ListAddressUser {
     cep: string;
     complemento: string;
     id: string;
-  }[];
+  };
 }
 
 export interface ListDataUserLogged {

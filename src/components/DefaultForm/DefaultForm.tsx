@@ -16,6 +16,7 @@ interface FormProps<T extends ZodSchema<any>> {
     type?: string;
     placeholder: string;
     disabled?: boolean;
+    defaultValue?: string;
   }[];
   childrenButton?: string;
   isLoading?: boolean;
@@ -38,18 +39,21 @@ export function DefaultForm<T extends ZodSchema<any>>({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {fields.map(({ name, label, type, placeholder, disabled }) => (
-        <InputField
-          key={name as string}
-          label={label}
-          name={name as string}
-          register={register}
-          placeholder={placeholder}
-          type={type || 'text'}
-          error={errors[name] as FieldError | undefined}
-          disabled={isLoading || disabled}
-        />
-      ))}
+      {fields.map(
+        ({ name, label, type, placeholder, disabled, defaultValue }) => (
+          <InputField
+            key={name as string}
+            label={label}
+            name={name as string}
+            register={register}
+            placeholder={placeholder}
+            type={type || 'text'}
+            error={errors[name] as FieldError | undefined}
+            disabled={isLoading || disabled}
+            defaultValue={defaultValue || ''}
+          />
+        ),
+      )}
       <ButtonDefault
         type="submit"
         variant="primary"
