@@ -31,3 +31,11 @@ export interface addressUser {
   complemento: string;
   id: string;
 }
+
+export interface editPersonalDataUser {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  dataAtualizacao: string;
+}

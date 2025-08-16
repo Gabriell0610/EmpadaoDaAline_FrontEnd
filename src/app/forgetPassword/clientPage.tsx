@@ -74,7 +74,7 @@ export default function ClientPageForgetPassword() {
   };
 
   return (
-    <>
+    <section>
       {tokenNotGenerated ? (
         <div>
           <p>
@@ -115,6 +115,6 @@ export default function ClientPageForgetPassword() {
           />
         </div>
       )}
-    </>
+    </section>
   );
 }

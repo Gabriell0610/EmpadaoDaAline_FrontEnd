@@ -56,7 +56,7 @@ export default function ClientPageNewPassword() {
   };
 
   return (
-    <div>
+    <section>
       <DefaultForm
         schema={resetPasswordSchema}
         onSubmit={handleNewPassword}
@@ -77,6 +77,6 @@ export default function ClientPageNewPassword() {
         ]}
         childrenButton={'Salvar'}
       />
-    </div>
+    </section>
   );
 }

@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation';
 import { Session } from 'next-auth';
 import { Cart } from '../Cart/Cart';
 import { useState } from 'react';
-import { FaRegCircleUser } from 'react-icons/fa6';
 import { FaBagShopping } from 'react-icons/fa6';
+import { ProfileIcon } from './MenuHeader/ProfileHeader';
+import { useCart } from '@/providers/cartContext/cartProvider';
 
 interface HeaderProps {
   session?: Session | null;
@@ -18,12 +19,12 @@ interface HeaderProps {
 export function Header({ session }: HeaderProps) {
   const navigate = useRouter();
   const [openCart, setOpenCart] = useState(false);
-
+  const {quantity} = useCart()
   return (
     <header className="px-8 py-4">
       <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-4 py-2">
         <div className="flex min-w-0 items-center">
-          <Link href="/">
+          <Link href={session?.user.accessToken ? "/client" : "/"}>
             <Image
               alt="logo da marca"
               src={logo}
@@ -34,9 +35,21 @@ export function Header({ session }: HeaderProps) {
         </div>
 
         {/* BOTÕES LOGIN / CADASTRO */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <FaBagShopping 
+              className="cursor-pointer" 
+              size={22} 
+              onClick={() => setOpenCart(true)} 
+            />
+            
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
+              {quantity}
+            </span>
+          </div>
           {!session?.user.accessToken ? (
             <div className="flex gap-2">
+              
               <ButtonDefault
                 variant="secondary"
                 onClick={() => navigate.push('/login')}
@@ -53,19 +66,13 @@ export function Header({ session }: HeaderProps) {
           ) : (
             <div className="flex gap-4 items-center">
               <ButtonDefault variant="link" href='/menu' className='text-text-primary'>Menu</ButtonDefault>
-
-              <ButtonDefault variant="link" href='/client/profile' className="text-text-primary">
-                <FaRegCircleUser size={22} />
-              </ButtonDefault>
-
-              <ButtonDefault className="relative bg-text-green px-3 py-3 rounded-lg text-neutral-white" onClick={() => setOpenCart(true)}>
-                <span className='flex gap-2'> <FaBagShopping size={22} /> Sua sacola </span>
-              </ButtonDefault>
+              <ProfileIcon/>
+              
             </div>
           )}
         </div>
       </nav>
-      <Cart openCart={openCart} setOpenCart={setOpenCart} />
+     {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
     </header>
   );
 }

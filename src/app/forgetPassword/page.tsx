@@ -4,7 +4,6 @@ import imageForgetPassword from '../../../public/image_forgetPassword.png';
 import { AuthLayout } from '@/components/AuthLayout/AuthLayout';
 export default function ForgetPasswordPage() {
   return (
-    <>
       <AuthLayout
         altImage="Uma pessoa confusa e pensando na senha perdida"
         imageUrl={imageForgetPassword}
@@ -12,6 +11,5 @@ export default function ForgetPasswordPage() {
       >
         <ClientPageForgetPassword />
       </AuthLayout>
-    </>
   );
 }

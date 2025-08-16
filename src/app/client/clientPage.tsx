@@ -15,15 +15,8 @@ interface ClienPageProps {
 }
 
 export default function ClientPage({ data }: ClienPageProps) {
-  //const { isLoading, setIsLoading } = useContext(LoadingContext);
-  //const { data: session } = useSession();
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
-  //const [dataUser, setDataUser] = useState(session);
-
-  // useEffect(() => {
-  //   setDataUser(session);
-  // }, [session]);
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);

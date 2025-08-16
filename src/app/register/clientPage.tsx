@@ -34,7 +34,7 @@ export default function ClientPageRegister() {
   };
 
   return (
-    <div>
+    <section>
       <DefaultForm
         schema={registerSchema}
         onSubmit={handleRegister}
@@ -74,6 +74,6 @@ export default function ClientPageRegister() {
           </ButtonDefault>
         </p>
       </div>
-    </div>
+    </section>
   );
 }

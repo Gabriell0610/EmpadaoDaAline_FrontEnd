@@ -44,7 +44,7 @@ export default function ClientPageLogin() {
   };
 
   return (
-    <div>
+    <section>
       <DefaultForm
         schema={loginSchema}
         onSubmit={handleLogin}
@@ -86,6 +86,6 @@ export default function ClientPageLogin() {
           </ButtonDefault>
         </p>
       </div>
-    </div>
+    </section>
   );
 }

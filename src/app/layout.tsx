@@ -6,10 +6,6 @@ import { LoadingProvider } from '@/providers/loadingProvider/loadingProvider';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from '@/components/ui/provider';
 import { CartProvider } from '@/providers/cartContext/cartProvider';
-import { Header } from '@/components/Header/Header';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/libs/auth';
-import { Footer } from '@/components/Footer/Footer';
 
 //import { AuthProvider } from '@/providers/refresh';
 
@@ -19,7 +15,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: SomeChildrenInterface) {
-  const session = await getServerSession(authOptions);
   return (
     <html lang="pt-br">
       <body
@@ -31,9 +26,7 @@ export default async function RootLayout({ children }: SomeChildrenInterface) {
             {/* <SessionWatcher /> */}
             <CartProvider>
               <Provider>
-                <Header session={session} />
                 <main className="flex-grow">{children}</main>
-                <Footer />
               </Provider>
             </CartProvider>
           </LoadingProvider>

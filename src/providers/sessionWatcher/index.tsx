@@ -11,7 +11,6 @@ export function SessionWatcher() {
   const hasHandledSession = useRef(false);
 
   useEffect(() => {
-    if (pathname === '/login') return;
     if (status !== 'authenticated') return;
     if (hasHandledSession.current) return;
 

@@ -124,6 +124,7 @@ export const authOptions: NextAuthOptions = {
       if (isAccessTokenExpired) {
         try {
           const decodedRefresh = jwtDecode<{ exp: number }>(token.refreshToken);
+          const nowInSeconds = Math.floor(Date.now() / 1000);
           const isRefreshTokenExpired = nowInSeconds > decodedRefresh.exp;
 
           if (isRefreshTokenExpired) {

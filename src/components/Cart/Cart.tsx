@@ -9,6 +9,7 @@ import { FaPlus } from 'react-icons/fa6';
 import { FaMinus } from 'react-icons/fa6';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegTrashAlt } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 interface CartProps {
   openCart: boolean;
@@ -25,6 +26,8 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     removeItem,
     session,
   } = useCart();
+
+  const navigation = useRouter();
 
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
@@ -194,8 +197,15 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 variant="primary"
                 className="w-full py-3"
                 isLoading={isLoading}
+                onClick={() =>
+                  !session?.user.accessToken
+                    ? navigation.push('/login')
+                    : navigation.push('/checkout')
+                }
               >
-                Finalizar Pedido
+                {!session?.user.accessToken
+                  ? 'Login / Cadastro'
+                  : 'Finalizar Pedido'}
               </ButtonDefault>
             </Drawer.Footer>
 

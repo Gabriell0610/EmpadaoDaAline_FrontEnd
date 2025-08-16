@@ -9,6 +9,7 @@ import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/Card/card';
 import { useRouter } from 'next/navigation';
 import { PropsHome } from '@/utils/types/components/listItemComponent.type';
+import { ButtonDefault } from '@/components/Button/Button';
 
 /* eslint-disable prettier/prettier */
 export default function Home({ data }: PropsHome) {
@@ -34,17 +35,18 @@ export default function Home({ data }: PropsHome) {
               <span className="text-yellow-600">aquecem</span> o coração e{' '}
               <span className="text-text-green">encantam</span> o paladar.
             </TitleH1>
-            <p className="text-text-secondary">
+            <p className="text-text-secondary text-sm sm:text-base">
               Prove o melhor da nossa cozinha: receitas com ingredientes
               selecionados, preparo artesanal e muito sabor. Surpreenda-se e
               transforme cada refeição em um momento especial.
             </p>
-            <button
+            <ButtonDefault
               onClick={() => navigate.push('/menu')}
-              className="w-fit rounded-md bg-primary-greenLight px-4 py-2 text-neutral-white hover:bg-green-800"
+              variant='primary'
+              className='w-fit'
             >
               Veja nosso Menu
-            </button>
+            </ButtonDefault>
           </div>
 
           <div className="hidden min-w-[350px] max-w-[350px] md:flex">
@@ -65,7 +67,7 @@ export default function Home({ data }: PropsHome) {
           ))}
         </div>
       </section>
-      <Cart openCart={openCart} setOpenCart={setOpenCart} />
+      {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
     </main>
   );
 }

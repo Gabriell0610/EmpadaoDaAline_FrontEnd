@@ -7,6 +7,7 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
   // nextUrl nativo do next
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin');
   //const isClientRoute = req.nextUrl.pathname.startsWith('/client');
+  const isHomeRoute = req.nextUrl.pathname === '/';
   const isNewPasswordRoute = req.nextUrl.pathname.startsWith('/newPassword');
 
   // nextAuth só da para usar quando tem withAuth - Com o nextAuth eu consigo pegar os dados do usuário que estão no token no cookie
@@ -18,6 +19,13 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
   // }
 
   const isAdmin = userRole === AccessProfile.ADMIN;
+
+  const isClient = userRole === AccessProfile.CLIENT;
+
+  // Redireciona cliente que tentar acessar home
+  if (isClient && token && isHomeRoute) {
+    return NextResponse.redirect(new URL('/client', req.url));
+  }
 
   // Se for rota de admin
   if (isAdminRoute) {

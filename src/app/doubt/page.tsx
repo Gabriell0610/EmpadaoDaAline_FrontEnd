@@ -1,16 +1,15 @@
-import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
-import ProfilePageClient from './clientPage';
+import DoubtClientPage from './clientPage';
+import { authOptions } from '@/libs/auth';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
 
-export default async function HomeProfilePage() {
+export default async function DoubtPage() {
   const session = await getServerSession(authOptions);
-
   return (
     <>
       <Header session={session} />
-      <ProfilePageClient session={session} />
+      <DoubtClientPage />
       <Footer />
     </>
   );

@@ -24,6 +24,8 @@ import {
   addressUserData,
   addressUserDataSchema,
 } from '@/utils/schemas/address.schema';
+import { ButtonDefault } from '@/components/Button/Button';
+import { signOut } from 'next-auth/react';
 
 interface ProfilePageProps {
   session: Session | null;
@@ -37,6 +39,8 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
   const [selectAddress, setSelectAddress] = useState<ListAddressUser>();
+  const { editDataUserLogger, editAddressUserData } = UserHook();
+  const [idAddress, setIdAddress] = useState('');
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -58,28 +62,64 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     }
   };
 
-  const editPersonalUserData = () => {
+  const preparePersonalUserEdit = () => {
     setTitleModal('Editar dados pessoais');
     setModeModal('personal');
     openModal();
   };
 
-  const editAddressUserData = (idAddress: string) => {
+  const prepareAddressEdit = (idAddress: string) => {
     setTitleModal('Editar Endereço');
     setModeModal('address');
     const valor = dataUserLogged?.enderecos.find(
       (value) => value.endereco.id === idAddress,
     );
     setSelectAddress(valor);
+    setIdAddress(idAddress);
     openModal();
   };
 
-  const handleEditPersonalUserData = (data: personalUserData) => {
-    console.log(data);
+  const handleEditPersonalUserData = async (data: personalUserData) => {
+    try {
+      setIsLoading(true);
+      const res = await editDataUserLogger(
+        session?.user.accessToken || '',
+        data,
+      );
+      if (!res.success) {
+        toast.error(getSafeErrorMessage(res.message));
+        setIsLoading(false);
+      }
+      await handleDataUser();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleEditAddressUserData = (data: addressUserData) => {
-    console.log('teste endereco', data);
+  const handleEditAddressUserData = async (data: addressUserData) => {
+    try {
+      setIsLoading(true);
+      const res = await editAddressUserData(
+        session?.user.accessToken || '',
+        data,
+        idAddress,
+      );
+
+      if (!res.success) {
+        toast(getSafeErrorMessage(res.message));
+        setIsLoading(false);
+      }
+
+      await handleDataUser();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -93,85 +133,100 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   };
 
   return (
-    <main className="mx-auto w-full">
-      <article className="m-auto flex max-w-[750px] flex-col gap-5 px-8 py-6">
-        <div className="mb-5 sm:text-center">
-          <TitleH1 className="mb-0">Edite suas informações</TitleH1>
-          <p className="text-xs sm:text-base">
-            matenha seus dados sempre atualizados
+    <main className="mx-auto w-full px-8 py-6">
+      <article className="m-auto flex max-w-[750px] flex-col gap-8">
+        {/* Título */}
+        <div className="mb-5 text-center">
+          <TitleH1 className="mb-1">Edite suas informações</TitleH1>
+          <p className="text-sm text-gray-500 sm:text-base">
+            Mantenha seus dados sempre atualizados
           </p>
         </div>
-        <div className="flex flex-col justify-between gap-4 md:flex-row">
-          <section>
-            <div className="flex items-center gap-3">
+
+        <div className="flex flex-col gap-6 md:flex-row">
+          {/* Dados Pessoais */}
+          <section className="flex-1 rounded-lg border border-gray-100 bg-white p-5 shadow-md">
+            <div className="mb-4 flex items-center justify-between">
               <TitleH2 className="mb-0">Dados Pessoais</TitleH2>
               <FaRegEdit
-                onClick={() => editPersonalUserData()}
-                className="cursor-pointer"
+                onClick={() => preparePersonalUserEdit()}
+                className="cursor-pointer text-green-600 hover:text-green-800"
                 title="Editar dados pessoais"
               />
             </div>
-            <div className="my-2 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 text-sm sm:text-base">
               {Object.entries(loggedUserData).map(([label, value]) => (
-                <p
-                  key={label}
-                  className="flex items-center gap-3 text-xs sm:text-base"
-                >
+                <p key={label} className="flex items-center gap-2">
                   <span className="font-semibold text-text-primary">
-                    {label}{' '}
+                    {label}
                   </span>
                   {value}
                 </p>
               ))}
             </div>
           </section>
-          <section>
-            <TitleH2>Endereços</TitleH2>
-            {dataUserLogged?.enderecos.map((value) => (
-              <div
-                key={value.endereco.id}
-                className="mb-3 text-xs sm:text-base"
-              >
-                <div className="flex gap-3">
-                  <p>
-                    <span className="font-semibold">CEP:</span>{' '}
-                    {formatCep(value.endereco.cep)}
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="font-semibold">Rua:</span>{' '}
-                    {value.endereco.rua}
+
+          {/* Endereços */}
+          <section className="flex-1 rounded-lg border border-gray-100 bg-white p-5 shadow-md">
+            <TitleH2 className="mb-4">Endereços</TitleH2>
+            <div className="flex flex-col gap-4">
+              {dataUserLogged?.enderecos.map((value) => (
+                <div
+                  key={value.endereco.id}
+                  className="border-b border-gray-100 pb-3 last:border-none"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">CEP:</span>
+                      {formatCep(value.endereco.cep)}
+                      <span className="ml-3 font-semibold">Rua:</span>
+                      {value.endereco.rua}
+                    </p>
                     <FaRegEdit
-                      className="cursor-pointer"
+                      className="cursor-pointer text-green-600 hover:text-green-800"
                       title="Editar endereço"
-                      onClick={() => editAddressUserData(value.endereco.id)}
+                      onClick={() => prepareAddressEdit(value.endereco.id)}
                     />
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-4">
+                    <p>
+                      <span className="font-semibold">Número:</span>{' '}
+                      {value.endereco.numero}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Bairro:</span>{' '}
+                      {value.endereco.bairro}
+                    </p>
+                  </div>
+                  <p className="mt-1">
+                    <span className="font-semibold">Cidade:</span>{' '}
+                    {value.endereco.cidade}
                   </p>
                 </div>
-                <div className="flex gap-3">
-                  <p>
-                    <span className="font-semibold">Número:</span>{' '}
-                    {value.endereco.numero}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Bairro:</span>{' '}
-                    {value.endereco.bairro}
-                  </p>
-                </div>
-                <p>
-                  <span className="font-semibold">Cidade:</span>{' '}
-                  {value.endereco.cidade}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         </div>
       </article>
 
+      {/* Botão de sair */}
+      <div className="mt-8">
+        <ButtonDefault
+          variant="primary"
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="w-fit px-6 py-2"
+        >
+          Sair
+        </ButtonDefault>
+      </div>
+
+      {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal} title={titleModal}>
         {modeModal === 'personal' ? (
           <DefaultForm
             onSubmit={handleEditPersonalUserData}
             schema={personalUserDataSchema}
+            isLoading={isLoading}
             fields={[
               {
                 name: 'name',
@@ -198,6 +253,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
           <DefaultForm
             onSubmit={handleEditAddressUserData}
             schema={addressUserDataSchema}
+            isLoading={isLoading}
             fields={[
               {
                 name: 'zipCode',
@@ -234,6 +290,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
           />
         )}
       </Modal>
+
       {isLoading && <LoadingComponent mode={'fullScreen'} />}
     </main>
   );
