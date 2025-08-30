@@ -33,6 +33,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   );
   const [itemsWithLoggedUser, setItemsWithLoggedUser] =
     useState<Carrinho | null>(null);
+
   const { listCartByUser } = useCartHook();
 
   const {

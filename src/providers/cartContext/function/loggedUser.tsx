@@ -71,6 +71,7 @@ export const AuxiliarCartLoggedUserProvider = ({
         await listCart();
       } else {
         toast.error(getSafeErrorMessage(res.message));
+        console.error(res.message);
       }
       setIsLoading(false);
     } catch (error) {

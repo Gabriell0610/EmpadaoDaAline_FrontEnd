@@ -11,6 +11,10 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
   const res = await listActiveItem();
 
+  if (!res.success) {
+    console.error(res.message);
+  }
+
   const data: ListActiveItemsInterface[] = res.data;
   return (
     <>

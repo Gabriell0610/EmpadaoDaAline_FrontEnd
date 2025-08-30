@@ -8,14 +8,17 @@ import { Cart } from '@/components/Cart/Cart';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/Card/card';
 import { useRouter } from 'next/navigation';
-import { PropsHome } from '@/utils/types/components/listItemComponent.type';
+import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { ButtonDefault } from '@/components/Button/Button';
 
 /* eslint-disable prettier/prettier */
-export default function Home({ data }: PropsHome) {
+export default function Home({ data }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const navigate = useRouter();
+
+  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
+
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
     addItemInCart(itemId);
@@ -55,18 +58,20 @@ export default function Home({ data }: PropsHome) {
         </article>
       </section>
 
-      <section className="w-full px-8 py-6">
-        <TitleH1>Os mais pedidos</TitleH1>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {data.map((value, index) => (
-            <Card
-              content={value}
-              key={index}
-              handleOpenCart={(itemId) => handleOpenCart(itemId)}
-            />
-          ))}
-        </div>
-      </section>
+      {empadoes.length > 0 && (
+        <section className="w-full px-8 py-10">
+          <TitleH1>Os mais pedidos</TitleH1>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+            {empadoes.map((value) => (
+              <Card
+                key={value.id}
+                content={value}
+                handleOpenCart={handleOpenCart}
+              />
+            ))}
+          </div>
+        </section>
+      )}
       {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
     </main>
   );

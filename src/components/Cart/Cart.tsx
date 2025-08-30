@@ -10,6 +10,7 @@ import { FaMinus } from 'react-icons/fa6';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface CartProps {
   openCart: boolean;
@@ -47,6 +48,9 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
       (!itemsWithLoggedUser?.carrinhoItens ||
         itemsWithLoggedUser.carrinhoItens.length === 0));
 
+  useEffect(() => {
+    console.log('dados carrinho', itemsWithLoggedUser);
+  }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root
       size={'sm'}
@@ -87,9 +91,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                       className="h-25 w-28 flex-shrink-0 rounded-sm object-cover"
                     />
                     <div className="flex flex-col gap-3">
-                      <p className="font-semibold">
-                        {content.item.itemDescription.nome}
-                      </p>
+                      <TitleH4>{content.item.itemDescription.nome}</TitleH4>
                       <p>{content.item.itemDescription.descricao}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">
@@ -107,7 +109,11 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                             <FaPlus />
                           </ButtonDefault>
                           <span className="font-semibold">
-                            {content.quantity}
+                            {content.item.unidades != null
+                              ? content.quantity +
+                                Number(content.item.unidades) -
+                                1
+                              : content.quantity}
                           </span>
                           <ButtonDefault
                             onClick={() =>
@@ -139,13 +145,16 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                       src={content.item.itemDescription.image || ImageFood}
                       alt="imagem do produto"
                       quality={100}
-                      className="h-20 w-24 flex-shrink-0 rounded-sm object-cover"
+                      className="h-24 w-28 flex-shrink-0 rounded-sm object-cover"
                     />
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1">
+                      <TitleH4 className="mb-0">
+                        {content.item.itemDescription.nome}
+                      </TitleH4>
                       <p>{content.item.itemDescription.descricao}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">
-                          {normalizeCurrency(content.precoAtual)}
+                          {normalizeCurrency(content.item.preco)}
                         </p>
                         <div className="flex items-center gap-4">
                           <ButtonDefault
@@ -159,7 +168,11 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                             <FaPlus />
                           </ButtonDefault>
                           <span className="font-semibold">
-                            {content.quantidade}
+                            {content.item.unidades != null
+                              ? content.quantidade +
+                                Number(content.item.unidades) -
+                                1
+                              : content.quantidade}
                           </span>
                           <ButtonDefault
                             onClick={() =>

@@ -1,5 +1,5 @@
 import { ListActiveItemsInterface } from '../items.type';
 
-export interface PropsHome {
+export interface ClientPageProps {
   data: ListActiveItemsInterface[];
 }

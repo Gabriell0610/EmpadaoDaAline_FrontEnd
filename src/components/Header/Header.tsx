@@ -36,19 +36,19 @@ export function Header({ session }: HeaderProps) {
 
         {/* BOTÕES LOGIN / CADASTRO */}
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <FaBagShopping 
-              className="cursor-pointer" 
-              size={22} 
-              onClick={() => setOpenCart(true)} 
-            />
-            
-            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
-              {quantity}
-            </span>
-          </div>
           {!session?.user.accessToken ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <FaBagShopping 
+                  className="cursor-pointer" 
+                  size={22} 
+                  onClick={() => setOpenCart(true)} 
+                />
+                
+              <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
+                {quantity}
+              </span>
+            </div>
               
               <ButtonDefault
                 variant="secondary"
@@ -65,9 +65,11 @@ export function Header({ session }: HeaderProps) {
             </div>
           ) : (
             <div className="flex gap-4 items-center">
-              <ButtonDefault variant="link" href='/menu' className='text-text-primary'>Menu</ButtonDefault>
               <ProfileIcon/>
-              
+              <ButtonDefault className='sm:py-2 sm:px-4 sm:bg-text-green sm:flex sm:items-center sm:gap-2 sm:text-neutral-white sm:rounded-md' onClick={() => setOpenCart(true)}>
+                <FaBagShopping size={20}/>
+                <span className='hidden sm:block'>Sua Sacola</span>
+              </ButtonDefault>
             </div>
           )}
         </div>

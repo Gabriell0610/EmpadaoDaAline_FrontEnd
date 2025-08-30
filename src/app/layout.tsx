@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-sync-scripts */
 import '../../theme/globals.css';
 import type { Metadata } from 'next';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';

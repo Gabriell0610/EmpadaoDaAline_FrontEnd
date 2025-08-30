@@ -15,13 +15,16 @@ export interface ItemCarrinho {
   precoAtual: string;
   item: {
     preco: string;
+    precoUnitario: string;
+    disponivel: string;
+    tamanho: string;
+    unidades: string;
     itemDescription: {
       image: string;
       descricao: string;
       nome: string;
+      tipo: string;
     };
-    disponivel: string;
-    tamanho: string;
   };
 }
 
