@@ -22,9 +22,10 @@ export interface ListActiveItemsInterface {
 
 export interface ListActiveItemsByIdInterface {
   id: string;
+  precoUnitario: number;
   tamanho: string;
   preco: string;
-  precoUnitario: string;
+  unidades: string;
   itemDescription: {
     id: string;
     descricao: string;

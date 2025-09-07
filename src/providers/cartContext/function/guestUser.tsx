@@ -54,14 +54,17 @@ export const AuxiliarCartGuestUserProvider = ({
   );
 
   const incrementOrDecrementItemGuestUser = (act: string, itemId: string) => {
-    const updatedItems = itemsWithGuestUser.map((item) => {
-      if (item.item.id === itemId) {
-        const newQuantity =
-          act === 'increment' ? item.quantity + 1 : item.quantity - 1;
-        return { ...item, quantity: Math.max(1, newQuantity) };
-      }
-      return item;
-    });
+    const updatedItems = itemsWithGuestUser
+      .map((item) => {
+        if (item.item.id === itemId) {
+          const newQuantity =
+            act === 'increment' ? item.quantity + 1 : item.quantity - 1;
+          return { ...item, quantity: newQuantity }; // atualiza a quantidade
+        }
+        return item;
+      })
+      .filter((item) => item.quantity > 0); // remove itens com quantidade 0
+
     setItemsWithGuestUser(updatedItems);
   };
 

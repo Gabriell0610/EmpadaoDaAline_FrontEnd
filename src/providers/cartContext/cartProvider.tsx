@@ -36,6 +36,15 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
 
   const { listCartByUser } = useCartHook();
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('cart-items');
+      setItemsWithGuestUser(stored ? JSON.parse(stored) : []);
+    } catch {
+      setItemsWithGuestUser([]);
+    }
+  }, []);
+
   const {
     handleGuestAdd,
     incrementOrDecrementItemGuestUser,
@@ -46,31 +55,32 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   });
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('cart-items');
-      setItemsWithGuestUser(stored ? JSON.parse(stored) : []);
-    } catch {
-      setItemsWithGuestUser([]);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!session?.user.accessToken) {
-      const timeout = setTimeout(() => {
-        localStorage.setItem('cart-items', JSON.stringify(itemsWithGuestUser));
-        const quantity = itemsWithGuestUser.reduce(
-          (acc, curr) => acc + curr.quantity,
-          0,
-        );
-        setQuantity(quantity > 0 ? quantity : 0);
-      }, 300);
-      return () => clearTimeout(timeout);
+      let newQuantity: number = 0;
+      localStorage.setItem('cart-items', JSON.stringify(itemsWithGuestUser));
+      itemsWithGuestUser
+        .map((item) => {
+          if (item.item.unidades && item.quantity > 1) {
+            return (newQuantity! += 1);
+          } else {
+            return (newQuantity! += item.quantity);
+          }
+        })
+        .reduce((a, b) => a + b, 0);
+      setQuantity(newQuantity > 0 ? newQuantity : 0);
     } else {
-      const quantity = itemsWithLoggedUser?.carrinhoItens.reduce(
-        (acc, curr) => acc + curr.quantidade,
-        0,
-      );
-      setQuantity(quantity || 0);
+      let newQuantity: number = 0;
+      itemsWithLoggedUser?.carrinhoItens
+        .map((item) => {
+          if (item.item.unidades && item.quantidade > 1) {
+            return (newQuantity! += 1);
+          } else {
+            return (newQuantity! += item.quantidade);
+          }
+        })
+        .reduce((a, b) => a + b, 0);
+
+      setQuantity(newQuantity || 0);
     }
   }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
 

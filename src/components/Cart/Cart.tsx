@@ -32,12 +32,18 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
 
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
-      return itemsWithGuestUser
-        .reduce(
-          (total, item) => total + parseFloat(item.item?.preco) * item.quantity,
-          0,
-        )
+      const totalPrice = itemsWithGuestUser
+        .map((item) => {
+          const newQuantity = item.item.unidades!
+            ? Number(item.item.unidades) + item.quantity! - 1
+            : item.quantity;
+          return item.item.unidades!
+            ? Number(item.item.precoUnitario) * newQuantity
+            : newQuantity * Number(item.item.preco);
+        })
+        .reduce((acc, curr) => acc + curr, 0)
         .toFixed(2);
+      return totalPrice;
     }
     return itemsWithLoggedUser?.valorTotal || '0.00';
   };
@@ -50,6 +56,9 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
 
   useEffect(() => {
     console.log('dados carrinho', itemsWithLoggedUser);
+  }, [itemsWithLoggedUser]);
+  useEffect(() => {
+    console.log('dados carrinho', itemsWithGuestUser);
   }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root
@@ -101,12 +110,12 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           <ButtonDefault
                             onClick={() =>
                               incrementOrDecrementItem(
-                                'increment',
+                                'decrement',
                                 content.item?.id,
                               )
                             }
                           >
-                            <FaPlus />
+                            <FaMinus />
                           </ButtonDefault>
                           <span className="font-semibold">
                             {content.item.unidades != null
@@ -118,12 +127,12 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           <ButtonDefault
                             onClick={() =>
                               incrementOrDecrementItem(
-                                'decrement',
+                                'increment',
                                 content.item?.id,
                               )
                             }
                           >
-                            <FaMinus />
+                            <FaPlus />
                           </ButtonDefault>
                           <ButtonDefault
                             onClick={() => removeItem(content.item?.id)}
@@ -160,12 +169,12 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           <ButtonDefault
                             onClick={() =>
                               incrementOrDecrementItem(
-                                'increment',
+                                'decrement',
                                 content.itemId,
                               )
                             }
                           >
-                            <FaPlus />
+                            <FaMinus />
                           </ButtonDefault>
                           <span className="font-semibold">
                             {content.item.unidades != null
@@ -177,13 +186,14 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           <ButtonDefault
                             onClick={() =>
                               incrementOrDecrementItem(
-                                'decrement',
+                                'increment',
                                 content.itemId,
                               )
                             }
                           >
-                            <FaMinus />
+                            <FaPlus />
                           </ButtonDefault>
+
                           <ButtonDefault
                             onClick={() => removeItem(content.itemId)}
                           >
