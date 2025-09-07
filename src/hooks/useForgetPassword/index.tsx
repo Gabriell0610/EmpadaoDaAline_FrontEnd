@@ -1,5 +1,5 @@
 import { NewPasswordData } from '@/app/newPassword/clientPage';
-import { sendEmailDto, validateTokenDto } from '@/utils/zod/forgetPassword';
+import { sendEmailDto, validateTokenDto } from '@/utils/schemas/forgetPassword';
 
 export function useForgetPassword() {
   async function generateToken(data: sendEmailDto) {

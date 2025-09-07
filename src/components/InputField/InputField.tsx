@@ -9,6 +9,7 @@ interface InputsFieldsProps extends InputProps {
   error?: FieldError;
   label: string;
   name: string;
+  defaultValue: string;
 }
 
 export function InputField({
@@ -18,6 +19,7 @@ export function InputField({
   error,
   placeholder,
   type,
+  defaultValue,
   ...rest
 }: InputsFieldsProps) {
   return (
@@ -31,6 +33,7 @@ export function InputField({
         className="rounded-md border border-text-secondary px-4 py-2 focus:outline-none"
         placeholder={placeholder}
         type={type}
+        defaultValue={defaultValue}
         {...rest}
       />
       {error && <p className="text-details-error">{error.message}</p>}

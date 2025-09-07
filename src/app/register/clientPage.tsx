@@ -4,12 +4,12 @@ import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { useRegister } from '@/hooks/useRegister/useRegister';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { getSafeErrorMessage } from '@/utils/helpers';
-import { RegisterData, registerSchema } from '@/utils/zod/register.schema';
+import { RegisterData, registerSchema } from '@/utils/schemas/register.schema';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import toast from 'react-hot-toast';
 
-export const ClientPageRegister = () => {
+export default function ClientPageRegister() {
   const route = useRouter();
   const { register } = useRegister();
   const { isLoading, setIsLoading } = useContext(LoadingContext);
@@ -34,7 +34,7 @@ export const ClientPageRegister = () => {
   };
 
   return (
-    <div>
+    <section>
       <DefaultForm
         schema={registerSchema}
         onSubmit={handleRegister}
@@ -74,6 +74,6 @@ export const ClientPageRegister = () => {
           </ButtonDefault>
         </p>
       </div>
-    </div>
+    </section>
   );
-};
+}

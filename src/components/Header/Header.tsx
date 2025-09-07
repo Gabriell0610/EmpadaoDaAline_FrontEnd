@@ -7,31 +7,24 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Session } from 'next-auth';
 import { Cart } from '../Cart/Cart';
-import { useEffect, useState } from 'react';
-import { useCart } from '@/providers/cartContext/cartProvider';
-import { FaRegCircleUser } from 'react-icons/fa6';
+import { useState } from 'react';
 import { FaBagShopping } from 'react-icons/fa6';
+import { ProfileIcon } from './MenuHeader/ProfileHeader';
+import { useCart } from '@/providers/cartContext/cartProvider';
 
 interface HeaderProps {
-  login?: Session | null;
+  session?: Session | null;
 }
 
-export function Header(props: HeaderProps) {
+export function Header({ session }: HeaderProps) {
   const navigate = useRouter();
-  const { login } = props;
   const [openCart, setOpenCart] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-  const { items, quantity } = useCart();
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
+  const {quantity} = useCart()
   return (
     <header className="px-8 py-4">
       <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-4 py-2">
         <div className="flex min-w-0 items-center">
-          <Link href="/">
+          <Link href={session?.user.accessToken ? "/client" : "/"}>
             <Image
               alt="logo da marca"
               src={logo}
@@ -42,20 +35,21 @@ export function Header(props: HeaderProps) {
         </div>
 
         {/* BOTÕES LOGIN / CADASTRO */}
-        <div className="flex items-center gap-2">
-          {hasMounted && items.length > 0 && (
-            <ButtonDefault
-              className="relative"
-              onClick={() => setOpenCart(true)}
-            >
-              <FaBagShopping size={25} />
-              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+        <div className="flex items-center gap-4">
+          {!session?.user.accessToken ? (
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <FaBagShopping 
+                  className="cursor-pointer" 
+                  size={22} 
+                  onClick={() => setOpenCart(true)} 
+                />
+                
+              <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
                 {quantity}
               </span>
-            </ButtonDefault>
-          )}
-          {!login?.user.id ? (
-            <div className="flex gap-2">
+            </div>
+              
               <ButtonDefault
                 variant="secondary"
                 onClick={() => navigate.push('/login')}
@@ -70,17 +64,17 @@ export function Header(props: HeaderProps) {
               </ButtonDefault>
             </div>
           ) : (
-            <div className="flex gap-6">
-              <ButtonDefault variant="link" className="text-text-primary">
-                <FaRegCircleUser size={25} />
+            <div className="flex gap-4 items-center">
+              <ProfileIcon/>
+              <ButtonDefault className='sm:py-2 sm:px-4 sm:bg-text-green sm:flex sm:items-center sm:gap-2 sm:text-neutral-white sm:rounded-md' onClick={() => setOpenCart(true)}>
+                <FaBagShopping size={20}/>
+                <span className='hidden sm:block'>Sua Sacola</span>
               </ButtonDefault>
-              <ButtonDefault variant="link">Menu</ButtonDefault>
-              <ButtonDefault variant="link">Meus Pedidos</ButtonDefault>
             </div>
           )}
         </div>
       </nav>
-      <Cart openCart={openCart} setOpenCart={setOpenCart} />
+     {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
     </header>
   );
 }

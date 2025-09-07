@@ -2,28 +2,32 @@
 'use client';
 import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
-import ImageFood from '../../public/image5.png';
-import { Footer } from '@/components/Footer/Footer';
-import { TitleH1, TitleH3 } from '@/components/Titles/Titles';
-import { useState } from 'react';
-import { ListActiveItemsInterface } from '@/utils/types/items.type';
-import { normalizeCurrency } from '@/utils/helpers/normalizeCurrency';
+import { TitleH1 } from '@/components/Titles/Titles';
+import { useEffect, useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
-import { ButtonDefault } from '@/components/Button/Button';
 import { useCart } from '@/providers/cartContext/cartProvider';
+import { Card } from '@/components/Card/card';
+import { useRouter } from 'next/navigation';
+import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
+import { ButtonDefault } from '@/components/Button/Button';
 
-interface PropsHome {
-  data: ListActiveItemsInterface[];
-}
 /* eslint-disable prettier/prettier */
-export default function Home({ data }: PropsHome) {
+export default function Home({ data }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
-  const { addItemById } = useCart();
+  const { addItemInCart } = useCart();
+  const navigate = useRouter();
+
+  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
-    addItemById(itemId);
+    addItemInCart(itemId);
   }
+
+  useEffect(() => {
+    console.log(data);
+  }, []);
+
   return (
     <main className="mx-auto w-full">
       <section className="w-full px-8 py-10">
@@ -34,14 +38,18 @@ export default function Home({ data }: PropsHome) {
               <span className="text-yellow-600">aquecem</span> o coração e{' '}
               <span className="text-text-green">encantam</span> o paladar.
             </TitleH1>
-            <p className="text-text-secondary">
+            <p className="text-text-secondary text-sm sm:text-base">
               Prove o melhor da nossa cozinha: receitas com ingredientes
               selecionados, preparo artesanal e muito sabor. Surpreenda-se e
               transforme cada refeição em um momento especial.
             </p>
-            <button className="w-fit rounded-md bg-primary-greenLight px-4 py-2 text-neutral-white hover:bg-green-800">
+            <ButtonDefault
+              onClick={() => navigate.push('/menu')}
+              variant='primary'
+              className='w-fit'
+            >
               Veja nosso Menu
-            </button>
+            </ButtonDefault>
           </div>
 
           <div className="hidden min-w-[350px] max-w-[350px] md:flex">
@@ -50,45 +58,21 @@ export default function Home({ data }: PropsHome) {
         </article>
       </section>
 
-      <section className="w-full px-8 py-6">
-        <TitleH1>Os mais pedidos</TitleH1>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {data
-            ?.filter((_, index) => index === 0 || index === 5 || index === 11)
-            .map((value, index) => (
-              <div
-                className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white shadow-md"
-                key={index}
-              >
-                <Image
-                  src={value.image || ImageFood}
-                  alt="Empadão"
-                  className="h-40 w-full object-cover"
-                />
-                <div className="flex h-full flex-col justify-between p-4">
-                  <TitleH3 className="md:text-sm">{value.nome}</TitleH3>
-                  <p className="font mb-3 min-h-[72px] text-gray-700 md:text-sm lg:text-base">
-                    {value.descricao}
-                  </p>
-                  <div className="flex items-center justify-between text-gray-700 md:text-sm lg:text-base">
-                    <span>{normalizeCurrency(value.preco)}</span>
-                    <span>{value.pesoReal}</span>
-                  </div>
-                  <ButtonDefault
-                    type="button"
-                    variant="third"
-                    className="mt-4 outline-none"
-                    onClick={() => handleOpenCart(value.id)}
-                  >
-                    Adicionar
-                  </ButtonDefault>
-                </div>
-              </div>
+      {empadoes.length > 0 && (
+        <section className="w-full px-8 py-10">
+          <TitleH1>Os mais pedidos</TitleH1>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+            {empadoes.map((value) => (
+              <Card
+                key={value.id}
+                content={value}
+                handleOpenCart={handleOpenCart}
+              />
             ))}
-        </div>
-      </section>
-      <Cart openCart={openCart} setOpenCart={setOpenCart} />
-      <Footer />
+          </div>
+        </section>
+      )}
+      {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
     </main>
   );
 }

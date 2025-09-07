@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { passwordValidation } from './validations/password';
+import { passwordValidation } from '../validators';
 
 const defaultSchema = z.object({
   email: z.string().min(1, 'Campo obrigatório').email('Email inválido'),

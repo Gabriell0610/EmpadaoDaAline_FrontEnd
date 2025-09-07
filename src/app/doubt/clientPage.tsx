@@ -1,3 +1,4 @@
+'use client';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { Accordion, Span } from '@chakra-ui/react';
 
@@ -6,7 +7,7 @@ export default function DoubtClientPage() {
     {
       value: 'a',
       title: '1. Como fazer o pedido?',
-      text: 'Faça login ou se cadastre. Navegue pelu menu e selecione o produto de sua preferência. Ao finalizar, cadastre ou selecione o seu endereço (casp ja tenha um endereço cadastrado) e escolha o meio de pagamento e confirme os produtos do carrinho',
+      text: 'Faça login ou se cadastre. Navegue pelo menu e selecione o produto de sua preferência. Ao finalizar, cadastre ou selecione o seu endereço (casp ja tenha um endereço cadastrado) e escolha o meio de pagamento e confirme os produtos do carrinho',
     },
     {
       value: 'b',
@@ -21,7 +22,7 @@ export default function DoubtClientPage() {
   ];
 
   return (
-    <main>
+    <main className="mx-auto w-full">
       <section id="duvidas" className="w-full px-8 py-6">
         <TitleH1>Dúvidas Frequentes</TitleH1>
         <Accordion.Root collapsible defaultValue={['b']}>

@@ -9,7 +9,7 @@ export const TitleH1 = ({ children, className }: TitlesInterface) => {
   return (
     <h1
       className={twMerge(
-        'mb-5 text-2xl font-semibold text-text-primary sm:text-3xl lg:text-4xl',
+        'mb-5 text-xl font-semibold text-text-primary sm:text-3xl lg:text-4xl',
         className,
       )}
     >

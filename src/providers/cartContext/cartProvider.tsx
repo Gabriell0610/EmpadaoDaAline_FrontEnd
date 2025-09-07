@@ -1,6 +1,5 @@
 'use client';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
-import { ListActiveItemsByIdInterface } from '@/utils/types/items.type';
 import {
   createContext,
   useCallback,
@@ -8,26 +7,18 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useItems } from '@/hooks/useItems';
 import { useSession } from 'next-auth/react';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-
-interface CartItem {
-  item: ListActiveItemsByIdInterface;
-  quantity: number;
-}
-
-interface CartContextType {
-  items: CartItem[];
-  addItemById: (itemId: string) => Promise<void>;
-  incrementOrDecrementItem: (
-    itemId: string,
-    act: string,
-  ) => Promise<void> | void;
-  removeItem: (itemId: string) => Promise<void> | void;
-  isLoading: boolean;
-  quantity: number;
-}
+import { Carrinho } from '@/utils/types/cart.type';
+import {
+  CartContextType,
+  CartItemLocal,
+} from '@/utils/types/providers/cartProvider.type';
+import { AuxiliarCartGuestUserProvider } from './function/guestUser';
+import { AuxiliarCartLoggedUserProvider } from './function/loggedUser';
+import toast from 'react-hot-toast';
+import { getSafeErrorMessage } from '@/utils/helpers';
+import { useCartHook } from '@/hooks/useCart';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -35,88 +26,138 @@ export const CartContext = createContext<CartContextType | undefined>(
 
 export const CartProvider = ({ children }: SomeChildrenInterface) => {
   const { data: session } = useSession();
-  const { listItemById } = useItems();
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const [quantity, setQuantity] = useState(0);
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [itemsWithGuestUser, setItemsWithGuestUser] = useState<CartItemLocal[]>(
+    [],
+  );
+  const [itemsWithLoggedUser, setItemsWithLoggedUser] =
+    useState<Carrinho | null>(null);
+
+  const { listCartByUser } = useCartHook();
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem('cart-items');
-      setItems(stored ? JSON.parse(stored) : []);
+      setItemsWithGuestUser(stored ? JSON.parse(stored) : []);
     } catch {
-      setItems([]);
+      setItemsWithGuestUser([]);
     }
   }, []);
 
-  // Atualiza o localStorage toda vez que items mudar
+  const {
+    handleGuestAdd,
+    incrementOrDecrementItemGuestUser,
+    removeItemGuestUser,
+  } = AuxiliarCartGuestUserProvider({
+    itemsWithGuestUser,
+    setItemsWithGuestUser,
+  });
+
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      localStorage.setItem('cart-items', JSON.stringify(items));
-      const quantity = items.reduce((acc, curr) => acc + curr.quantity, 0);
-      setQuantity(quantity > 0 ? quantity : 0);
-    }, 300);
+    if (!session?.user.accessToken) {
+      let newQuantity: number = 0;
+      localStorage.setItem('cart-items', JSON.stringify(itemsWithGuestUser));
+      itemsWithGuestUser
+        .map((item) => {
+          if (item.item.unidades && item.quantity > 1) {
+            return (newQuantity! += 1);
+          } else {
+            return (newQuantity! += item.quantity);
+          }
+        })
+        .reduce((a, b) => a + b, 0);
+      setQuantity(newQuantity > 0 ? newQuantity : 0);
+    } else {
+      let newQuantity: number = 0;
+      itemsWithLoggedUser?.carrinhoItens
+        .map((item) => {
+          if (item.item.unidades && item.quantidade > 1) {
+            return (newQuantity! += 1);
+          } else {
+            return (newQuantity! += item.quantidade);
+          }
+        })
+        .reduce((a, b) => a + b, 0);
 
-    return () => clearTimeout(timeout);
-  }, [items]);
+      setQuantity(newQuantity || 0);
+    }
+  }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
 
-  // Função para adicionar item ao carrinho
-  const addItemById = useCallback(
+  const listCart = useCallback(async () => {
+    try {
+      const token = session?.user?.accessToken || '';
+      const res = await listCartByUser({ token });
+
+      if (!res.data) {
+        console.warn('Usuário sem dados no carrinho.');
+        return;
+      }
+
+      if (!res.success) {
+        toast.error(getSafeErrorMessage(res.message));
+        return;
+      }
+
+      setItemsWithLoggedUser(res.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [listCartByUser]);
+
+  useEffect(() => {
+    if (session?.user?.accessToken) {
+      listCart();
+    }
+  }, [session?.user?.accessToken]);
+
+  const {
+    handleLoggedAdd,
+    incrementOrDecrementItemLoggedUser,
+    removeItemLoggedUser,
+  } = AuxiliarCartLoggedUserProvider({
+    session,
+    listCart,
+  });
+
+  const addItemInCart = useCallback(
     async (itemId: string) => {
-      if (!session?.user?.id) {
-        setIsLoading(true);
-
-        const response = await listItemById(itemId);
-
-        const existingIndex = items.findIndex(
-          (cartItem) => cartItem.item?.id === response.data.id,
-        );
-
-        if (existingIndex >= 0) {
-          const updatedItems = [...items];
-          updatedItems[existingIndex].quantity += 1;
-          setItems(updatedItems);
-        } else {
-          setItems((prevItems) => [
-            ...prevItems,
-            { item: response.data, quantity: 1 },
-          ]);
-        }
-
-        setIsLoading(false);
+      if (!session?.user?.accessToken) {
+        await handleGuestAdd(itemId);
+      } else {
+        await handleLoggedAdd(itemId);
       }
     },
-    [session?.user?.id, listItemById, setIsLoading, items],
+    [handleGuestAdd, handleLoggedAdd, session?.user?.accessToken],
   );
 
-  const incrementOrDecrementItem = (act: string, itemId: string) => {
-    if (!session?.user.id) {
-      const updatedItems = items.map((item) => {
-        if (item.item.id === itemId) {
-          const newQuantity =
-            act === 'increment' ? item.quantity + 1 : item.quantity - 1;
-          return { ...item, quantity: Math.max(1, newQuantity) };
-        }
-        return item;
-      });
-      setItems(updatedItems);
+  const incrementOrDecrementItem = async (act: string, itemId: string) => {
+    if (!session?.user.accessToken) {
+      incrementOrDecrementItemGuestUser(act, itemId);
+    } else {
+      await incrementOrDecrementItemLoggedUser(act, itemId);
     }
   };
 
-  const removeItem = (itemId: string) => {
-    if (!session?.user.id) {
-      const updatedItems = items.filter((item) => item.item.id !== itemId);
-      setItems(updatedItems);
+  const removeItem = async (itemId: string) => {
+    if (!session?.user.accessToken) {
+      removeItemGuestUser(itemId);
+    } else {
+      await removeItemLoggedUser(itemId);
     }
   };
 
   return (
     <CartContext.Provider
       value={{
-        items,
+        session,
+        itemsWithGuestUser,
+        itemsWithLoggedUser,
         isLoading,
         quantity,
-        addItemById,
+        addItemInCart,
         incrementOrDecrementItem,
         removeItem,
       }}

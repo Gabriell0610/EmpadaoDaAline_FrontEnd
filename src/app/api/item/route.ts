@@ -7,6 +7,9 @@ export async function GET(request: Request) {
 
   const req = await fetch(`${baseUrl()}/itens/${itemId}`, {
     method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 
   const res = await req.json();
