@@ -16,6 +16,10 @@ body {
   font-family: 'inter', sans-serif;
 }
 
+.container-custom {
+  @apply mx-auto w-full px-8 py-10;
+}
+
 /* Remover setas do input number para todos os navegadores */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

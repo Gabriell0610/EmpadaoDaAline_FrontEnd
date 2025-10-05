@@ -4,7 +4,7 @@ import { FaFacebookSquare } from 'react-icons/fa';
 import { TitleH2 } from '../Titles/Titles';
 import { CustomLink } from '../LinkComponent/Link';
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="bg-primary-greenFooter px-6 text-text-primary">
       <div className="container mx-auto flex flex-wrap justify-between gap-6 px-4 py-6">
@@ -57,5 +57,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-export { Footer };

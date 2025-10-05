@@ -22,8 +22,8 @@ export default function DoubtClientPage() {
   ];
 
   return (
-    <main className="mx-auto w-full">
-      <section id="duvidas" className="w-full px-8 py-6">
+    <main className="container-custom">
+      <section id="duvidas">
         <TitleH1>Dúvidas Frequentes</TitleH1>
         <Accordion.Root collapsible defaultValue={['b']}>
           {items.map((item, index) => (

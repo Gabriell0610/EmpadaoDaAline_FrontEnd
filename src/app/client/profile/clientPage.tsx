@@ -12,7 +12,6 @@ import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
 import { useContext, useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import { Session } from 'next-auth';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { Modal } from '@/components/modal/modalComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
@@ -26,10 +25,7 @@ import {
 } from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
-
-interface ProfilePageProps {
-  session: Session | null;
-}
+import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
@@ -133,7 +129,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   };
 
   return (
-    <main className="mx-auto w-full px-8 py-6">
+    <main className="container-custom">
       <article className="m-auto flex max-w-[750px] flex-col gap-8">
         {/* Título */}
         <div className="mb-5 text-center">

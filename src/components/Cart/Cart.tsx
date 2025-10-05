@@ -55,10 +55,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
         itemsWithLoggedUser.carrinhoItens.length === 0));
 
   useEffect(() => {
-    console.log('dados carrinho', itemsWithLoggedUser);
+    console.log('dados carrinho logado', itemsWithLoggedUser);
   }, [itemsWithLoggedUser]);
   useEffect(() => {
-    console.log('dados carrinho', itemsWithGuestUser);
+    console.log('dados carrinho local', itemsWithGuestUser);
   }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root

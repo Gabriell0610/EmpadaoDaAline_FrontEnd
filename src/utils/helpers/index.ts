@@ -6,7 +6,6 @@ export const normalizeCurrency = (value: string) => {
 
 // utils/helpers.ts
 export const getSafeErrorMessage = (errorMessage?: string): string => {
-  console.log('CHEGOU ASSIM A MENSAGEM DE ERRO', errorMessage);
   if (!errorMessage) return 'Ocorreu um erro. Tente novamente mais tarde.';
 
   // Lista de mensagens que não devem ser mostradas diretamente
