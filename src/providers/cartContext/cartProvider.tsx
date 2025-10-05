@@ -19,6 +19,7 @@ import { AuxiliarCartLoggedUserProvider } from './function/loggedUser';
 import toast from 'react-hot-toast';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { useCartHook } from '@/hooks/useCart';
+import { StatusCart } from '@/constants/enums/StatusCart';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -55,8 +56,8 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   });
 
   useEffect(() => {
+    let newQuantity: number = 0;
     if (!session?.user.accessToken) {
-      let newQuantity: number = 0;
       localStorage.setItem('cart-items', JSON.stringify(itemsWithGuestUser));
       itemsWithGuestUser
         .map((item) => {
@@ -69,7 +70,6 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         .reduce((a, b) => a + b, 0);
       setQuantity(newQuantity > 0 ? newQuantity : 0);
     } else {
-      let newQuantity: number = 0;
       itemsWithLoggedUser?.carrinhoItens
         .map((item) => {
           if (item.item.unidades && item.quantidade > 1) {
@@ -97,6 +97,10 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
       if (!res.success) {
         toast.error(getSafeErrorMessage(res.message));
         return;
+      }
+
+      if (res.data.status === StatusCart.FINALIZADO) {
+        return setItemsWithLoggedUser(null);
       }
 
       setItemsWithLoggedUser(res.data);
