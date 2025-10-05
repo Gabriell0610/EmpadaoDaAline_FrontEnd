@@ -1,5 +1,5 @@
 'use client';
-import { Card } from '@/components/Card/card';
+import { Card } from '@/components/CardItens/card';
 import { Cart } from '@/components/Cart/Cart';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useCart } from '@/providers/cartContext/cartProvider';

@@ -20,6 +20,10 @@ body {
   @apply mx-auto w-full px-8 py-10;
 }
 
+.text-p-custom {
+  @apply text-xs sm:text-base 
+}
+
 /* Remover setas do input number para todos os navegadores */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

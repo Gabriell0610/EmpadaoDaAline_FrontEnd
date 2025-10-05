@@ -6,7 +6,7 @@ import { TitleH1 } from '@/components/Titles/Titles';
 import { useEffect, useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
 import { useCart } from '@/providers/cartContext/cartProvider';
-import { Card } from '@/components/Card/card';
+import { Card } from '@/components/CardItens/card';
 import { useRouter } from 'next/navigation';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { ButtonDefault } from '@/components/Button/Button';

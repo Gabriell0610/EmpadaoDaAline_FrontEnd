@@ -1,0 +1,7 @@
+export enum StatusOrder {
+  ACEITO = 'ACEITO',
+  PENDENTE = 'PENDENTE',
+  PREPARANDO = 'PREPARANDO',
+  ENTREGUE = 'ENTREGUE',
+  CANCELADO = 'CANCELADO',
+}

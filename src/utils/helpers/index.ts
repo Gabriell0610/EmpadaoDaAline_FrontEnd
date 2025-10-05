@@ -1,6 +1,6 @@
 import { cellphoneNumberRegex, cepRegex } from '../validators';
 
-export const normalizeCurrency = (value: string) => {
+export const normalizeCurrency = (value: string | number) => {
   return `R$${value}`;
 };
 
@@ -41,6 +41,10 @@ export const baseUrl = () => {
   const url = 'http://localhost:1338/api';
   if (!url) throw new Error('API base URL não definida!');
   return url;
+};
+
+export const formatDatePtBr = (date: Date) => {
+  return new Date(date).toLocaleDateString('pt-BR');
 };
 
 export const DEFAULTMESSAGEERROAPI =
