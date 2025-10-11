@@ -129,7 +129,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   };
 
   return (
-    <main className="container-custom">
+    <>
       <article className="m-auto flex max-w-[750px] flex-col gap-8">
         {/* Título */}
         <div className="mb-5 text-center">
@@ -288,6 +288,6 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
       </Modal>
 
       {isLoading && <LoadingComponent mode={'fullScreen'} />}
-    </main>
+    </>
   );
 }

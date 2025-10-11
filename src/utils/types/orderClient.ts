@@ -4,6 +4,7 @@ import { Carrinho } from './cart.type';
 import { addressUser } from './user.type';
 
 export interface OrderInterface {
+  id: string;
   horarioDeEntrega: string;
   dataAgendamento: Date;
   meioPagamento: PaymentMethod;

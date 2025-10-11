@@ -1,10 +1,14 @@
 'use client';
 import { ListOrderByClient } from '@/utils/types/orderClient';
 import { ButtonDefault } from '../Button/Button';
-import { formatDatePtBr, normalizeCurrency } from '@/utils/helpers';
-import { ItemCarrinho } from '@/utils/types/cart.type';
+import {
+  formartQuantityItem,
+  formatDatePtBr,
+  normalizeCurrency,
+} from '@/utils/helpers';
 import { twMerge } from 'tailwind-merge';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
+import Link from 'next/link';
 
 interface CardOrderInterface {
   content: ListOrderByClient;
@@ -14,26 +18,22 @@ export default function CardOrder({ content }: CardOrderInterface) {
   const contentInCart = content.carrinho.carrinhoItens[0];
 
   const pending = content.status === StatusOrder.PENDENTE;
+  const accept = content.status === StatusOrder.ACEITO;
   const preparing = content.status === StatusOrder.PREPARANDO;
-  const cancel = content.status === StatusOrder.CANCELADO;
   const deliverd = content.status === StatusOrder.ENTREGUE;
-
-  function formartDescriptionItem(data: ItemCarrinho) {
-    const quantity = data.item.unidades
-      ? Number(data.item.unidades) + data.quantidade - 1
-      : data.quantidade;
-
-    return quantity;
-  }
+  const cancel = content.status === StatusOrder.CANCELADO;
 
   return (
     <>
-      <div className="cursor-pointer rounded-md bg-neutral-white px-2 py-2 text-xs">
-        <div className="flex items-center justify-between gap-5">
+      <Link
+        className="min-h-10 w-auto cursor-pointer rounded-md bg-neutral-white px-2 py-2 text-xs hover:shadow-lg"
+        href={`/client/pedidos/${content.id}`}
+      >
+        <div className="flex items-center justify-between gap-1.5 sm:gap-5">
           <div className="flex items-center gap-2">
             <div
               className={twMerge(
-                'h-2 w-2 rounded-full sm:h-3 sm:w-3',
+                'min-h-2 min-w-2 rounded-full sm:min-h-3 sm:min-w-3',
                 pending
                   ? 'bg-details-pending'
                   : preparing
@@ -42,20 +42,21 @@ export default function CardOrder({ content }: CardOrderInterface) {
                       ? 'bg-details-canceled'
                       : deliverd
                         ? 'bg-details-delivered'
-                        : '',
+                        : accept
+                          ? 'bg-details-accept'
+                          : '',
               )}
             ></div>
-            <p className="text-xs sm:text-lg">Pedido #{content.numeroPedido}</p>
             <p className="sm:text-base">{content.status}</p>
           </div>
-          <p className="text-xs sm:text-base">
+          <p className="text-p-custom">
             {formatDatePtBr(content.dataAgendamento)}
           </p>
         </div>
         {contentInCart && (
-          <div key={contentInCart.itemId} className="mt-2 text-xs sm:text-base">
+          <div key={contentInCart.itemId} className="text-p-custom mt-2">
             <div className="flex gap-1">
-              <p>{formartDescriptionItem(contentInCart)}x</p>
+              <p>{formartQuantityItem(contentInCart)}x</p>
               <p>{contentInCart.item.itemDescription.nome}...</p>
             </div>
           </div>
@@ -64,15 +65,14 @@ export default function CardOrder({ content }: CardOrderInterface) {
           <span>Total:</span>
           {normalizeCurrency(content.precoTotal)}
         </p>
-        <div className="mt-3">
-          <ButtonDefault
-            className="bg-red-500 px-2 py-1 text-xs hover:bg-red-500"
-            variant="primary"
-          >
-            Cancelar
-          </ButtonDefault>
-        </div>
-      </div>
+        {content.status != StatusOrder.PREPARANDO ? (
+          <div className="mt-3">
+            <ButtonDefault variant="fourth">Cancelar</ButtonDefault>
+          </div>
+        ) : (
+          ''
+        )}
+      </Link>
     </>
   );
 }

@@ -12,12 +12,12 @@ import { ClientPageProps } from '@/utils/types/components/listItemComponent.type
 import { ButtonDefault } from '@/components/Button/Button';
 
 /* eslint-disable prettier/prettier */
-export default function Home({ data }: ClientPageProps) {
+export default function Home({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const navigate = useRouter();
 
-  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
+  const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
@@ -25,11 +25,11 @@ export default function Home({ data }: ClientPageProps) {
   }
 
   useEffect(() => {
-    console.log(data);
+    console.log(activeItems);
   }, []);
 
   return (
-    <main className="mx-auto w-full">
+    <main className="container-custom">
       <section className="w-full px-8 py-10">
         <article className="flex flex-col items-center gap-6 md:flex-row md:gap-8">
           <div className="flex flex-col gap-4">

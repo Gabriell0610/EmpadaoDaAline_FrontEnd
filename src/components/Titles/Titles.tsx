@@ -56,3 +56,7 @@ export const TitleH4 = ({ children, className }: TitlesInterface) => {
     </h3>
   );
 };
+
+export const TitleParagrapgy = ({ children, className }: TitlesInterface) => {
+  return <p className={twMerge('font-semibold', className)}>{children}</p>;
+};

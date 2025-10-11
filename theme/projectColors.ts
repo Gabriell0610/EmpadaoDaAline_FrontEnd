@@ -26,5 +26,6 @@ export const projectColors = {
     pending: '#F97316',
     canceled: '#EF4444',
     delivered: '#22C55E',
+    accept: '#03300B',
   },
 };

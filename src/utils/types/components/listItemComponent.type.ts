@@ -1,5 +1,7 @@
 import { ListActiveItemsInterface } from '../items.type';
 
 export interface ClientPageProps {
-  data: ListActiveItemsInterface[];
+  activeItems: ListActiveItemsInterface[];
 }
+
+export type MenuPageProps = ClientPageProps;

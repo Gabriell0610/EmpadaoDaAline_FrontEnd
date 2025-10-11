@@ -10,10 +10,17 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
   background-color: #f8f8f8;
   color: #222;
   font-family: 'inter', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .container-custom {

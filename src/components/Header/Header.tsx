@@ -21,8 +21,8 @@ export function Header({ session }: HeaderProps) {
   const [openCart, setOpenCart] = useState(false);
   const {quantity} = useCart()
   return (
-    <header className="px-8 py-4">
-      <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-4 py-2">
+    <header className="py-8 px-8">
+      <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between">
         <div className="flex min-w-0 items-center">
           <Link href={session?.user.accessToken ? "/client" : "/"}>
             <Image

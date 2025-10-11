@@ -1,3 +1,4 @@
+import { ItemCarrinho } from '../types/cart.type';
 import { cellphoneNumberRegex, cepRegex } from '../validators';
 
 export const normalizeCurrency = (value: string | number) => {
@@ -46,6 +47,14 @@ export const baseUrl = () => {
 export const formatDatePtBr = (date: Date) => {
   return new Date(date).toLocaleDateString('pt-BR');
 };
+
+export function formartQuantityItem(data: ItemCarrinho) {
+  const quantity = data.item.unidades
+    ? Number(data.item.unidades) + data.quantidade - 1
+    : data.quantidade;
+
+  return quantity;
+}
 
 export const DEFAULTMESSAGEERROAPI =
   'Erro inesperado entre em contato com o suporte!';

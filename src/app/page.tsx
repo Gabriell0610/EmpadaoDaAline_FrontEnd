@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import Home from './clientPage';
-import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import { listActiveItem } from '@/services/itemService';
 import { Header } from '@/components/Header/Header';
 import { getServerSession } from 'next-auth';
@@ -9,17 +8,16 @@ import { Footer } from '@/components/Footer/Footer';
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
-  const res = await listActiveItem();
+  const responseActiveItem = await listActiveItem();
 
-  if (!res.success) {
-    console.error(res.message);
+  if (!responseActiveItem.success) {
+    console.error(responseActiveItem.message);
   }
 
-  const data: ListActiveItemsInterface[] = res.data;
   return (
     <>
       <Header session={session} />
-      <Home data={data} />
+      <Home activeItems={responseActiveItem.data} />
       <Footer />
     </>
   );

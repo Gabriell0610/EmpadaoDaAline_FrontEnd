@@ -18,11 +18,14 @@ export default function ClientOrderPage({ session }: ProfilePageProps) {
   async function getOrderClient() {
     try {
       setIsLoading(true);
-      const res = await listOrderByClient({ token: accessToken, idUser });
-      if (res.success) {
-        setListOrder(res.data);
+      const resListOrdersByClient = await listOrderByClient({
+        token: accessToken,
+        idUser,
+      });
+      if (resListOrdersByClient.success) {
+        setListOrder(resListOrdersByClient.data);
       } else {
-        toast.error(res.message);
+        toast.error(resListOrdersByClient.message);
       }
       setIsLoading(false);
     } catch (error) {
@@ -36,10 +39,10 @@ export default function ClientOrderPage({ session }: ProfilePageProps) {
   }, []);
 
   return (
-    <main className="container-custom">
-      <TitleH1>Histórico de Pedidos</TitleH1>
-      {/* <p>{session?.user.accessToken}</p> */}
-      <div className="flex flex-col gap-6 sm:flex-row">
+    <div className="">
+      <TitleH1>Meus Pedidos</TitleH1>
+      <p>{session?.user.accessToken}</p>
+      <div className="mt-4 grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {listOrder &&
           listOrder.map((value, index) => (
             <CardOrder key={index} content={value} />
@@ -47,6 +50,6 @@ export default function ClientOrderPage({ session }: ProfilePageProps) {
       </div>
 
       {isLoading && <LoadingComponent mode="fullScreen" />}
-    </main>
+    </div>
   );
 }

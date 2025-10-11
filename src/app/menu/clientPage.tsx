@@ -18,7 +18,7 @@ import { FaChevronLeft } from 'react-icons/fa6';
 
 import { IconButton } from '@chakra-ui/react';
 
-export default function MenuClient({ data }: ClientPageProps) {
+export default function MenuClient({ activeItems }: ClientPageProps) {
   const { data: session } = useSession();
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
@@ -30,16 +30,19 @@ export default function MenuClient({ data }: ClientPageProps) {
   }
 
   // separa os itens por tipo
-  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
-  const panquecas = data.filter((item) => item.tipo === 'PANQUECA');
-  const almondegas = data.filter((item) => item.tipo === 'ALMONDEGA');
+  const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
+  const panquecas = activeItems.filter((item) => item.tipo === 'PANQUECA');
+  const almondegas = activeItems.filter((item) => item.tipo === 'ALMONDEGA');
 
-  // helper para renderizar seção
-  const renderSection = (title: string, items: typeof data, id: string) => {
+  const renderSection = (
+    title: string,
+    items: typeof activeItems,
+    id: string,
+  ) => {
     if (items.length === 0) return null;
 
     return (
-      <section className="relative w-full px-8 py-10">
+      <section className="relative mt-3">
         <TitleH1>{title}</TitleH1>
 
         <div className="relative">
@@ -118,7 +121,7 @@ export default function MenuClient({ data }: ClientPageProps) {
   };
 
   return (
-    <main className="mx-auto w-full">
+    <main className="">
       {renderSection('Empadões', empadoes, 'empadao')}
       {renderSection('Panquecas', panquecas, 'panqueca')}
       {renderSection('Almôndegas', almondegas, 'almondega')}
