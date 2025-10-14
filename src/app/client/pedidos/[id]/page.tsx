@@ -7,7 +7,7 @@ import ClientOrderDetailsPage from './clientPage';
 
 interface PageProps {
   params: {
-    id: string; // o [id] da rota
+    id: string;
   };
 }
 
@@ -19,7 +19,7 @@ export default async function OrderDetailsPage({ params }: PageProps) {
   const reqOrderById = await fetch(`${baseUrl()}/order/${params.id}`, {
     method: 'GET',
     headers: {
-      authorization: `${session?.user.accessToken}`,
+      Authorization: `Bearer ${session?.user.accessToken}`,
       'Content-Type': 'application/json',
     },
     cache: 'no-store',

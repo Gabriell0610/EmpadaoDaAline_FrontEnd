@@ -9,7 +9,6 @@ import {
 
 export function UserHook() {
   async function getAddressByUser(token: string) {
-    console.log('Token no hook', token);
     const req = await fetch('/api/user', {
       method: 'GET',
       headers: {

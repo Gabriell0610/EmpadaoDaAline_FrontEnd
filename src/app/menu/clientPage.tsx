@@ -4,7 +4,6 @@ import { Cart } from '@/components/Cart/Cart';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { Navigation } from 'swiper/modules';
@@ -19,14 +18,12 @@ import { FaChevronLeft } from 'react-icons/fa6';
 import { IconButton } from '@chakra-ui/react';
 
 export default function MenuClient({ activeItems }: ClientPageProps) {
-  const { data: session } = useSession();
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
     addItemInCart(itemId);
-    console.log(session?.user.accessToken);
   }
 
   // separa os itens por tipo
@@ -121,7 +118,7 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
   };
 
   return (
-    <main className="">
+    <main>
       {renderSection('Empadões', empadoes, 'empadao')}
       {renderSection('Panquecas', panquecas, 'panqueca')}
       {renderSection('Almôndegas', almondegas, 'almondega')}

@@ -55,15 +55,15 @@ export const ButtonDefault = ({
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       className={twMerge(
-        'rounded-md border sm:px-4 sm:py-2 sm:text-base',
+        'rounded-md border px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary
-          ? 'bg-primary-greenLight px-1 py-2 text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
+          ? 'bg-primary-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
           : isSecondary
-            ? 'border-primary-greenLight bg-neutral-white px-1 py-2 text-xs font-semibold text-text-primary hover:opacity-80'
+            ? 'border-primary-greenLight bg-neutral-white text-xs font-semibold text-text-primary hover:opacity-80'
             : isThird
               ? 'w-full rounded border border-green-700 py-2 font-medium text-green-700 transition-colors duration-200 hover:bg-green-700 hover:text-white'
               : isFourth
-                ? 'bg-red-500 py-1 py-2 text-center text-xs font-semibold text-neutral-white'
+                ? 'bg-red-500 text-center text-xs font-semibold text-neutral-white'
                 : '',
         className,
       )}
