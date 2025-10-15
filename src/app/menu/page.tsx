@@ -13,7 +13,7 @@ export default async function HomeMenu() {
   return (
     <>
       <Header session={session} />
-      <MenuClient data={data} />
+      <MenuClient activeItems={data} />
       <Footer />
     </>
   );

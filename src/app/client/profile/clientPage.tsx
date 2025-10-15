@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { TitleH1, TitleH2 } from '@/components/Titles/Titles';
-import { UserHook } from '@/hooks/userHook/userHook';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import {
   formatCep,
   getSafeErrorMessage,
   normalizeCellphoneNumber,
 } from '@/utils/helpers';
 import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
@@ -26,36 +23,32 @@ import {
 import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
-  const { getDataUserLogged } = UserHook();
   const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
   const [selectAddress, setSelectAddress] = useState<ListAddressUser>();
-  const { editDataUserLogger, editAddressUserData } = UserHook();
   const [idAddress, setIdAddress] = useState('');
+  const { call, isLoading } = useFetch();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const handleDataUser = async () => {
-    try {
-      setIsLoading(true);
-      const res = await getDataUserLogged(session?.user.accessToken || '');
-      if (!res.success) {
-        toast.error(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-      }
+    const res = await call<null, ListDataUserLogged>({
+      token: session?.user.accessToken || '',
+      method: 'GET',
+      url: `users/me`,
+    });
 
-      setDataUserLogged(res.data);
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
     }
+
+    setDataUserLogged(res.data);
   };
 
   const preparePersonalUserEdit = () => {
@@ -76,46 +69,33 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   };
 
   const handleEditPersonalUserData = async (data: personalUserData) => {
-    try {
-      setIsLoading(true);
-      const res = await editDataUserLogger(
-        session?.user.accessToken || '',
-        data,
-      );
-      if (!res.success) {
-        toast.error(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-      }
-      await handleDataUser();
-      closeModal();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    const res = await call<personalUserData, null>({
+      method: 'PUT',
+      url: `users`,
+      body: data,
+      token: session?.user.accessToken || '',
+    });
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
     }
+    await handleDataUser();
+    closeModal();
   };
 
   const handleEditAddressUserData = async (data: addressUserData) => {
-    try {
-      setIsLoading(true);
-      const res = await editAddressUserData(
-        session?.user.accessToken || '',
-        data,
-        idAddress,
-      );
+    const res = await call<addressUserData, null>({
+      method: 'PUT',
+      url: `users/${idAddress}/address`,
+      body: data,
+      token: session?.user.accessToken || '',
+    });
 
-      if (!res.success) {
-        toast(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-      }
-
-      await handleDataUser();
-      closeModal();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (!res.success) {
+      toast(getSafeErrorMessage(res.message));
     }
+
+    await handleDataUser();
+    closeModal();
   };
 
   useEffect(() => {

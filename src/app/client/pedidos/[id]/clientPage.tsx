@@ -7,24 +7,53 @@ import { ButtonDefault } from '@/components/Button/Button';
 import {
   formartQuantityItem,
   formatDatePtBr,
+  getSafeErrorMessage,
   normalizeCurrency,
 } from '@/utils/helpers';
+import { ProfilePageProps } from '@/utils/types/generics/layout.type';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 
-interface ClientOrderDetailsInterface {
-  content: ListOrderByClient;
+interface ClientOrderDetailsInterface extends ProfilePageProps {
+  id: string;
 }
 export default function ClientOrderDetailsPage({
-  content,
+  id,
+  session,
 }: ClientOrderDetailsInterface) {
-  const pending = content.status === StatusOrder.PENDENTE;
-  const accept = content.status === StatusOrder.ACEITO;
-  const preparing = content.status === StatusOrder.PREPARANDO;
-  const deliverd = content.status === StatusOrder.ENTREGUE;
-  const cancel = content.status === StatusOrder.CANCELADO;
+  const { call, isLoading } = useFetch();
+  const [content, setContent] = useState<ListOrderByClient>();
+
+  const handleOrderDetails = async () => {
+    const response = await call<null, ListOrderByClient>({
+      method: 'GET',
+      url: `order/${id}`,
+      token: session?.user.accessToken || '',
+    });
+
+    if (!response.success) {
+      toast.error(getSafeErrorMessage(response.message));
+      return;
+    }
+
+    setContent(response.data);
+  };
+
+  useEffect(() => {
+    handleOrderDetails();
+  }, []);
+
+  const pending = content?.status === StatusOrder.PENDENTE;
+  const accept = content?.status === StatusOrder.ACEITO;
+  const preparing = content?.status === StatusOrder.PREPARANDO;
+  const deliverd = content?.status === StatusOrder.ENTREGUE;
+  const cancel = content?.status === StatusOrder.CANCELADO;
 
   return (
     <div className="mx-auto w-full max-w-md rounded-lg border p-6 shadow">
-      <TitleH1>Pedido #{content.numeroPedido}</TitleH1>
+      <TitleH1>Pedido #{content?.numeroPedido}</TitleH1>
 
       <TitleParagrapgy className="mt-2">
         Status atual:{' '}
@@ -44,27 +73,27 @@ export default function ClientOrderDetailsPage({
                       : '',
           )}
         >
-          {content.status}
+          {content?.status}
         </span>
       </TitleParagrapgy>
       <TitleParagrapgy>
         Data de agendamento:{' '}
         <span className="font-medium">
-          {formatDatePtBr(content.dataAgendamento)}
+          {formatDatePtBr(content?.dataAgendamento || '')}
         </span>
       </TitleParagrapgy>
       <TitleParagrapgy>
         Horário de entrega:{' '}
-        <span className="font-medium">{content.horarioDeEntrega}</span>
+        <span className="font-medium">{content?.horarioDeEntrega}</span>
       </TitleParagrapgy>
       <TitleParagrapgy>
         Meio de pagamento:{' '}
-        <span className="font-medium">{content.meioPagamento}</span>
+        <span className="font-medium">{content?.meioPagamento}</span>
       </TitleParagrapgy>
       <TitleParagrapgy>
         Observação:{' '}
         <span className="font-medium">
-          {content.observacao || 'Nenhuma observação'}
+          {content?.observacao || 'Nenhuma observação'}
         </span>
       </TitleParagrapgy>
 
@@ -72,7 +101,7 @@ export default function ClientOrderDetailsPage({
 
       <div>
         <TitleParagrapgy>Itens do pedido:</TitleParagrapgy>
-        {content.carrinho.carrinhoItens.map((item, index) => (
+        {content?.carrinho.carrinhoItens.map((item, index) => (
           <div key={index} className="mt-1">
             <span>
               {formartQuantityItem(item)}x {item.item.itemDescription.nome}
@@ -84,7 +113,7 @@ export default function ClientOrderDetailsPage({
       <hr className="my-4 border-gray-200" />
       <div className="mt-2 flex gap-2">
         <TitleParagrapgy>Total:</TitleParagrapgy>
-        <span>{normalizeCurrency(content.precoTotal)}</span>
+        <span>{normalizeCurrency(content?.precoTotal || '')}</span>
       </div>
 
       <hr className="my-4 border-gray-200" />
@@ -92,18 +121,19 @@ export default function ClientOrderDetailsPage({
       <div>
         <TitleParagrapgy className="font-semibold">Entrega em:</TitleParagrapgy>
         <p>
-          {content.endereco.rua} - {content.endereco.numero} -{' '}
-          {content.endereco.bairro} - {content.endereco.cidade}/
-          {content.endereco.estado} {content.endereco.complemento}
+          {content?.endereco.rua} - {content?.endereco.numero} -{' '}
+          {content?.endereco.bairro} - {content?.endereco.cidade}/
+          {content?.endereco.estado} {content?.endereco.complemento}
         </p>
       </div>
-      {content.status != StatusOrder.PREPARANDO ? (
+      {content?.status != StatusOrder.PREPARANDO ? (
         <div className="mt-3">
           <ButtonDefault variant="fourth">Cancelar</ButtonDefault>
         </div>
       ) : (
         ''
       )}
+      {isLoading && <LoadingComponent mode="fullScreen" />}
     </div>
   );
 }

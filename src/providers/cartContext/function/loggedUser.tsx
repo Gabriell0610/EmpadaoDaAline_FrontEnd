@@ -1,104 +1,65 @@
 'use client';
-import { useCartHook } from '@/hooks/useCart';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
-import { Carrinho } from '@/utils/types/cart.type';
-import { Session } from 'next-auth';
-import { Dispatch, SetStateAction, useCallback, useContext } from 'react';
+import { AuxiliarCartLoggedUserProviderInterface } from '@/utils/types/providers/AuxiliarProvider';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
-
-interface AuxiliarCartLoggedUserProviderInterface {
-  session: Session | null;
-  setItemsWithLoggedUser?: Dispatch<SetStateAction<Carrinho | null>>;
-  itemsWithLoggedUser?: Carrinho | null;
-  listCart: () => Promise<void>;
-}
 
 export const AuxiliarCartLoggedUserProvider = ({
   session,
   listCart,
 }: AuxiliarCartLoggedUserProviderInterface) => {
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
-  const { createUserCart } = useCartHook();
-  const { incrementOrDecrementItemInCart, removeItemCart } = useCartHook();
+  const { call, isLoading } = useFetch();
 
   const handleLoggedAdd = useCallback(
     async (itemId: string) => {
-      try {
-        setIsLoading(true);
-        const res = await createUserCart({
-          token: session?.user.accessToken || '',
-          body: { itemId, userId: session?.user.id || '' },
-        });
+      const res = await call({
+        method: 'POST',
+        token: session?.user.accessToken,
+        body: { itemId, userId: session?.user.id || '' },
+        url: 'cart',
+      });
 
-        if (!res.success) {
-          toast.error(getSafeErrorMessage(res.message));
-          return;
-        }
-
-        await listCart();
-      } catch (error) {
-        console.error(error);
-        toast.error(getSafeErrorMessage());
-      } finally {
-        setIsLoading(false);
+      if (!res.success) {
+        toast.error(getSafeErrorMessage(res.message));
+        return;
       }
+
+      await listCart();
     },
-    [
-      session?.user?.accessToken,
-      session?.user?.id,
-      createUserCart,
-      listCart,
-      setIsLoading,
-    ],
+    [session?.user?.accessToken, session?.user?.id, call, listCart],
   );
 
   const incrementOrDecrementItemLoggedUser = async (
     act: string,
     itemId: string,
   ) => {
-    try {
-      setIsLoading(true);
-      const res = await incrementOrDecrementItemInCart(
-        {
-          token: session?.user.accessToken || '',
-          body: { itemId: itemId },
-        },
-        act,
-      );
+    const res = await call({
+      token: session?.user.accessToken || '',
+      body: { itemId: itemId },
+      url: `cart/item/${itemId}/${act}`,
+      method: 'PATCH',
+    });
 
-      if (res.success) {
-        await listCart();
-      } else {
-        toast.error(getSafeErrorMessage(res.message));
-        console.error(res.message);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      toast.error(getSafeErrorMessage());
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
     }
+
+    await listCart();
   };
 
   const removeItemLoggedUser = async (itemId: string) => {
-    try {
-      setIsLoading(true);
-      const res = await removeItemCart({
-        token: session?.user.accessToken || '',
-        body: { itemId: itemId },
-      });
+    const res = await call({
+      method: 'DELETE',
+      token: session?.user.accessToken || '',
+      url: `cart/item/${itemId}`,
+    });
 
-      if (res.success) {
-        await listCart();
-      } else {
-        toast.error(getSafeErrorMessage(res.message));
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(getSafeErrorMessage());
-    } finally {
-      setIsLoading(false);
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
     }
+
+    await listCart();
   };
 
   return {

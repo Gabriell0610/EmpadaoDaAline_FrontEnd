@@ -44,7 +44,7 @@ export const baseUrl = () => {
   return url;
 };
 
-export const formatDatePtBr = (date: Date) => {
+export const formatDatePtBr = (date: Date | string) => {
   return new Date(date).toLocaleDateString('pt-BR');
 };
 

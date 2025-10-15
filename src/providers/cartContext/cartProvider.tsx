@@ -8,7 +8,6 @@ import {
   useState,
 } from 'react';
 import { useSession } from 'next-auth/react';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { Carrinho } from '@/utils/types/cart.type';
 import {
   CartContextType,
@@ -18,8 +17,8 @@ import { AuxiliarCartGuestUserProvider } from './function/guestUser';
 import { AuxiliarCartLoggedUserProvider } from './function/loggedUser';
 import toast from 'react-hot-toast';
 import { getSafeErrorMessage } from '@/utils/helpers';
-import { useCartHook } from '@/hooks/useCart';
 import { StatusCart } from '@/constants/enums/StatusCart';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -27,7 +26,6 @@ export const CartContext = createContext<CartContextType | undefined>(
 
 export const CartProvider = ({ children }: SomeChildrenInterface) => {
   const { data: session } = useSession();
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
   const [quantity, setQuantity] = useState(0);
   const [itemsWithGuestUser, setItemsWithGuestUser] = useState<CartItemLocal[]>(
     [],
@@ -35,7 +33,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   const [itemsWithLoggedUser, setItemsWithLoggedUser] =
     useState<Carrinho | null>(null);
 
-  const { listCartByUser } = useCartHook();
+  const { call, isLoading } = useFetch();
 
   useEffect(() => {
     try {
@@ -85,31 +83,29 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
 
   const listCart = useCallback(async () => {
-    try {
-      const token = session?.user?.accessToken || '';
-      const res = await listCartByUser({ token });
+    const token = session?.user?.accessToken || '';
+    const res = await call<null, Carrinho>({
+      token,
+      method: 'GET',
+      url: `cart`,
+    });
 
-      if (!res.data) {
-        console.warn('Usuário sem dados no carrinho.');
-        return;
-      }
-
-      if (!res.success) {
-        toast.error(getSafeErrorMessage(res.message));
-        return;
-      }
-
-      if (res.data.status === StatusCart.FINALIZADO) {
-        return setItemsWithLoggedUser(null);
-      }
-
-      setItemsWithLoggedUser(res.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (!res.data) {
+      console.warn('Usuário sem dados no carrinho.');
+      return;
     }
-  }, [listCartByUser]);
+
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
+      return;
+    }
+
+    if (res.data.status === StatusCart.FINALIZADO) {
+      return setItemsWithLoggedUser(null);
+    }
+
+    setItemsWithLoggedUser(res.data);
+  }, [call]);
 
   useEffect(() => {
     if (session?.user?.accessToken) {

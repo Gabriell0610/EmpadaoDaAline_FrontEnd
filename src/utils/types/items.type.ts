@@ -3,6 +3,10 @@ enum EnumStatusItem {
   INATIVO,
 }
 
+export interface BodyItemInterface {
+  itemId: string;
+}
+
 export interface ListActiveItemsInterface {
   id: string;
   descricao: string;

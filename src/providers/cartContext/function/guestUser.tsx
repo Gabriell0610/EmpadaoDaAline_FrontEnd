@@ -1,56 +1,52 @@
 'use client';
-import { useItems } from '@/hooks/useItems';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
-import { CartItemLocal } from '@/utils/types/providers/cartProvider.type';
-import { Dispatch, SetStateAction, useCallback, useContext } from 'react';
+import {
+  BodyItemInterface,
+  ListActiveItemsByIdInterface,
+} from '@/utils/types/items.type';
+import { AuxiliarCartGuestUserProviderInterface } from '@/utils/types/providers/AuxiliarProvider';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
-
-interface AuxiliarCartGuestUserProviderInterface {
-  itemsWithGuestUser: CartItemLocal[];
-  setItemsWithGuestUser: Dispatch<SetStateAction<CartItemLocal[]>>;
-}
 
 export const AuxiliarCartGuestUserProvider = ({
   itemsWithGuestUser,
   setItemsWithGuestUser,
 }: AuxiliarCartGuestUserProviderInterface) => {
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
-  const { listItemById } = useItems();
+  const { call, isLoading } = useFetch();
 
   const handleGuestAdd = useCallback(
     async (itemId: string) => {
-      try {
-        setIsLoading(true);
-        const response = await listItemById(itemId);
+      const response = await call<
+        BodyItemInterface,
+        ListActiveItemsByIdInterface
+      >({
+        method: 'GET',
+        url: `itens/${itemId}`,
+        body: { itemId },
+      });
 
-        if (!response.success) {
-          toast.error(getSafeErrorMessage(response.message));
-          return;
-        }
+      if (!response.success) {
+        toast.error(getSafeErrorMessage(response.message));
+        return;
+      }
 
-        const existingIndex = itemsWithGuestUser.findIndex(
-          (cartItem) => cartItem.item?.id === response.data.id,
-        );
+      const existingIndex = itemsWithGuestUser.findIndex(
+        (cartItem) => cartItem.item?.id === response.data.id,
+      );
 
-        if (existingIndex >= 0) {
-          const updatedItems = [...itemsWithGuestUser];
-          updatedItems[existingIndex].quantity += 1;
-          setItemsWithGuestUser(updatedItems);
-        } else {
-          setItemsWithGuestUser((prevItems) => [
-            ...prevItems,
-            { item: response.data, quantity: 1 },
-          ]);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(getSafeErrorMessage());
-      } finally {
-        setIsLoading(false);
+      if (existingIndex >= 0) {
+        const updatedItems = [...itemsWithGuestUser];
+        updatedItems[existingIndex].quantity += 1;
+        setItemsWithGuestUser(updatedItems);
+      } else {
+        setItemsWithGuestUser((prevItems) => [
+          ...prevItems,
+          { item: response.data, quantity: 1 },
+        ]);
       }
     },
-    [itemsWithGuestUser, listItemById, setIsLoading, setItemsWithGuestUser],
+    [itemsWithGuestUser, setItemsWithGuestUser, call],
   );
 
   const incrementOrDecrementItemGuestUser = (act: string, itemId: string) => {

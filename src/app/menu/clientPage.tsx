@@ -118,7 +118,7 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
   };
 
   return (
-    <main>
+    <main className="container-custom">
       {renderSection('Empadões', empadoes, 'empadao')}
       {renderSection('Panquecas', panquecas, 'panqueca')}
       {renderSection('Almôndegas', almondegas, 'almondega')}

@@ -8,3 +8,8 @@ export interface SomeChildrenInterface {
 export interface ProfilePageProps {
   session: Session | null;
 }
+export interface PageProps {
+  params: {
+    id: string;
+  };
+}
