@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
-import { Modal } from '@/components/modal/modalComponent';
+import { Modal } from '@/components/Modal/modalComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import {
   personalUserData,
