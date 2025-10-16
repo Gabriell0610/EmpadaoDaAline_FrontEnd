@@ -1,36 +1,30 @@
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
-import { useRegister } from '@/hooks/useRegister/useRegister';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { AUTH_REGISTER } from '@/constants';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { RegisterData, registerSchema } from '@/utils/schemas/register.schema';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageRegister() {
   const route = useRouter();
-  const { register } = useRegister();
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
-
+  const { call, isLoading } = useFetch();
   const handleRegister = async (data: RegisterData) => {
-    try {
-      setIsLoading(true);
-      const res = await register(data);
+    const res = await call<RegisterData, null>({
+      method: StatusHttp.POST,
+      url: AUTH_REGISTER,
+      body: data,
+    });
 
-      if (!res.success) {
-        toast.error(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-      } else {
-        toast.success(getSafeErrorMessage('Redirecionando...'));
-        setIsLoading(false);
-        route.push('/login');
-      }
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
     }
+
+    toast.success(getSafeErrorMessage('Redirecionando...'));
+    route.push('/login');
   };
 
   return (

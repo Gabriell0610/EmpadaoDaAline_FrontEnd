@@ -1,7 +1,8 @@
 'use client';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
-import { useForgetPassword } from '@/hooks/useForgetPassword';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { AUTH_RESET_PASSWORD } from '@/constants';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import {
   resetPasswordSchema,
@@ -9,7 +10,6 @@ import {
 } from '@/utils/schemas/forgetPassword';
 import { useRouter } from 'next/navigation';
 import { destroyCookie, parseCookies } from 'nookies';
-import { useContext } from 'react';
 import toast from 'react-hot-toast';
 
 export interface NewPasswordData {
@@ -19,8 +19,7 @@ export interface NewPasswordData {
 }
 
 export default function ClientPageNewPassword() {
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
-  const { resetPassword } = useForgetPassword();
+  const { call, isLoading } = useFetch();
   const router = useRouter();
 
   const cookies = parseCookies();
@@ -28,31 +27,27 @@ export default function ClientPageNewPassword() {
   const token = cookies['userToken'];
 
   const handleNewPassword = async (data: resetPasswordDto) => {
-    try {
-      setIsLoading(true);
+    const dataToSend: NewPasswordData = {
+      email: userEmail as string,
+      newPassword: data.newPassword,
+      token: token as string,
+    };
 
-      const dataToSend: NewPasswordData = {
-        email: userEmail as string,
-        newPassword: data.newPassword,
-        token: token as string,
-      };
+    const res = await call<NewPasswordData, null>({
+      method: StatusHttp.POST,
+      url: AUTH_RESET_PASSWORD,
+      body: dataToSend,
+    });
 
-      const res = await resetPassword(dataToSend);
-
-      if (!res.success) {
-        toast.error(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-      } else {
-        toast.success(getSafeErrorMessage(res.message));
-        setIsLoading(false);
-        router.push('/login');
-        destroyCookie(null, 'userEmail');
-        destroyCookie(null, 'userToken');
-      }
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
+      return;
     }
+
+    toast.success(getSafeErrorMessage(res.message));
+    destroyCookie(null, 'userEmail');
+    destroyCookie(null, 'userToken');
+    router.push('/login');
   };
 
   return (

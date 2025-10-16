@@ -52,5 +52,5 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
 });
 
 export const config = {
-  matcher: ['/admin/:path*', '/client/:path*', '/newPassword'], // Aplica o middleware nas rotas
+  matcher: ['/admin/:path*', '/client/:path*'], // Aplica o middleware nas rotas
 };
