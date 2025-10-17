@@ -31,6 +31,14 @@ body {
   @apply text-xs sm:text-base 
 }
 
+.class-icons {
+  @apply h-5 w-5 text-text-green
+}
+
+.class-container-icons-text {
+  @apply flex items-center gap-2
+}
+
 /* Remover setas do input number para todos os navegadores */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

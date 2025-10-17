@@ -1,10 +1,6 @@
 'use client';
 import { TitleH1, TitleH2 } from '@/components/Titles/Titles';
-import {
-  formatCep,
-  getSafeErrorMessage,
-  normalizeCellphoneNumber,
-} from '@/utils/helpers';
+import { getSafeErrorMessage, normalizeCellphoneNumber } from '@/utils/helpers';
 import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
 import { useEffect, useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
@@ -24,6 +20,9 @@ import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { Mail, MapPinHouse, Phone, User } from 'lucide-react';
+import { EDIT_USER_ADDRESS, USER, USER_ME } from '@/constants';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
   const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
@@ -40,8 +39,8 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
   const handleDataUser = async () => {
     const res = await call<null, ListDataUserLogged>({
       token: session?.user.accessToken || '',
-      method: 'GET',
-      url: `users/me`,
+      method: StatusHttp.GET,
+      url: USER_ME,
     });
 
     if (!res.success) {
@@ -70,8 +69,8 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
   const handleEditPersonalUserData = async (data: personalUserData) => {
     const res = await call<personalUserData, null>({
-      method: 'PUT',
-      url: `users`,
+      method: StatusHttp.PUT,
+      url: USER,
       body: data,
       token: session?.user.accessToken || '',
     });
@@ -84,15 +83,17 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
   const handleEditAddressUserData = async (data: addressUserData) => {
     const res = await call<addressUserData, null>({
-      method: 'PUT',
-      url: `users/${idAddress}/address`,
+      method: StatusHttp.PUT,
+      url: `${EDIT_USER_ADDRESS}${idAddress}`,
       body: data,
       token: session?.user.accessToken || '',
     });
 
     if (!res.success) {
-      toast(getSafeErrorMessage(res.message));
+      toast.error(getSafeErrorMessage(res.message));
     }
+
+    toast.success(res.message);
 
     await handleDataUser();
     closeModal();
@@ -110,91 +111,94 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
   return (
     <>
-      <article className="m-auto flex max-w-[750px] flex-col gap-8">
+      <article className="m-auto max-w-4xl px-4 py-10">
         {/* Título */}
-        <div className="mb-5 text-center">
-          <TitleH1 className="mb-1">Edite suas informações</TitleH1>
+        <header className="mb-10 text-center">
+          <TitleH1 className="mb-2 text-3xl font-bold text-gray-800">
+            Edite suas informações
+          </TitleH1>
           <p className="text-sm text-gray-500 sm:text-base">
             Mantenha seus dados sempre atualizados
           </p>
+        </header>
+
+        {/* Card único */}
+        <div className="group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+          {/* Header do card */}
+          <div className="mb-6 flex items-center justify-between">
+            <TitleH2>Perfil do Usuário</TitleH2>
+            <FaRegEdit
+              onClick={() => preparePersonalUserEdit()}
+              className="cursor-pointer text-green-600 transition-transform duration-200 hover:scale-110 hover:text-green-700"
+              title="Editar dados pessoais"
+            />
+          </div>
+
+          {/* Dados pessoais */}
+          <div className="mb-6 grid grid-cols-1 gap-4 text-gray-700 sm:grid-cols-2">
+            {Object.entries(loggedUserData).map(([label, value]) => (
+              <div
+                key={label}
+                className="flex flex-col sm:flex-row sm:items-center sm:gap-2"
+              >
+                <div className="class-container-icons-text">
+                  {label === 'Celular: ' ? (
+                    <Phone className="class-icons" />
+                  ) : label === 'Email: ' ? (
+                    <Mail className="class-icons" />
+                  ) : (
+                    <User className="class-icons" />
+                  )}
+                  <span className="font-semibold text-gray-900">{label}</span>
+                </div>
+                <span>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Lista resumida de endereços */}
+          <div>
+            <div className="flex items-center gap-2">
+              <MapPinHouse className="class-icons" />
+              <TitleH2>Endereços</TitleH2>
+            </div>
+            <div className="mt-3 flex flex-col gap-3">
+              {dataUserLogged?.enderecos.map((value) => (
+                <button
+                  key={value.endereco.id}
+                  onClick={() => prepareAddressEdit(value.endereco.id)}
+                  className="flex items-center justify-between rounded-xl bg-gray-50 p-4 text-left shadow-sm transition-all hover:bg-gray-100 hover:shadow-md"
+                >
+                  <div>
+                    <p className="text-sm sm:text-base">
+                      <span className="font-semibold text-gray-900">Rua:</span>{' '}
+                      {value.endereco.rua}, {value.endereco.numero}
+                    </p>
+                    <p className="text-sm sm:text-base">
+                      <span className="font-semibold text-gray-900">
+                        Bairro:
+                      </span>{' '}
+                      {value.endereco.bairro} - {value.endereco.cidade}
+                    </p>
+                  </div>
+                  <FaRegEdit className="text-green-600 transition-transform hover:scale-110 hover:text-green-700" />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-6 md:flex-row">
-          {/* Dados Pessoais */}
-          <section className="flex-1 rounded-lg border border-gray-100 bg-white p-5 shadow-md">
-            <div className="mb-4 flex items-center justify-between">
-              <TitleH2 className="mb-0">Dados Pessoais</TitleH2>
-              <FaRegEdit
-                onClick={() => preparePersonalUserEdit()}
-                className="cursor-pointer text-green-600 hover:text-green-800"
-                title="Editar dados pessoais"
-              />
-            </div>
-            <div className="flex flex-col gap-3 text-sm sm:text-base">
-              {Object.entries(loggedUserData).map(([label, value]) => (
-                <p key={label} className="flex items-center gap-2">
-                  <span className="font-semibold text-text-primary">
-                    {label}
-                  </span>
-                  {value}
-                </p>
-              ))}
-            </div>
-          </section>
-
-          {/* Endereços */}
-          <section className="flex-1 rounded-lg border border-gray-100 bg-white p-5 shadow-md">
-            <TitleH2 className="mb-4">Endereços</TitleH2>
-            <div className="flex flex-col gap-4">
-              {dataUserLogged?.enderecos.map((value) => (
-                <div
-                  key={value.endereco.id}
-                  className="border-b border-gray-100 pb-3 last:border-none"
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">CEP:</span>
-                      {formatCep(value.endereco.cep)}
-                      <span className="ml-3 font-semibold">Rua:</span>
-                      {value.endereco.rua}
-                    </p>
-                    <FaRegEdit
-                      className="cursor-pointer text-green-600 hover:text-green-800"
-                      title="Editar endereço"
-                      onClick={() => prepareAddressEdit(value.endereco.id)}
-                    />
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-4">
-                    <p>
-                      <span className="font-semibold">Número:</span>{' '}
-                      {value.endereco.numero}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Bairro:</span>{' '}
-                      {value.endereco.bairro}
-                    </p>
-                  </div>
-                  <p className="mt-1">
-                    <span className="font-semibold">Cidade:</span>{' '}
-                    {value.endereco.cidade}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+        {/* Botão de sair */}
+        <div className="mt-10 flex justify-center">
+          <ButtonDefault
+            variant="primary"
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="px-8 py-2 text-base font-medium"
+          >
+            Sair da conta
+          </ButtonDefault>
         </div>
       </article>
-
-      {/* Botão de sair */}
-      <div className="mt-8">
-        <ButtonDefault
-          variant="primary"
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          className="w-fit px-6 py-2"
-        >
-          Sair
-        </ButtonDefault>
-      </div>
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal} title={titleModal}>
@@ -207,19 +211,16 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
               {
                 name: 'name',
                 label: 'Nome Completo',
-                placeholder: '',
                 defaultValue: dataUserLogged?.nome,
               },
               {
                 name: 'email',
                 label: 'Email',
-                placeholder: '',
                 defaultValue: dataUserLogged?.email,
               },
               {
                 name: 'cellphone',
                 label: 'Celular',
-                placeholder: '',
                 defaultValue: dataUserLogged?.telefone,
               },
             ]}
@@ -234,31 +235,26 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
               {
                 name: 'zipCode',
                 label: 'CEP',
-                placeholder: '',
                 defaultValue: selectAddress?.endereco.cep,
               },
               {
                 name: 'neighborhood',
                 label: 'Bairro',
-                placeholder: '',
                 defaultValue: selectAddress?.endereco.bairro,
               },
               {
                 name: 'city',
                 label: 'Cidade',
-                placeholder: '',
                 defaultValue: selectAddress?.endereco.cidade,
               },
               {
                 name: 'street',
                 label: 'Rua',
-                placeholder: '',
                 defaultValue: selectAddress?.endereco.rua,
               },
               {
                 name: 'number',
                 label: 'Número',
-                placeholder: '',
                 defaultValue: selectAddress?.endereco.numero,
               },
             ]}
@@ -267,7 +263,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
         )}
       </Modal>
 
-      {isLoading && <LoadingComponent mode={'fullScreen'} />}
+      {isLoading && <LoadingComponent mode="fullScreen" />}
     </>
   );
 }

@@ -1,6 +1,5 @@
 'use client';
 import { ListOrderByClient } from '@/utils/types/orderClient';
-import { ButtonDefault } from '../Button/Button';
 import {
   formartQuantityItem,
   formatDatePtBr,
@@ -17,16 +16,10 @@ interface CardOrderInterface {
 export default function CardOrder({ content }: CardOrderInterface) {
   const contentInCart = content.carrinho.carrinhoItens[0];
 
-  const pending = content.status === StatusOrder.PENDENTE;
-  const accept = content.status === StatusOrder.ACEITO;
-  const preparing = content.status === StatusOrder.PREPARANDO;
-  const deliverd = content.status === StatusOrder.ENTREGUE;
-  const cancel = content.status === StatusOrder.CANCELADO;
-
   return (
     <>
       <Link
-        className="min-h-10 w-auto cursor-pointer rounded-md bg-neutral-white px-2 py-2 text-xs hover:shadow-lg"
+        className="border-1 min-h-10 w-auto cursor-pointer rounded-md bg-neutral-white px-2 py-2 text-xs hover:shadow-lg"
         href={`/client/pedidos/${content.id}`}
       >
         <div className="flex items-center justify-between gap-1.5 sm:gap-5">
@@ -34,17 +27,17 @@ export default function CardOrder({ content }: CardOrderInterface) {
             <div
               className={twMerge(
                 'min-h-2 min-w-2 rounded-full sm:min-h-3 sm:min-w-3',
-                pending
+                content?.status === StatusOrder.PENDENTE
                   ? 'bg-details-pending'
-                  : preparing
+                  : content?.status === StatusOrder.PREPARANDO
                     ? 'bg-details-inProgress'
-                    : cancel
+                    : content?.status === StatusOrder.CANCELADO
                       ? 'bg-details-canceled'
-                      : deliverd
+                      : content?.status === StatusOrder.ENTREGUE
                         ? 'bg-details-delivered'
-                        : accept
+                        : content?.status === StatusOrder.ACEITO
                           ? 'bg-details-accept'
-                          : '',
+                          : 'bg-gray-500',
               )}
             ></div>
             <p className="sm:text-base">{content.status}</p>
@@ -65,13 +58,6 @@ export default function CardOrder({ content }: CardOrderInterface) {
           <span>Total:</span>
           {normalizeCurrency(content.precoTotal)}
         </p>
-        {content.status != StatusOrder.PREPARANDO ? (
-          <div className="mt-3">
-            <ButtonDefault variant="fourth">Cancelar</ButtonDefault>
-          </div>
-        ) : (
-          ''
-        )}
       </Link>
     </>
   );

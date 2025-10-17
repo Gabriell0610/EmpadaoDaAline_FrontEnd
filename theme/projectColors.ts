@@ -23,7 +23,7 @@ export const projectColors = {
     greenHover: '#166534',
     error: '#DC2626',
     inProgress: '#3B82F6',
-    pending: '#F97316',
+    pending: '#eab308',
     canceled: '#EF4444',
     delivered: '#22C55E',
     accept: '#03300B',

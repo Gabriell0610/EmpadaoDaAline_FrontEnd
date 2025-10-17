@@ -14,7 +14,7 @@ interface FormProps<T extends ZodSchema<any>> {
     name: keyof TypeOf<T>;
     label: string;
     type?: string;
-    placeholder: string;
+    placeholder?: string;
     disabled?: boolean;
     defaultValue?: string;
   }[];

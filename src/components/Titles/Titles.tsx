@@ -21,10 +21,7 @@ export const TitleH1 = ({ children, className }: TitlesInterface) => {
 export const TitleH2 = ({ children, className }: TitlesInterface) => {
   return (
     <h2
-      className={twMerge(
-        'mb-2 text-xl font-semibold text-text-primary',
-        className,
-      )}
+      className={twMerge('text-xl font-semibold text-text-primary', className)}
     >
       {children}
     </h2>

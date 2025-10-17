@@ -17,7 +17,7 @@ export const Card = ({ content, handleOpenCart }: CardProps) => {
 
   return (
     <>
-      <div className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white shadow-md">
+      <div className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white">
         <Image
           src={content.image || ImageFood}
           alt="Empadão"
