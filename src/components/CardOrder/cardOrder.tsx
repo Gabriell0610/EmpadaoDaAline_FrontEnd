@@ -20,7 +20,7 @@ export default function CardOrder({ content }: CardOrderInterface) {
     <>
       <Link
         className="border-1 min-h-10 w-auto cursor-pointer rounded-md bg-neutral-white px-2 py-2 text-xs hover:shadow-lg"
-        href={`/client/pedidos/${content.id}`}
+        href={`/client/orders/${content.id}`}
       >
         <div className="flex items-center justify-between gap-1.5 sm:gap-5">
           <div className="flex items-center gap-2">

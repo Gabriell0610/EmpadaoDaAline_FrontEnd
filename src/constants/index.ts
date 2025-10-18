@@ -21,4 +21,4 @@ export const CART = `cart`;
 export const CART_ITEM = `cart/item`;
 
 //ITENS
-export const ITENS_ACTIVE = `/itens/active`;
+export const ITENS_ACTIVE = `itens/active`;

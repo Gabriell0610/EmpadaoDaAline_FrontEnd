@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FaRegCircleUser } from 'react-icons/fa6';
 import { FaBagShopping } from 'react-icons/fa6';
 
-export const ProfileIcon = () => {
+export const ProfileHeader = () => {
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
@@ -27,7 +27,7 @@ export const ProfileIcon = () => {
             <div className="flex cursor-pointer items-center gap-2 px-2 py-2">
               <FaBagShopping size={15} />
               <Link
-                href={'/client/pedidos'}
+                href={'/client/orders'}
                 rel="noreferrer"
                 className="outline-none hover:text-text-green hover:underline"
               >

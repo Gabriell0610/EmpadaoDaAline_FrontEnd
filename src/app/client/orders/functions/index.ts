@@ -65,5 +65,6 @@ export function useClientOrder({ session }: ProfilePageProps) {
     isLoading,
     content,
     listOrder,
+    setContent,
   };
 }

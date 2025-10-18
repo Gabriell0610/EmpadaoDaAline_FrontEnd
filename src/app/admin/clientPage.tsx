@@ -17,6 +17,7 @@ export default function AdminClientPage() {
     <>
       <h1>Página home de admin</h1>
       <h1>Ola: {session?.user.email}</h1>
+      <p>{session?.user.accessToken}</p>
       {isLoading && <LoadingComponent />}
     </>
   );
