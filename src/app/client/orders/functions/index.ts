@@ -21,6 +21,7 @@ export function useClientOrder({ session }: ProfilePageProps) {
 
     if (!response.success) {
       toast.error(getSafeErrorMessage(response.message));
+      return;
     }
 
     toast.success(response.message);
@@ -48,11 +49,13 @@ export function useClientOrder({ session }: ProfilePageProps) {
       method: 'GET',
       url: `${ORDER_ME}${session?.user.id}`,
     });
-    if (resListOrdersByClient.success) {
-      setListOrder(resListOrdersByClient.data);
-    } else {
+
+    if (!resListOrdersByClient.success) {
       toast.error(resListOrdersByClient.message);
+      return;
     }
+
+    setListOrder(resListOrdersByClient.data);
   }
 
   return {

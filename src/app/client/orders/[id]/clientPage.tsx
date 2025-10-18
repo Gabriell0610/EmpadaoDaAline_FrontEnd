@@ -22,7 +22,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 
-import { useClientOrder } from '@/app/client/pedidos/functions/index';
+import { useClientOrder } from '@/app/client/orders/functions/';
 import { useRouter } from 'next/navigation';
 
 interface ClientOrderDetailsInterface extends ProfilePageProps {
@@ -172,8 +172,14 @@ export default function ClientOrderDetailsPage({
             <div className="flex justify-end bg-gray-50 p-6">
               <ButtonDefault
                 variant="fourth"
-                className="!bg-red-500 text-white hover:!bg-red-600"
+                className={twMerge(
+                  '!bg-red-500 text-white',
+                  content?.status === StatusOrder.CANCELADO ? 'opacity-75' : '',
+                )}
                 onClick={() => handleCancelOrderByClient(content?.id || '')}
+                disabled={
+                  content?.status === StatusOrder.CANCELADO ? true : false
+                }
               >
                 Cancelar Pedido
               </ButtonDefault>

@@ -1,4 +1,6 @@
 'use client';
+import { CART, CART_ITEM } from '@/constants';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { AuxiliarCartLoggedUserProviderInterface } from '@/utils/types/providers/AuxiliarProvider';
@@ -14,10 +16,10 @@ export const AuxiliarCartLoggedUserProvider = ({
   const handleLoggedAdd = useCallback(
     async (itemId: string) => {
       const res = await call({
-        method: 'POST',
+        method: StatusHttp.POST,
         token: session?.user.accessToken,
         body: { itemId, userId: session?.user.id || '' },
-        url: 'cart',
+        url: CART,
       });
 
       if (!res.success) {
@@ -37,8 +39,8 @@ export const AuxiliarCartLoggedUserProvider = ({
     const res = await call({
       token: session?.user.accessToken || '',
       body: { itemId: itemId },
-      url: `cart/item/${itemId}/${act}`,
-      method: 'PATCH',
+      url: `${CART_ITEM}/${itemId}/${act}`,
+      method: StatusHttp.PATCH,
     });
 
     if (!res.success) {
@@ -50,9 +52,9 @@ export const AuxiliarCartLoggedUserProvider = ({
 
   const removeItemLoggedUser = async (itemId: string) => {
     const res = await call({
-      method: 'DELETE',
+      method: StatusHttp.DELETE,
       token: session?.user.accessToken || '',
-      url: `cart/item/${itemId}`,
+      url: `${CART_ITEM}/${itemId}`,
     });
 
     if (!res.success) {

@@ -19,6 +19,8 @@ import toast from 'react-hot-toast';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { StatusCart } from '@/constants/enums/StatusCart';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { CART } from '@/constants';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -86,8 +88,8 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     const token = session?.user?.accessToken || '';
     const res = await call<null, Carrinho>({
       token,
-      method: 'GET',
-      url: `cart`,
+      method: StatusHttp.GET,
+      url: CART,
     });
 
     if (!res.data) {
