@@ -1,3 +1,4 @@
+'use client';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
 import { twMerge } from 'tailwind-merge';
 import { TitleH2 } from '../Titles/Titles';
