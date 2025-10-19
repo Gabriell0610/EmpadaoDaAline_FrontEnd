@@ -5,7 +5,6 @@ import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
-import { Modal } from '@/components/Modal/ModalComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import {
   personalUserData,
@@ -22,6 +21,7 @@ import { useFetch } from '@/hooks/useFetch/useFetch';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { EDIT_USER_ADDRESS, USER, USER_ME } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { Modal } from '@/components/Modal/ModalComponent';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
   const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
