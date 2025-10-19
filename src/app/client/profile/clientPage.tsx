@@ -3,7 +3,6 @@ import { TitleH1, TitleH2 } from '@/components/Titles/Titles';
 import { getSafeErrorMessage, normalizeCellphoneNumber } from '@/utils/helpers';
 import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
 import { useEffect, useState } from 'react';
-import { FaRegEdit } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { Modal } from '@/components/Modal/ModalComponent';
@@ -20,7 +19,7 @@ import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useFetch } from '@/hooks/useFetch/useFetch';
-import { Mail, MapPinHouse, Phone, User } from 'lucide-react';
+import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { EDIT_USER_ADDRESS, USER, USER_ME } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 
@@ -127,10 +126,10 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
           {/* Header do card */}
           <div className="mb-6 flex items-center justify-between">
             <TitleH2>Perfil do Usuário</TitleH2>
-            <FaRegEdit
+            <SquarePen
               onClick={() => preparePersonalUserEdit()}
               className="cursor-pointer text-green-600 transition-transform duration-200 hover:scale-110 hover:text-green-700"
-              title="Editar dados pessoais"
+              textDecoration={'Editar dados pessoais'}
             />
           </div>
 
@@ -181,7 +180,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
                       {value.endereco.bairro} - {value.endereco.cidade}
                     </p>
                   </div>
-                  <FaRegEdit className="text-green-600 transition-transform hover:scale-110 hover:text-green-700" />
+                  <SquarePen className="text-green-600 transition-transform hover:scale-110 hover:text-green-700" />
                 </button>
               ))}
             </div>

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/CardItens/card';
@@ -23,10 +23,6 @@ export default function Home({ activeItems }: ClientPageProps) {
     setOpenCart(true);
     addItemInCart(itemId);
   }
-
-  useEffect(() => {
-    console.log(activeItems);
-  }, []);
 
   return (
     <main className="container-custom">

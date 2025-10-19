@@ -12,10 +12,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import { FaChevronRight } from 'react-icons/fa6';
-import { FaChevronLeft } from 'react-icons/fa6';
-
 import { IconButton } from '@chakra-ui/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MenuClient({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
@@ -87,7 +85,7 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
             zIndex={10}
             _hover={{ bg: 'gray.100' }}
           >
-            <FaChevronLeft className="size-4" />
+            <ChevronLeft className="size-4" />
           </IconButton>
 
           {/* Next */}
@@ -110,7 +108,7 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
             zIndex={10}
             _hover={{ bg: 'gray.100' }}
           >
-            <FaChevronRight className="size-3" />
+            <ChevronRight className="size-3" />
           </IconButton>
         </div>
       </section>

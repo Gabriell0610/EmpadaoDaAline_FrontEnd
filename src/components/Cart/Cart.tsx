@@ -10,7 +10,6 @@ import { FaMinus } from 'react-icons/fa6';
 import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 interface CartProps {
   openCart: boolean;
@@ -54,12 +53,12 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
       (!itemsWithLoggedUser?.carrinhoItens ||
         itemsWithLoggedUser.carrinhoItens.length === 0));
 
-  useEffect(() => {
-    console.log('dados carrinho logado', itemsWithLoggedUser);
-  }, [itemsWithLoggedUser]);
-  useEffect(() => {
-    console.log('dados carrinho local', itemsWithGuestUser);
-  }, [itemsWithLoggedUser]);
+  // useEffect(() => {
+  //   console.log('dados carrinho logado', itemsWithLoggedUser);
+  // }, [itemsWithLoggedUser]);
+  // useEffect(() => {
+  //   console.log('dados carrinho local', itemsWithGuestUser);
+  // }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root
       size={'sm'}
@@ -174,7 +173,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                               )
                             }
                           >
-                            <FaMinus />
+                            <FaMinus size={15} />
                           </ButtonDefault>
                           <span className="font-semibold">
                             {content.item.unidades != null
@@ -191,13 +190,13 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                               )
                             }
                           >
-                            <FaPlus />
+                            <FaPlus size={15} />
                           </ButtonDefault>
 
                           <ButtonDefault
                             onClick={() => removeItem(content.itemId)}
                           >
-                            <FaRegTrashAlt />
+                            <FaRegTrashAlt size={15} />
                           </ButtonDefault>
                         </div>
                       </div>

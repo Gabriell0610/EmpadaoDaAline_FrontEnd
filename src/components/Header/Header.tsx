@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { FaBagShopping } from 'react-icons/fa6';
 import { ProfileHeader } from './MenuHeader/ProfileHeader';
 import { useCart } from '@/providers/cartContext/cartProvider';
+import { ShoppingBag } from 'lucide-react';
 
 interface HeaderProps {
   session?: Session | null;
@@ -39,7 +40,7 @@ export function Header({ session }: HeaderProps) {
           {!session?.user.accessToken ? (
             <div className="flex items-center gap-4">
               <div className="relative">
-                <FaBagShopping 
+                <ShoppingBag 
                   className="cursor-pointer" 
                   size={22} 
                   onClick={() => setOpenCart(true)} 

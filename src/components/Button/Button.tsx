@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Link from 'next/link';
 import { ComponentProps } from 'react';
-import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import { LoadingComponent } from '../Loading/LoadingComponent';
 
@@ -10,7 +9,6 @@ type VariantButton = 'primary' | 'third' | 'link' | 'secondary' | 'fourth';
 
 interface ButtonInterface extends ButtonProps {
   variant?: VariantButton;
-  icon?: IconType;
   href?: string;
   isLoading?: boolean;
 }
@@ -19,7 +17,6 @@ export const ButtonDefault = ({
   type,
   children,
   href,
-  icon,
   variant,
   onClick = () => null,
   isLoading,
@@ -55,7 +52,7 @@ export const ButtonDefault = ({
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       className={twMerge(
-        'rounded-md border px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
+        'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary
           ? 'bg-primary-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
           : isSecondary
