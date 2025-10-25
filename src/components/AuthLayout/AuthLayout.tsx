@@ -31,7 +31,7 @@ export const AuthLayout = ({
           <span onClick={() => navigate.back()} className='flex items-center gap-1 text-lg cursor-pointer'>
              <ArrowLeft /> Voltar
           </span>
-          <TitleH1 className='mt-3'>
+          <TitleH1 className='mt-3 lg:text-2xl'>
             {title}
           </TitleH1>
           {children}

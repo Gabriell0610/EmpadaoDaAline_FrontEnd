@@ -1,5 +1,4 @@
 'use client';
-// import { TitleH1, TitleParagrapgy } from '@/components/Titles/Titles';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { twMerge } from 'tailwind-merge';
 import { ButtonDefault } from '@/components/Button/Button';
@@ -24,53 +23,18 @@ import {
 
 import { useClientOrder } from '@/app/client/orders/functions/';
 import { useRouter } from 'next/navigation';
-import io from 'socket.io-client';
 
 interface ClientOrderDetailsInterface extends ProfilePageProps {
   id: string;
-}
-
-interface UpdateStatusSocket {
-  orderId: string;
-  newStatus: StatusOrder;
 }
 export default function ClientOrderDetailsPage({
   id,
   session,
 }: ClientOrderDetailsInterface) {
-  const {
-    handleCancelOrderByClient,
-    content,
-    setContent,
-    handleOrderDetails,
-    isLoading,
-  } = useClientOrder({ session });
+  const { handleCancelOrderByClient, content, handleOrderDetails, isLoading } =
+    useClientOrder({ session });
 
   useEffect(() => {
-    const socket = io('http://localhost:1338');
-
-    socket.on('orderStatusUpdate', (data: UpdateStatusSocket) => {
-      console.log('CONEXÃO FUNCIONANDO DE FORMA CORRETA', data);
-
-      setContent((prevContent) => {
-        if (prevContent && prevContent.id === data.orderId) {
-          return {
-            ...prevContent,
-            status: data.newStatus,
-          };
-        }
-
-        return prevContent;
-      });
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log('render sendo chamado');
     handleOrderDetails(id);
   }, []);
 
