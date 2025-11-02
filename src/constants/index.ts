@@ -22,3 +22,13 @@ export const CART_ITEM = `cart/item`;
 
 //ITENS
 export const ITENS_ACTIVE = `itens/active`;
+
+//ADDRESS
+export const ADDRESS_ME = `users/address/me`;
+export const ADD_ADDRESS = `users/address`;
+
+//payment methods
+export const PAYMENT_METHODS = `paymentMethods`;
+
+//SHIPPING
+export const SHIPPING = `shipping`;

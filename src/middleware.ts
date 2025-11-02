@@ -14,10 +14,6 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
   const userRole = req.nextauth.token?.role;
   const token = req.nextauth.token;
 
-  // if (!token || token.refreshTokenExpired) {
-  //   return NextResponse.redirect(new URL('/login', req.url));
-  // }
-
   const isAdmin = userRole === AccessProfile.ADMIN;
 
   const isClient = userRole === AccessProfile.CLIENT;
@@ -52,5 +48,5 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
 });
 
 export const config = {
-  matcher: ['/admin/:path*', '/client/:path*'], // Aplica o middleware nas rotas
+  matcher: ['/admin/:path*', '/client/:path*', '/'], // Aplica o middleware nas rotas
 };

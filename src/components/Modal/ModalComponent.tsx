@@ -24,15 +24,15 @@ export const Modal = ({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50 px-3">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50 px-4 py-4">
       <div
         className={twMerge(
-          'w-[500px] rounded-lg bg-white p-6 shadow-lg',
+          'w-[550px] rounded-lg bg-white px-6 py-6 shadow-lg',
           className,
         )}
       >
-        <div className="flex items-center justify-between">
-          <TitleH2 className="mb-0">{title}</TitleH2>
+        <div className="mb-4 flex items-center justify-between">
+          <TitleH2>{title}</TitleH2>
           <button onClick={onClose}>
             <IoClose size={20} />
           </button>

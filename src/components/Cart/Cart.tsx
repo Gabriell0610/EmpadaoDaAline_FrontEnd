@@ -222,7 +222,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 onClick={() =>
                   !session?.user.accessToken
                     ? navigation.push('/login')
-                    : navigation.push('/checkout')
+                    : navigation.push('/client/checkout')
                 }
               >
                 {!session?.user.accessToken

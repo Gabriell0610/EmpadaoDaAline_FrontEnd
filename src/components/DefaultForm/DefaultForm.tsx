@@ -4,10 +4,9 @@ import { FieldError, useForm } from 'react-hook-form';
 import { TypeOf, ZodSchema } from 'zod';
 import { InputField } from '../InputField/InputField';
 import { ButtonDefault } from '../Button/Button';
+import { twMerge } from 'tailwind-merge';
 
 interface FormProps<T extends ZodSchema<any>> {
-  // "TypeOf<T> me dá o objeto de tipos."
-  // "keyof TypeOf<T> me dá só os nomes das propriedades — que são exatamente os nomes dos inputs que o register() precisa."
   schema: T;
   onSubmit: (data: TypeOf<T>) => void;
   fields: {
@@ -17,9 +16,16 @@ interface FormProps<T extends ZodSchema<any>> {
     placeholder?: string;
     disabled?: boolean;
     defaultValue?: string;
+    options?: { label: string; value: string }[];
   }[];
   childrenButton?: string;
   isLoading?: boolean;
+  className?: string;
+
+  /** define layout do container de inputs — padrão é coluna */
+  layoutType?: 'column' | 'grid';
+  /** classes extras para ajustar grid */
+  gridClassName?: string;
 }
 
 export function DefaultForm<T extends ZodSchema<any>>({
@@ -28,6 +34,9 @@ export function DefaultForm<T extends ZodSchema<any>>({
   fields,
   childrenButton,
   isLoading,
+  className,
+  layoutType = 'column',
+  gridClassName,
 }: FormProps<T>) {
   const {
     register,
@@ -37,28 +46,55 @@ export function DefaultForm<T extends ZodSchema<any>>({
     resolver: zodResolver(schema),
   });
 
+  // 🔹 Decide o layout com base em layoutType
+  const layoutClasses =
+    layoutType === 'grid'
+      ? twMerge('grid gap-4', gridClassName) // grid flexível
+      : 'flex flex-col gap-4'; // padrão coluna
+
+  const layoutButton =
+    layoutType === 'grid'
+      ? twMerge('mt-5 w-fit self-start px-8 py-2')
+      : 'mt-5 px-8 py-2';
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {fields.map(
-        ({ name, label, type, placeholder, disabled, defaultValue }) => (
-          <InputField
-            key={name as string}
-            label={label}
-            name={name as string}
-            register={register}
-            placeholder={placeholder}
-            type={type || 'text'}
-            error={errors[name] as FieldError | undefined}
-            disabled={isLoading || disabled}
-            defaultValue={defaultValue || ''}
-          />
-        ),
-      )}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={twMerge('flex flex-col', className)}
+    >
+      <div className={layoutClasses}>
+        {fields.map(
+          ({
+            name,
+            label,
+            type,
+            placeholder,
+            disabled,
+            defaultValue,
+            options,
+          }) => (
+            <InputField
+              key={name as string}
+              label={label}
+              name={name as string}
+              register={register}
+              placeholder={placeholder}
+              type={type || 'text'}
+              error={errors[name] as FieldError | undefined}
+              disabled={isLoading || disabled}
+              defaultValue={defaultValue || ''}
+              options={options}
+              className="w-full"
+            />
+          ),
+        )}
+      </div>
+
       <ButtonDefault
         type="submit"
         variant="primary"
         isLoading={isLoading}
-        className="mt-5"
+        className={layoutButton}
       >
         {childrenButton}
       </ButtonDefault>

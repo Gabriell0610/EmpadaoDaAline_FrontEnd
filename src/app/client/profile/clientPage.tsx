@@ -100,6 +100,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
   useEffect(() => {
     handleDataUser();
+    console.log(session?.user.accessToken);
   }, [session]);
 
   const loggedUserData = {

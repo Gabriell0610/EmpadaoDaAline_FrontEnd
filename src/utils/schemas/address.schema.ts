@@ -6,6 +6,8 @@ export const addressUserDataSchema = z.object({
   city: z.string(),
   street: z.string(),
   number: z.string(),
+  state: z.string(),
+  complement: z.string().optional(),
 });
 
 export type addressUserData = z.infer<typeof addressUserDataSchema>;
