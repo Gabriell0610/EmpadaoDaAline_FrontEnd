@@ -1,50 +1,55 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FieldError, UseFormRegister } from 'react-hook-form';
+import { FieldError, useFormContext } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
 
 type CommonProps = {
   label: string;
   name: string;
-  register: UseFormRegister<any>;
-  error?: FieldError;
   defaultValue?: string;
   className?: string;
   placeholder?: string;
   type: string;
-  disabled: boolean | undefined;
+  disabled?: boolean | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 };
 
-// 🔹 Tipo para campos de input
 interface InputProps extends CommonProps {
   options?: never; // 🔒 impede uso de options quando for input
 }
 
-// 🔹 Tipo para campos de select
 interface SelectProps extends CommonProps {
   options: { label: string; value: string }[];
 }
 
-// 🔹 União discriminada — TS entende o tipo baseado no valor de `type`
 type InputsFieldsProps = InputProps | SelectProps;
 
 export function InputField(props: InputsFieldsProps) {
   const {
     label,
     name,
-    register,
-    error,
     placeholder,
-    type = 'text',
-    defaultValue,
+    type,
     className,
+    defaultValue,
+    options,
     disabled,
+    maxLength,
+    minLength,
   } = props;
+
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+  const error = errors[name as keyof typeof errors] as FieldError | undefined;
+
   const baseClass =
     'rounded-md border border-text-secondary px-4 py-2 focus:outline-none cursor-pointer';
 
   const selectClass = twMerge(
     baseClass,
-    'bg-white px-4 py-[0.6rem] cursor-pointer', // padding levemente reduzido
+    'bg-white cursor-pointer appearance-none',
   );
 
   return (
@@ -58,13 +63,13 @@ export function InputField(props: InputsFieldsProps) {
           id={name}
           {...register(name)}
           defaultValue={defaultValue}
-          className={twMerge(selectClass)}
+          className={selectClass}
           disabled={disabled}
         >
           <option value="" disabled>
             {placeholder || 'Selecione uma opção'}
           </option>
-          {props.options?.map((opt) => (
+          {options?.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
@@ -79,6 +84,8 @@ export function InputField(props: InputsFieldsProps) {
           defaultValue={defaultValue}
           className={baseClass}
           disabled={disabled}
+          minLength={minLength}
+          maxLength={maxLength}
         />
       )}
 

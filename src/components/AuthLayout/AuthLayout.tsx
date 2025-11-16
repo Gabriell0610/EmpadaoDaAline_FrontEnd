@@ -29,9 +29,9 @@ export const AuthLayout = ({
       <section className="flex flex-1 flex-col items-center justify-center overflow-y-auto lg:w-1/2">
         <div className="mx-auto w-full max-w-[600px] px-8 py-2 md:max-w-[500px]">
           <span onClick={() => navigate.back()} className='flex items-center gap-1 text-lg cursor-pointer'>
-             <ArrowLeft /> Voltar
+            <ArrowLeft /> Voltar
           </span>
-          <TitleH1 className='mt-3 lg:text-2xl'>
+          <TitleH1 className='mt-3 mb-1 lg:text-2xl'>
             {title}
           </TitleH1>
           {children}

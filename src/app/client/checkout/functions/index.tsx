@@ -7,6 +7,7 @@ import {
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { addressUserData } from '@/utils/schemas/address.schema';
+import { orderDetailsDto } from '@/utils/schemas/order.schema';
 import { ListAddressUserById } from '@/utils/types/address.type';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { PaymenMethodsInterface } from '@/utils/types/paymentMethods.type';
@@ -19,6 +20,8 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   const [address, setAddress] = useState<ListAddressUserById[] | undefined>();
   const [paymentMethods, setPaymentMethods] =
     useState<PaymenMethodsInterface[]>();
+
+  const [detailsOrder, setDetailsOrder] = useState<orderDetailsDto>();
 
   const [getShippingAddress, setShippingAddress] = useState<number | null>(
     null,
@@ -101,9 +104,11 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     isLoading,
     address,
     paymentMethods,
+    getShippingAddress,
+    detailsOrder,
     addAddress,
     calculateShipping,
-    getShippingAddress,
     setShippingAddress,
+    setDetailsOrder,
   };
 }

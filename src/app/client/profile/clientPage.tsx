@@ -22,6 +22,7 @@ import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { EDIT_USER_ADDRESS, USER, USER_ME } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { Modal } from '@/components/Modal/ModalComponent';
+import { InputField } from '@/components/InputField/InputField';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
   const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
@@ -100,7 +101,6 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
   useEffect(() => {
     handleDataUser();
-    console.log(session?.user.accessToken);
   }, [session]);
 
   const loggedUserData = {
@@ -136,20 +136,20 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
 
           {/* Dados pessoais */}
           <div className="mb-6 grid grid-cols-1 gap-4 text-gray-700 sm:grid-cols-2">
-            {Object.entries(loggedUserData).map(([label, value]) => (
+            {Object.entries(loggedUserData).map(([key, value]) => (
               <div
-                key={label}
+                key={key}
                 className="flex flex-col sm:flex-row sm:items-center sm:gap-2"
               >
                 <div className="class-container-icons-text">
-                  {label === 'Celular: ' ? (
+                  {key === 'Celular: ' ? (
                     <Phone className="class-icons" />
-                  ) : label === 'Email: ' ? (
+                  ) : key === 'Email: ' ? (
                     <Mail className="class-icons" />
                   ) : (
                     <User className="class-icons" />
                   )}
-                  <span className="font-semibold text-gray-900">{label}</span>
+                  <span className="font-semibold text-gray-900">{key}</span>
                 </div>
                 <span>{value}</span>
               </div>
@@ -207,59 +207,77 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
             onSubmit={handleEditPersonalUserData}
             schema={personalUserDataSchema}
             isLoading={isLoading}
-            fields={[
-              {
-                name: 'name',
-                label: 'Nome Completo',
-                defaultValue: dataUserLogged?.nome,
-              },
-              {
-                name: 'email',
-                label: 'Email',
-                defaultValue: dataUserLogged?.email,
-              },
-              {
-                name: 'cellphone',
-                label: 'Celular',
-                defaultValue: dataUserLogged?.telefone,
-              },
-            ]}
-            childrenButton="Editar"
-          />
+          >
+            <InputField
+              name="name"
+              label="Nome Completo"
+              type="text"
+              defaultValue={dataUserLogged?.nome}
+            />
+            <InputField
+              name="email"
+              label="Email"
+              type="email"
+              defaultValue={dataUserLogged?.email}
+            />
+            <InputField
+              name="cellphone"
+              label="Celular"
+              type="text"
+              defaultValue={dataUserLogged?.telefone}
+            />
+            <ButtonDefault
+              type="submit"
+              isLoading={isLoading}
+              variant="primary"
+            >
+              Editar
+            </ButtonDefault>
+          </DefaultForm>
         ) : (
           <DefaultForm
             onSubmit={handleEditAddressUserData}
             schema={addressUserDataSchema}
             isLoading={isLoading}
-            fields={[
-              {
-                name: 'zipCode',
-                label: 'CEP',
-                defaultValue: selectAddress?.endereco.cep,
-              },
-              {
-                name: 'neighborhood',
-                label: 'Bairro',
-                defaultValue: selectAddress?.endereco.bairro,
-              },
-              {
-                name: 'city',
-                label: 'Cidade',
-                defaultValue: selectAddress?.endereco.cidade,
-              },
-              {
-                name: 'street',
-                label: 'Rua',
-                defaultValue: selectAddress?.endereco.rua,
-              },
-              {
-                name: 'number',
-                label: 'Número',
-                defaultValue: selectAddress?.endereco.numero,
-              },
-            ]}
-            childrenButton="Editar"
-          />
+          >
+            <InputField
+              name="zipCode"
+              label="Cep"
+              defaultValue={selectAddress?.endereco.cep}
+              type="text"
+            />
+            <InputField
+              name="neighborhood"
+              label="Bairro"
+              defaultValue={selectAddress?.endereco.bairro}
+              type="text"
+            />
+            <InputField
+              name="city"
+              label="Cidade"
+              defaultValue={selectAddress?.endereco.cidade}
+              type="text"
+            />
+            <InputField
+              name="street"
+              label="Rua"
+              defaultValue={selectAddress?.endereco.rua}
+              type="text"
+            />
+            <InputField
+              name="number"
+              label="Número"
+              defaultValue={selectAddress?.endereco.numero}
+              type="text"
+            />
+            <ButtonDefault
+              type="submit"
+              isLoading={isLoading}
+              variant="primary"
+            >
+              Editar
+            </ButtonDefault>
+          </DefaultForm>
         )}
       </Modal>
 

@@ -1,6 +1,7 @@
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
+import { InputField } from '@/components/InputField/InputField';
 import { AUTH_REGISTER } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
@@ -13,6 +14,7 @@ export default function ClientPageRegister() {
   const route = useRouter();
   const { call, isLoading } = useFetch();
   const handleRegister = async (data: RegisterData) => {
+    console.log(data);
     const res = await call<RegisterData, null>({
       method: StatusHttp.POST,
       url: AUTH_REGISTER,
@@ -33,33 +35,20 @@ export default function ClientPageRegister() {
         schema={registerSchema}
         onSubmit={handleRegister}
         isLoading={isLoading}
-        fields={[
-          {
-            name: 'name',
-            label: 'Nome Completo',
-            placeholder: 'Digite seu nome completo',
-          },
-          {
-            name: 'email',
-            label: 'Email',
-            type: 'email',
-            placeholder: 'Digite seu email',
-          },
-          {
-            name: 'password',
-            label: 'Senha',
-            type: 'password',
-            placeholder: 'Digite sua senha',
-          },
-          {
-            name: 'cellphone',
-            label: 'Telefone',
-            type: 'number',
-            placeholder: 'Digite seu telefone',
-          },
-        ]}
-        childrenButton="Continuar"
-      />
+      >
+        <InputField label="Nome Completo" name="name" type="text" />
+        <InputField label="Email" name="email" type="email" />
+        <InputField label="Senha" name="password" type="password" />
+        <InputField
+          label="Telefone"
+          name="cellphone"
+          type="text"
+          maxLength={11}
+        />
+        <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
+          Cadastrar
+        </ButtonDefault>
+      </DefaultForm>
       <div className="mt-5 flex justify-center">
         <p>
           Já tem uma conta?{' '}

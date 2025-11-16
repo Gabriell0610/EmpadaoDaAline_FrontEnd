@@ -2,7 +2,7 @@
 import { Card } from '@/components/CardItens/card';
 import { Cart } from '@/components/Cart/Cart';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { useCart } from '@/providers/cartContext/cartProvider';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { useState } from 'react';
 

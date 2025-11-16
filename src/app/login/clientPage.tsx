@@ -1,6 +1,7 @@
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
+import { InputField } from '@/components/InputField/InputField';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
@@ -15,6 +16,7 @@ export default function ClientPageLogin() {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const handleLogin = async (data: loginDto) => {
+    console.log(data);
     try {
       setIsLoading(true);
       const res = await signIn('credentials', {
@@ -49,22 +51,23 @@ export default function ClientPageLogin() {
         schema={loginSchema}
         onSubmit={handleLogin}
         isLoading={isLoading}
-        fields={[
-          {
-            name: 'email',
-            label: 'Email',
-            type: 'email',
-            placeholder: 'Digite seu email',
-          },
-          {
-            name: 'password',
-            label: 'Senha',
-            type: 'password',
-            placeholder: 'Digite sua senha',
-          },
-        ]}
-        childrenButton="Entrar"
-      />
+      >
+        <InputField
+          name={'email'}
+          label="Email"
+          type="email"
+          placeholder="Digite seu email"
+        />
+        <InputField
+          name={'password'}
+          label="Senha"
+          type="password"
+          placeholder="Digite sua senha"
+        />
+        <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
+          Login
+        </ButtonDefault>
+      </DefaultForm>
       <div className="flex justify-end underline">
         <ButtonDefault
           href={'/forgetPassword'}

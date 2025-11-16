@@ -45,12 +45,16 @@ export const ButtonDefault = ({
       </Link>
     );
   }
+
   return (
     <button
       {...rest}
       type={type}
       disabled={disabled}
-      onClick={disabled ? undefined : onClick}
+      onClick={(event) => {
+        if (disabled) return;
+        onClick?.(event); // NÃO interfere no submit
+      }}
       className={twMerge(
         'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary

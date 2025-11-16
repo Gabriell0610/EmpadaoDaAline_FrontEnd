@@ -5,11 +5,11 @@ import ImageChef from '../../public/image_chef.png';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
-import { useCart } from '@/providers/cartContext/cartProvider';
 import { Card } from '@/components/CardItens/card';
 import { useRouter } from 'next/navigation';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { ButtonDefault } from '@/components/Button/Button';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 
 /* eslint-disable prettier/prettier */
 export default function Home({ activeItems }: ClientPageProps) {

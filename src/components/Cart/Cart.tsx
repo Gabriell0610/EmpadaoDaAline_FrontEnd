@@ -7,9 +7,9 @@ import Image from 'next/image';
 import ImageFood from '../../../public/image_food2.png';
 import { FaPlus } from 'react-icons/fa6';
 import { FaMinus } from 'react-icons/fa6';
-import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 
 interface CartProps {
   openCart: boolean;

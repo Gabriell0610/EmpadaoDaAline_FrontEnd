@@ -8,7 +8,7 @@ export const AUTH_REFRESH = `auth/refresh`;
 
 // ORDER
 export const ORDER_CANCEL = `order/cancel`;
-export const ORDER_ME = `order/me/`;
+export const ORDER_ME = `order/me`;
 export const ORDER = `order`;
 
 //USER

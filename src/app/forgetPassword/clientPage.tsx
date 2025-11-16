@@ -14,6 +14,8 @@ import { getSafeErrorMessage } from '@/utils/helpers';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { AUTH_FORGOT_PASSWORD, AUTH_VALIDATE_PASSOWRD } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { InputField } from '@/components/InputField/InputField';
+import { ButtonDefault } from '@/components/Button/Button';
 
 export default function ClientPageForgetPassword() {
   const [tokenNotGenerated, setTokenNotGenerated] = useState(true);
@@ -70,7 +72,7 @@ export default function ClientPageForgetPassword() {
     <section>
       {tokenNotGenerated ? (
         <div>
-          <p>
+          <p className="mb-2">
             Informe seu email para gerar um token de segurança. Fique atento ao
             seu email!
           </p>
@@ -78,16 +80,21 @@ export default function ClientPageForgetPassword() {
             schema={sendEmailSchema}
             onSubmit={handleGenerateToken}
             isLoading={isLoading}
-            fields={[
-              {
-                name: 'email',
-                label: 'Email',
-                type: 'email',
-                placeholder: 'Digite seu email',
-              },
-            ]}
-            childrenButton={'Gerar Token'}
-          />
+          >
+            <InputField
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="Digite seu email"
+            />
+            <ButtonDefault
+              type="submit"
+              isLoading={isLoading}
+              variant="primary"
+            >
+              Gerar Token
+            </ButtonDefault>
+          </DefaultForm>
         </div>
       ) : (
         <div>
@@ -96,16 +103,21 @@ export default function ClientPageForgetPassword() {
             schema={validateTokenSchema}
             onSubmit={handleValidateToken}
             isLoading={isLoading}
-            fields={[
-              {
-                name: 'token',
-                label: 'Token',
-                type: 'number',
-                placeholder: 'Digite seu token',
-              },
-            ]}
-            childrenButton={'Continuar'}
-          />
+          >
+            <InputField
+              name="token"
+              label="Token"
+              type="number"
+              placeholder="Digite seu token"
+            />
+            <ButtonDefault
+              type="submit"
+              isLoading={isLoading}
+              variant="primary"
+            >
+              Continuar
+            </ButtonDefault>
+          </DefaultForm>
         </div>
       )}
     </section>

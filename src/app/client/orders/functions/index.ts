@@ -57,11 +57,13 @@ export function useClientOrder({ session }: UseClientOrderInterface) {
     const resListOrdersByClient = await call<null, ListOrderByClient[]>({
       token: session?.user.accessToken || '',
       method: StatusHttp.GET,
-      url: `${ORDER_ME}${session?.user.id}`,
+      url: `${ORDER_ME}`,
     });
 
     if (!resListOrdersByClient.success) {
-      toast.error(resListOrdersByClient.message);
+      toast(getSafeErrorMessage(resListOrdersByClient.message), {
+        icon: '⚠️',
+      });
       return;
     }
 

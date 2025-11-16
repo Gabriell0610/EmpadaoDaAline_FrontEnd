@@ -10,7 +10,7 @@ import { Cart } from '../Cart/Cart';
 import { useState } from 'react';
 import { FaBagShopping } from 'react-icons/fa6';
 import { ProfileHeader } from './MenuHeader/ProfileHeader';
-import { useCart } from '@/providers/cartContext/cartProvider';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ShoppingBag } from 'lucide-react';
 
 interface HeaderProps {
