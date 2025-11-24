@@ -12,5 +12,3 @@ export const passwordValidation = z
 
 export const cellphoneNumberRegex = /^(\d{2})(\d{5})(\d{4})$/;
 export const cepRegex = /^(\d{5})(\d{3})$/;
-
-export const startAndEndTimeValidation = z.string();

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import useClientCheckout from './functions';
@@ -11,16 +12,18 @@ import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { InputField } from '@/components/InputField/InputField';
 import { ButtonDefault } from '@/components/Button/Button';
 import { useRouter } from 'next/navigation';
+import { useOrderStore } from '@/stores/orderDetails-store';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
-  const { paymentMethods, isLoading, setDetailsOrder } = useClientCheckout({
+  const { paymentMethods, isLoading } = useClientCheckout({
     session,
   });
 
+  const setOrder = useOrderStore((state) => state.setOrder);
+
   const handleDetailsOrder = (data: orderDetailsDto) => {
-    console.log(data);
-    setDetailsOrder(data);
+    setOrder(data);
     navigate.push('/client/checkout/summary');
   };
 

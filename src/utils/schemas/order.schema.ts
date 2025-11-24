@@ -1,5 +1,4 @@
 import z from 'zod';
-import { startAndEndTimeValidation } from '../validators';
 
 export const orderDetailsSchema = z.object({
   schedulingDate: z.string({
@@ -8,8 +7,8 @@ export const orderDetailsSchema = z.object({
       'A data de agendamento deve ser uma string no formato ISO (DD-MM-YYYY)',
   }),
   idPaymentMethod: z.string(),
-  deliveryTimeStart: startAndEndTimeValidation,
-  deliveryTimeEnd: startAndEndTimeValidation,
+  deliveryTimeStart: z.string(),
+  deliveryTimeEnd: z.string(),
 });
 
-export type orderDto = z.infer<typeof orderDetailsSchema>;
+export type orderDetailsDto = z.infer<typeof orderDetailsSchema>;
