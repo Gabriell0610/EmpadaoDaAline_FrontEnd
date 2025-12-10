@@ -1,26 +1,263 @@
 'use client';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
-import React, { useEffect } from 'react';
 import useClientCheckout from '../functions';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { useOrderStore } from '@/stores/orderDetails-store';
-
+import { TitleH1, TitleH4 } from '@/components/Titles/Titles';
+import { formartQuantityItem, normalizeCurrency } from '@/utils/helpers';
+import { ButtonDefault } from '@/components/Button/Button';
+import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
+import { addressUserDataSchema } from '@/utils/schemas/address.schema';
+import { InputField } from '@/components/InputField/InputField';
+import { LoadingComponent } from '@/components/Loading/LoadingComponent';
+import { useContext, useEffect, useState } from 'react';
+import { OrderDto } from '@/utils/schemas/order.schema';
+import { AddressViaCepInterface } from '@/utils/types/address.type';
+import toast from 'react-hot-toast';
+import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+//import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 export default function SummaryClientPage({ session }: ProfilePageProps) {
-  const { detailsOrder, isLoading, address } = useClientCheckout({ session });
-  const { itemsWithLoggedUser } = useCart();
+  const {
+    isLoading,
+    address,
+    paymentMethods,
+    shipping,
+    calculateShipping,
+    addAddress,
+    createOrder,
+  } = useClientCheckout({ session });
 
+  const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
+
+  const { itemsWithLoggedUser } = useCart();
+  const navigate = useRouter();
+
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [addressId, setAddressId] = useState('');
+  //zustand
   const orderDetails = useOrderStore((state) => state.order);
 
   useEffect(() => {
-    console.log(orderDetails);
-  }, []);
+    if (!itemsWithLoggedUser) return;
+    const total =
+      Number(itemsWithLoggedUser.valorTotal) + Number(shipping ?? 0);
+    setTotalPrice(total);
+  }, [shipping, itemsWithLoggedUser]);
+
+  if (!itemsWithLoggedUser) {
+    return;
+  }
+
+  const paymentMethod = paymentMethods?.find(
+    (data) => data.id === orderDetails?.idPaymentMethod,
+  );
+
+  const calculateTotalPrice = (addressId: string) => {
+    setAddressId(addressId);
+    calculateShipping(addressId);
+  };
+
+  async function handleSubmitOrder() {
+    console.log('frete', shipping + typeof Number(shipping));
+    const createOrderObj: OrderDto = {
+      idUser: session!.user.id,
+      idCart: itemsWithLoggedUser!.id,
+      idAddress: addressId,
+      shipping: Number(shipping!),
+      deliveryTimeEnd: orderDetails!.deliveryTimeEnd,
+      deliveryTimeStart: orderDetails!.deliveryTimeStart,
+      idPaymentMethod: orderDetails!.idPaymentMethod,
+      schedulingDate: orderDetails!.schedulingDate,
+    };
+
+    console.log('Pedido gerado:', createOrderObj);
+    await createOrder(createOrderObj);
+    navigate.push(`orders/${createOrderObj.idUser}`);
+  }
 
   return (
-    <main className="flex items-center justify-center">
-      <section>
-        <p>Data: {orderDetails?.schedulingDate}</p>
+    <main className="flex flex-col gap-10 md2:flex-row md2:items-start md2:gap-12 lg:gap-20">
+      <section className="w-full md2:w-[60%] lg:w-[55%]">
+        <TitleH1 className="mb-2">Endereço de entrega</TitleH1>
+        <div>
+          <div className="mb-4 flex flex-col gap-2 rounded-md border border-text-secondary p-3">
+            <p className="mb-1 font-semibold">Selecione um endereço:</p>
+
+            {address && address.length > 0 ? (
+              address.map((address) => (
+                <label
+                  key={address.endereco.id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
+                  <input
+                    type="radio"
+                    name="selectedAddress"
+                    value={address.endereco.id}
+                    className="h-4 w-4"
+                    onClick={() => calculateTotalPrice(address.endereco.id)}
+                  />
+                  <span className="text-sm text-text-secondary">
+                    {address.endereco.rua}, {address.endereco.numero} -{' '}
+                    {address.endereco.bairro}, {address.endereco.cidade} -{' '}
+                    {address.endereco.estado} (CEP {address.endereco.cep})
+                  </span>
+                </label>
+              ))
+            ) : (
+              <div>
+                <p className="mb-1 font-semibold text-blue-600">
+                  Adicione um novo endereço para prosseguir
+                </p>
+              </div>
+            )}
+          </div>
+          <div>
+            <DefaultForm schema={addressUserDataSchema} onSubmit={addAddress}>
+              {(methods) => {
+                const consultaViaCep = async (cep: string) => {
+                  try {
+                    setIsLoading(true);
+                    const result = await fetch(
+                      `https://viacep.com.br/ws/${cep}/json/`,
+                    );
+                    const data: AddressViaCepInterface = await result.json();
+
+                    methods.setValue('street', data.logradouro);
+                    methods.setValue('neighborhood', data.bairro);
+                    methods.setValue('city', data.localidade);
+                    methods.setValue('state', data.uf);
+                  } catch (error) {
+                    console.error(error);
+                    toast.error('Erro ao pesquisar CEP, informe um cep válido');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                };
+
+                return (
+                  <>
+                    <div className="class-form-checkout-summary">
+                      <InputField
+                        label="CEP"
+                        name="zipCode"
+                        type="text"
+                        disabled={isLoading}
+                        placeholder="Digite seu cep"
+                        onBlur={(e) => consultaViaCep(e.target.value)}
+                      />
+                      <InputField
+                        label="Rua"
+                        name="street"
+                        type="text"
+                        disabled={isLoading}
+                        placeholder="Ex: Roberto Silveira"
+                      />
+                    </div>
+
+                    <div className="class-form-checkout-summary">
+                      <InputField
+                        label="Bairro"
+                        name="neighborhood"
+                        type="text"
+                        placeholder="Ex: Fonseca"
+                      />
+                      <InputField
+                        label="Cidade"
+                        name="city"
+                        type="text"
+                        placeholder="Ex: Niterói"
+                      />
+                    </div>
+
+                    <div className="class-form-checkout-summary">
+                      <InputField
+                        label="Estado"
+                        name="state"
+                        type="text"
+                        placeholder="Ex: RJ"
+                      />
+                      <InputField
+                        label="Número"
+                        name="number"
+                        type="number"
+                        placeholder="Ex: 33"
+                      />
+                    </div>
+
+                    <InputField
+                      label="Complemento"
+                      name="complement"
+                      type="text"
+                      placeholder="Ex: Bloco2/apto:402"
+                    />
+
+                    <ButtonDefault type="submit" variant="primary">
+                      Salvar Endereço
+                    </ButtonDefault>
+                  </>
+                );
+              }}
+            </DefaultForm>
+          </div>
+        </div>
       </section>
-      <section></section>
+      <section className="w-full md2:w-[40%] lg:w-[35%]">
+        <TitleH1 className="mb-2">Resumo do pedido</TitleH1>
+        <TitleH4 className="mb-1">Produtos:</TitleH4>
+        <div className="flex flex-col gap-2">
+          {itemsWithLoggedUser?.carrinhoItens &&
+            itemsWithLoggedUser?.carrinhoItens.map((item) => (
+              <div key={item.id}>
+                <p>
+                  {formartQuantityItem(item)}x {item.item.itemDescription.nome}
+                </p>
+              </div>
+            ))}
+          <hr />
+          <TitleH4 className="mb-1">Detalhes:</TitleH4>
+          <p>
+            {' '}
+            <span className="font-semibold">Data de entrega: </span>{' '}
+            {orderDetails?.schedulingDate}
+          </p>
+          <p>
+            <span className="font-semibold"> Horário de entrega entre: </span>{' '}
+            {orderDetails?.deliveryTimeStart} - {orderDetails?.deliveryTimeEnd}
+          </p>
+          <p>
+            <span className="font-semibold">Método de pagamento: </span>
+            {paymentMethod?.nome ? paymentMethod.nome : 'Erro'}
+          </p>
+          <hr />
+          <p>
+            {' '}
+            <span className="font-semibold">Subtotal</span>:{' '}
+            {normalizeCurrency(
+              itemsWithLoggedUser?.valorTotal
+                ? itemsWithLoggedUser?.valorTotal
+                : '0',
+            )}
+          </p>
+          <p>
+            <span className="font-semibold">
+              Frete: {shipping ? normalizeCurrency(shipping) : '0.00'}
+            </span>
+          </p>
+          <p className="font-semibold">
+            Total: {normalizeCurrency(totalPrice)}
+          </p>
+          <hr />
+          <ButtonDefault
+            onClick={() => handleSubmitOrder()}
+            className="mt-4"
+            variant="primary"
+          >
+            Fazer Pedido
+          </ButtonDefault>
+        </div>
+      </section>
+      {(isLoading || loading) && <LoadingComponent mode="fullScreen" />}
     </main>
   );
 }

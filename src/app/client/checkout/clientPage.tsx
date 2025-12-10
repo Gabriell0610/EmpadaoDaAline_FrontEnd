@@ -16,6 +16,7 @@ import { useOrderStore } from '@/stores/orderDetails-store';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
+
   const { paymentMethods, isLoading } = useClientCheckout({
     session,
   });
@@ -24,6 +25,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
 
   const handleDetailsOrder = (data: orderDetailsDto) => {
     setOrder(data);
+    <LoadingComponent mode="fullScreen" />;
     navigate.push('/client/checkout/summary');
   };
 
@@ -52,6 +54,8 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
               label="Método de pagamento"
               name="idPaymentMethod"
               type="select"
+              placeholder="Selecione o método de pagamento"
+              defaultValue=""
               options={paymentMethods?.map((p) => ({
                 label: p.nome,
                 value: p.id,

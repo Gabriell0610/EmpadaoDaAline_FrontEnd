@@ -14,6 +14,10 @@ export const config: Config = {
       colors: {
         ...projectColors,
       },
+      screens: {
+        xs: '560px',
+        md2: '860px',
+      },
     },
   },
   plugins: [],

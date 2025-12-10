@@ -12,6 +12,7 @@ type CommonProps = {
   disabled?: boolean | undefined;
   minLength?: number | undefined;
   maxLength?: number | undefined;
+  onBlur?: (event: any) => void;
 };
 
 interface InputProps extends CommonProps {
@@ -36,6 +37,7 @@ export function InputField(props: InputsFieldsProps) {
     disabled,
     maxLength,
     minLength,
+    onBlur,
   } = props;
 
   const {
@@ -86,6 +88,7 @@ export function InputField(props: InputsFieldsProps) {
           disabled={disabled}
           minLength={minLength}
           maxLength={maxLength}
+          onBlur={onBlur}
         />
       )}
 

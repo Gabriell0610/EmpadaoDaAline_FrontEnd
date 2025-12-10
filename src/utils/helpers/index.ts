@@ -2,7 +2,7 @@ import { ItemCarrinho } from '../types/cart.type';
 import { cellphoneNumberRegex, cepRegex } from '../validators';
 
 export const normalizeCurrency = (value: string | number) => {
-  return `R$${value}`;
+  return `R$ ${value}`;
 };
 
 // utils/helpers.ts

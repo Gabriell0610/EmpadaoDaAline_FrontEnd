@@ -43,6 +43,10 @@ body {
   @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3
 }
 
+.class-form-checkout-summary {
+  @apply flex flex-col gap-3 xs:flex-row
+} 
+
 /* Remover setas do input number para todos os navegadores */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

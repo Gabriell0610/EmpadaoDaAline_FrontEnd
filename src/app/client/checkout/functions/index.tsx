@@ -1,13 +1,14 @@
 import {
   ADD_ADDRESS,
   ADDRESS_ME,
+  ORDER,
   PAYMENT_METHODS,
   SHIPPING,
 } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { addressUserData } from '@/utils/schemas/address.schema';
-import { orderDetailsDto } from '@/utils/schemas/order.schema';
+import { OrderDto } from '@/utils/schemas/order.schema';
 import { ListAddressUserById } from '@/utils/types/address.type';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { PaymenMethodsInterface } from '@/utils/types/paymentMethods.type';
@@ -21,11 +22,7 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   const [paymentMethods, setPaymentMethods] =
     useState<PaymenMethodsInterface[]>();
 
-  const [detailsOrder, setDetailsOrder] = useState<orderDetailsDto>();
-
-  const [getShippingAddress, setShippingAddress] = useState<number | null>(
-    null,
-  );
+  const [shipping, setShipping] = useState<number | null>(null);
 
   async function listAddressByUserId() {
     const res = await call<null, ListAddressUserById[] | undefined>({
@@ -79,6 +76,7 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   }
 
   async function calculateShipping(idAddress: string) {
+    console.log(idAddress);
     const res = await call<PostShippingInterface, null>({
       method: StatusHttp.POST,
       url: `${SHIPPING}`,
@@ -91,24 +89,38 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
       return;
     }
 
-    console.log('dados: ', res.data);
-    setShippingAddress(res.data);
+    console.log('frete ap´s selecionar endereco: ', res.data);
+    setShipping(res.data);
   }
-
   useEffect(() => {
     listAddressByUserId();
     listAllPaymentMethods();
   }, []);
 
+  async function createOrder(orderDto: OrderDto) {
+    const res = await call<OrderDto, null>({
+      method: StatusHttp.POST,
+      url: `${ORDER}`,
+      token: session?.user.accessToken,
+      body: orderDto,
+    });
+
+    if (!res.success) {
+      toast.error(res.message);
+      return;
+    }
+
+    console.log('dados: ', res.data);
+  }
+
   return {
     isLoading,
     address,
     paymentMethods,
-    getShippingAddress,
-    detailsOrder,
+    shipping,
     addAddress,
     calculateShipping,
-    setShippingAddress,
-    setDetailsOrder,
+    setShipping,
+    createOrder,
   };
 }
