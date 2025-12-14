@@ -67,6 +67,7 @@ export const ButtonDefault = ({
                 ? 'bg-red-500 text-center text-xs font-semibold text-neutral-white'
                 : '',
         className,
+        disabled ? 'opacity-50 hover:bg-none' : 'opacity-100',
       )}
     >
       {isLoading ? (

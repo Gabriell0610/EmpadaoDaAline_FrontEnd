@@ -13,6 +13,8 @@ import { InputField } from '@/components/InputField/InputField';
 import { ButtonDefault } from '@/components/Button/Button';
 import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/stores/orderDetails-store';
+import { useCart } from '@/providers/cartProvider/cartProvider';
+import { ArrowLeft } from 'lucide-react';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
@@ -20,6 +22,8 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const { paymentMethods, isLoading } = useClientCheckout({
     session,
   });
+
+  const { itemsWithLoggedUser } = useCart();
 
   const setOrder = useOrderStore((state) => state.setOrder);
 
@@ -33,6 +37,9 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
     <main className="flex items-center justify-center">
       <article className="mb-5 md:w-2/4">
         <section>
+          <div className="mb-2 flex cursor-pointer gap-1">
+            <ArrowLeft onClick={() => navigate.push('/')} /> Voltar
+          </div>
           <TitleH1 className="mb-0">Detalhes do pedido</TitleH1>
           <p className="mb-3 text-text-secondary">
             Escolha a data de entrega, o método de pagamento e o melhor horário
@@ -81,6 +88,12 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
               type="submit"
               variant="primary"
               isLoading={isLoading}
+              disabled={
+                itemsWithLoggedUser &&
+                itemsWithLoggedUser.carrinhoItens.length === 0
+                  ? true
+                  : false
+              }
             >
               Continuar
             </ButtonDefault>

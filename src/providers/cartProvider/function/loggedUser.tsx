@@ -18,7 +18,7 @@ export const AuxiliarCartLoggedUserProvider = ({
       const res = await call({
         method: StatusHttp.POST,
         token: session?.user.accessToken,
-        body: { itemId, userId: session?.user.id || '' },
+        body: { itemId, userId: session?.user.id },
         url: CART,
       });
 

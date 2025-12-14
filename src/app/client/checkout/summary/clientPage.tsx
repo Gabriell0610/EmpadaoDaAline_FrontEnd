@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 //import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import EmptyContent from '@/components/EmptyContent/emptyContent';
 export default function SummaryClientPage({ session }: ProfilePageProps) {
   const {
     isLoading,
@@ -35,18 +36,30 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
 
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [addressId, setAddressId] = useState('');
+
   //zustand
   const orderDetails = useOrderStore((state) => state.order);
 
   useEffect(() => {
     if (!itemsWithLoggedUser) return;
     const total =
-      Number(itemsWithLoggedUser.valorTotal) + Number(shipping ?? 0);
+      (Number(itemsWithLoggedUser?.valorTotal) || 0) + (Number(shipping) || 0);
     setTotalPrice(total);
   }, [shipping, itemsWithLoggedUser]);
 
   if (!itemsWithLoggedUser) {
-    return;
+    navigate.push('/');
+  } else if (
+    itemsWithLoggedUser &&
+    itemsWithLoggedUser.carrinhoItens.length === 0
+  ) {
+    return (
+      <EmptyContent
+        title="Adicione itens na sacola para continuar nessa página"
+        description="Não perca tempo e compre conosco já!!!"
+        alt="sacola de mercado"
+      />
+    );
   }
 
   const paymentMethod = paymentMethods?.find(
@@ -59,21 +72,18 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
   };
 
   async function handleSubmitOrder() {
-    console.log('frete', shipping + typeof Number(shipping));
     const createOrderObj: OrderDto = {
       idUser: session!.user.id,
       idCart: itemsWithLoggedUser!.id,
       idAddress: addressId,
-      shipping: Number(shipping!),
+      shipping: shipping!,
       deliveryTimeEnd: orderDetails!.deliveryTimeEnd,
       deliveryTimeStart: orderDetails!.deliveryTimeStart,
       idPaymentMethod: orderDetails!.idPaymentMethod,
       schedulingDate: orderDetails!.schedulingDate,
     };
-
-    console.log('Pedido gerado:', createOrderObj);
-    await createOrder(createOrderObj);
-    navigate.push(`orders/${createOrderObj.idUser}`);
+    const order = await createOrder(createOrderObj);
+    navigate.push(`/client/orders/${order?.id}`);
   }
 
   return (
@@ -118,15 +128,22 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                 const consultaViaCep = async (cep: string) => {
                   try {
                     setIsLoading(true);
-                    const result = await fetch(
-                      `https://viacep.com.br/ws/${cep}/json/`,
-                    );
-                    const data: AddressViaCepInterface = await result.json();
+                    if (cep != '') {
+                      const result = await fetch(
+                        `https://viacep.com.br/ws/${cep}/json/`,
+                      );
+                      const data: AddressViaCepInterface = await result.json();
 
-                    methods.setValue('street', data.logradouro);
-                    methods.setValue('neighborhood', data.bairro);
-                    methods.setValue('city', data.localidade);
-                    methods.setValue('state', data.uf);
+                      methods.setValue('street', data.logradouro);
+                      methods.setValue('neighborhood', data.bairro);
+                      methods.setValue('city', data.localidade);
+                      methods.setValue('state', data.uf);
+                    } else {
+                      methods.setValue('street', '');
+                      methods.setValue('neighborhood', '');
+                      methods.setValue('city', '');
+                      methods.setValue('state', '');
+                    }
                   } catch (error) {
                     console.error(error);
                     toast.error('Erro ao pesquisar CEP, informe um cep válido');

@@ -5,7 +5,7 @@ import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { ListOrderByClient } from '@/utils/types/orderClient';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import io from 'socket.io-client';
 interface UpdateStatusSocket {
@@ -17,7 +17,7 @@ interface UseClientOrderInterface extends ProfilePageProps {
   id?: string;
 }
 
-export function useClientOrder({ session }: UseClientOrderInterface) {
+export function useClientOrder({ session, id }: UseClientOrderInterface) {
   const { call, isLoading } = useFetch();
   const [content, setContent] = useState<ListOrderByClient>();
   const [listOrder, setListOrder] = useState<ListOrderByClient[]>([]);
@@ -26,7 +26,7 @@ export function useClientOrder({ session }: UseClientOrderInterface) {
     const response = await call({
       method: StatusHttp.PATCH,
       url: `${ORDER_CANCEL}/${id}`,
-      token: session?.user.accessToken || '',
+      token: session?.user.accessToken,
     });
 
     if (!response.success) {
@@ -38,26 +38,36 @@ export function useClientOrder({ session }: UseClientOrderInterface) {
     await handleOrderDetails(id);
   };
 
-  const handleOrderDetails = async (id: string) => {
-    const response = await call<null, ListOrderByClient>({
-      method: StatusHttp.GET,
-      url: `${ORDER}/${id}`,
-      token: session?.user.accessToken || '',
-    });
+  const handleOrderDetails = useCallback(
+    async (id: string) => {
+      const response = await call<null, ListOrderByClient>({
+        method: StatusHttp.GET,
+        url: `${ORDER}/${id}`,
+        token: session?.user.accessToken,
+      });
 
-    if (!response.success) {
-      toast.error(getSafeErrorMessage(response.message));
-      return;
-    }
+      if (!response.success) {
+        toast.error(getSafeErrorMessage(response.message));
+        return;
+      }
+      console.log(response.data);
+      setContent(response.data);
+    },
+    [call, session?.user.accessToken],
+  );
 
-    setContent(response.data);
-  };
+  useEffect(() => {
+    if (!id) return;
+    handleOrderDetails(id);
+  }, [id, handleOrderDetails]);
 
-  async function getOrderClient() {
+  const getOrderClient = useCallback(async () => {
+    if (!session?.user?.accessToken) return;
+
     const resListOrdersByClient = await call<null, ListOrderByClient[]>({
-      token: session?.user.accessToken || '',
+      token: session.user.accessToken,
       method: StatusHttp.GET,
-      url: `${ORDER_ME}`,
+      url: ORDER_ME,
     });
 
     if (!resListOrdersByClient.success) {
@@ -68,7 +78,11 @@ export function useClientOrder({ session }: UseClientOrderInterface) {
     }
 
     setListOrder(resListOrdersByClient.data);
-  }
+  }, [session?.user?.accessToken, call]);
+
+  useEffect(() => {
+    getOrderClient();
+  }, [getOrderClient]);
 
   // cria o socket apenas uma vez
   useEffect(() => {

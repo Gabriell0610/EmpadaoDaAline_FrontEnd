@@ -7,13 +7,15 @@ import {
 } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { getSafeErrorMessage } from '@/utils/helpers';
 import { addressUserData } from '@/utils/schemas/address.schema';
 import { OrderDto } from '@/utils/schemas/order.schema';
 import { ListAddressUserById } from '@/utils/types/address.type';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
+import { OrderCreateReturnDto } from '@/utils/types/orderClient';
 import { PaymenMethodsInterface } from '@/utils/types/paymentMethods.type';
 import { PostShippingInterface } from '@/utils/types/shipping';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function useClientCheckout({ session }: ProfilePageProps) {
@@ -22,40 +24,41 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   const [paymentMethods, setPaymentMethods] =
     useState<PaymenMethodsInterface[]>();
 
-  const [shipping, setShipping] = useState<number | null>(null);
+  const [shipping, setShipping] = useState<string | null>(null);
 
-  async function listAddressByUserId() {
+  const listAddressByUserId = useCallback(async () => {
+    if (!session?.user?.accessToken) return;
+
     const res = await call<null, ListAddressUserById[] | undefined>({
       method: StatusHttp.GET,
-      url: `${ADDRESS_ME}`,
-      token: session?.user.accessToken,
+      url: ADDRESS_ME,
+      token: session.user.accessToken,
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
-
-    console.log('dados: ', res.data);
 
     setAddress(res.data);
-  }
+  }, [session?.user?.accessToken, call]);
 
-  async function listAllPaymentMethods() {
+  const listAllPaymentMethods = useCallback(async () => {
+    if (!session?.user?.accessToken) return;
+
     const res = await call<null, PaymenMethodsInterface[]>({
       method: StatusHttp.GET,
-      url: `${PAYMENT_METHODS}`,
-      token: session?.user.accessToken,
+      url: PAYMENT_METHODS,
+      token: session.user.accessToken,
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
 
-    console.log('dados: ', res.data);
     setPaymentMethods(res.data);
-  }
+  }, [session?.user?.accessToken, call]);
 
   async function addAddress(addressDto: addressUserData) {
     console.log('testando envio de endereco', addressDto);
@@ -67,7 +70,7 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
 
@@ -85,20 +88,22 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
 
-    console.log('frete ap´s selecionar endereco: ', res.data);
+    console.log('frete ao selecionar endereco: ', res.data);
     setShipping(res.data);
   }
+
   useEffect(() => {
-    listAddressByUserId();
-    listAllPaymentMethods();
-  }, []);
+    if (!session?.user?.accessToken) return;
+
+    Promise.all([listAddressByUserId(), listAllPaymentMethods()]);
+  }, [session?.user?.accessToken, listAddressByUserId, listAllPaymentMethods]);
 
   async function createOrder(orderDto: OrderDto) {
-    const res = await call<OrderDto, null>({
+    const res = await call<OrderDto, OrderCreateReturnDto>({
       method: StatusHttp.POST,
       url: `${ORDER}`,
       token: session?.user.accessToken,
@@ -106,11 +111,17 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(
+        getSafeErrorMessage(
+          'Erro ao realizar pedido, tente novamente ou entre em contato com o suporte',
+        ),
+      );
       return;
     }
 
-    console.log('dados: ', res.data);
+    toast.success(res.message);
+
+    return res.data;
   }
 
   return {

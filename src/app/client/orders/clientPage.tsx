@@ -3,17 +3,12 @@ import CardOrder from '@/components/CardOrder/cardOrder';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
-import { useEffect } from 'react';
 import { useClientOrder } from './functions';
-import Image from 'next/image';
-import imageEmptyCart from '../../../../public/assets/empty-cart-doubt-2.png';
+import ImageEmptyCart from '../../../../public/assets/empty_cart_doubt-2.png';
+import EmptyContent from '@/components/EmptyContent/emptyContent';
 
 export default function ClientOrderPage({ session }: ProfilePageProps) {
-  const { getOrderClient, isLoading, listOrder } = useClientOrder({ session });
-
-  useEffect(() => {
-    getOrderClient();
-  }, []);
+  const { isLoading, listOrder } = useClientOrder({ session });
 
   return (
     <div>
@@ -27,17 +22,12 @@ export default function ClientOrderPage({ session }: ProfilePageProps) {
           </div>
         </>
       ) : (
-        <div className="flex justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <TitleH1 className="mb-0">
-              Você ainda não possui nenhum pedido!
-            </TitleH1>
-            <p className="text-xs text-text-secondary sm:text-base">
-              Não perca tempo e peça seu delicioso lanche conosco
-            </p>
-            <Image src={imageEmptyCart} alt={'carrinho vazio'} width={200} />
-          </div>
-        </div>
+        <EmptyContent
+          title="Você ainda não possui nenhum pedido!"
+          description="Não perca tempo e peça seu delicioso lanche conosco"
+          image={ImageEmptyCart}
+          alt="carrinho de compras vazio"
+        />
       )}
 
       {isLoading && <LoadingComponent mode="fullScreen" />}

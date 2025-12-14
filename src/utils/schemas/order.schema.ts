@@ -17,7 +17,7 @@ export const orderSchema = orderDetailsSchema.extend({
   idCart: z.string(),
   idUser: z.string(),
   idAddress: z.string(),
-  shipping: z.number(),
+  shipping: z.string(),
 });
 
 export type OrderDto = z.infer<typeof orderSchema>;

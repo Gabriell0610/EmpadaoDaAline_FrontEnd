@@ -107,13 +107,13 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     }
 
     setItemsWithLoggedUser(res.data);
-  }, [call]);
+  }, [call, session]);
 
   useEffect(() => {
     if (session?.user?.accessToken) {
       listCart();
     }
-  }, [session?.user?.accessToken]);
+  }, [session?.user?.accessToken, listCart]);
 
   const {
     handleLoggedAdd,

@@ -8,7 +8,6 @@ import {
   normalizeCurrency,
 } from '@/utils/helpers';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
-import { useEffect } from 'react';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import {
   Calendar,
@@ -31,12 +30,10 @@ export default function ClientOrderDetailsPage({
   id,
   session,
 }: ClientOrderDetailsInterface) {
-  const { handleCancelOrderByClient, content, handleOrderDetails, isLoading } =
-    useClientOrder({ session });
-
-  useEffect(() => {
-    handleOrderDetails(id);
-  }, []);
+  const { handleCancelOrderByClient, content, isLoading } = useClientOrder({
+    session,
+    id,
+  });
 
   const navigate = useRouter();
 
@@ -45,7 +42,7 @@ export default function ClientOrderDetailsPage({
       <div className="w-full max-w-lg">
         <p
           className="class-container-icons-text cursor-pointer"
-          onClick={() => navigate.back()}
+          onClick={() => navigate.push('/client')}
         >
           {' '}
           <ArrowLeft /> Voltar
@@ -99,7 +96,9 @@ export default function ClientOrderDetailsPage({
                 <Clock className="h-5 w-5 text-text-green" />
                 <div>
                   <p className="text-sm text-gray-500">Horário de entrega</p>
-                  <p className="font-medium">{content?.horarioDeEntrega}</p>
+                  <p className="font-medium">
+                    {content?.horarioInicio} - {content?.horarioFim}
+                  </p>
                 </div>
               </div>
             </div>
@@ -109,7 +108,7 @@ export default function ClientOrderDetailsPage({
               <CreditCard className="h-5 w-5 text-text-green" />
               <div>
                 <p className="text-sm text-gray-500">Meio de pagamento</p>
-                <p className="font-medium">{content?.meioPagamento}</p>
+                <p className="font-medium">{content?.metodoPagamento.nome}</p>
               </div>
             </div>
 

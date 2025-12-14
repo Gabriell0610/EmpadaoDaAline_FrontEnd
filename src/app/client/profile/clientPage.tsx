@@ -1,60 +1,34 @@
 'use client';
 import { TitleH1, TitleH2 } from '@/components/Titles/Titles';
-import { getSafeErrorMessage, normalizeCellphoneNumber } from '@/utils/helpers';
-import { ListAddressUser, ListDataUserLogged } from '@/utils/types/user.type';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { normalizeCellphoneNumber } from '@/utils/helpers';
+import { useState } from 'react';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
-import {
-  personalUserData,
-  personalUserDataSchema,
-} from '@/utils/schemas/personalUser.schema';
-import {
-  addressUserData,
-  addressUserDataSchema,
-} from '@/utils/schemas/address.schema';
+import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
+import { addressUserDataSchema } from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
-import { useFetch } from '@/hooks/useFetch/useFetch';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
-import { EDIT_USER_ADDRESS, USER, USER_ME } from '@/constants';
-import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { Modal } from '@/components/Modal/ModalComponent';
 import { InputField } from '@/components/InputField/InputField';
+import useProfileRequests from './functions';
 
 export default function ProfilePageClient({ session }: ProfilePageProps) {
-  const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
-  const [selectAddress, setSelectAddress] = useState<ListAddressUser>();
-  const [idAddress, setIdAddress] = useState('');
-  const { call, isLoading } = useFetch();
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  const handleDataUser = async () => {
-    const res = await call<null, ListDataUserLogged>({
-      token: session?.user.accessToken || '',
-      method: StatusHttp.GET,
-      url: USER_ME,
-    });
-
-    if (!res.success) {
-      toast.error(getSafeErrorMessage(res.message));
-    }
-
-    setDataUserLogged(res.data);
-  };
-
-  const preparePersonalUserEdit = () => {
-    setTitleModal('Editar dados pessoais');
-    setModeModal('personal');
-    openModal();
-  };
+  const {
+    dataUserLogged,
+    openModal,
+    closeModal,
+    isLoading,
+    setIdAddress,
+    setSelectAddress,
+    isModalOpen,
+    handleEditPersonalUserData,
+    selectAddress,
+    handleEditAddressUserData,
+  } = useProfileRequests({ session });
 
   const prepareAddressEdit = (idAddress: string) => {
     setTitleModal('Editar Endereço');
@@ -67,41 +41,11 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     openModal();
   };
 
-  const handleEditPersonalUserData = async (data: personalUserData) => {
-    const res = await call<personalUserData, null>({
-      method: StatusHttp.PUT,
-      url: USER,
-      body: data,
-      token: session?.user.accessToken || '',
-    });
-    if (!res.success) {
-      toast.error(getSafeErrorMessage(res.message));
-    }
-    await handleDataUser();
-    closeModal();
+  const preparePersonalUserEdit = () => {
+    setTitleModal('Editar dados pessoais');
+    setModeModal('personal');
+    openModal();
   };
-
-  const handleEditAddressUserData = async (data: addressUserData) => {
-    const res = await call<addressUserData, null>({
-      method: StatusHttp.PUT,
-      url: `${EDIT_USER_ADDRESS}${idAddress}`,
-      body: data,
-      token: session?.user.accessToken || '',
-    });
-
-    if (!res.success) {
-      toast.error(getSafeErrorMessage(res.message));
-    }
-
-    toast.success(res.message);
-
-    await handleDataUser();
-    closeModal();
-  };
-
-  useEffect(() => {
-    handleDataUser();
-  }, [session]);
 
   const loggedUserData = {
     'Nome Completo: ': dataUserLogged?.nome,

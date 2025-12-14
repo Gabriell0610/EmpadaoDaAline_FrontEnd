@@ -14,6 +14,9 @@ import 'swiper/css/navigation';
 
 import { IconButton } from '@chakra-ui/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import EmptyContent from '@/components/EmptyContent/emptyContent';
+
+import ImageContentEmptyError from '../../../public/assets/erro_list_items.png';
 
 export default function MenuClient({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
@@ -34,7 +37,16 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
     items: typeof activeItems,
     id: string,
   ) => {
-    if (items.length === 0) return null;
+    if (items.length === 0) {
+      return (
+        <EmptyContent
+          title="Ocorreu algum erro e estamos tentando resolver..."
+          description="aguarde alguns instantes e renicie a página"
+          image={ImageContentEmptyError}
+          alt="conteúdo vazio na tela por conta do servidor"
+        />
+      );
+    }
 
     return (
       <section className="relative mt-3">

@@ -10,6 +10,7 @@ import { FaMinus } from 'react-icons/fa6';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/providers/cartProvider/cartProvider';
+import { twMerge } from 'tailwind-merge';
 
 interface CartProps {
   openCart: boolean;
@@ -28,6 +29,16 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
   } = useCart();
 
   const navigation = useRouter();
+
+  function handleSubmitForm() {
+    setOpenCart(false); // <-- fecha o drawer
+
+    if (!session?.user.accessToken) {
+      navigation.push('/login');
+    } else {
+      navigation.push('/client/checkout');
+    }
+  }
 
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
@@ -217,13 +228,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
               </div>
               <ButtonDefault
                 variant="primary"
-                className="w-full py-3"
+                className={twMerge('w-full py-3')}
                 isLoading={isLoading}
-                onClick={() =>
-                  !session?.user.accessToken
-                    ? navigation.push('/login')
-                    : navigation.push('/client/checkout')
-                }
+                onClick={() => handleSubmitForm()}
+                disabled={isCartEmpty ? isCartEmpty : false}
               >
                 {!session?.user.accessToken
                   ? 'Login / Cadastro'
