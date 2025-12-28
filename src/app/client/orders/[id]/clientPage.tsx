@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { twMerge } from 'tailwind-merge';
@@ -18,10 +19,17 @@ import {
   MessageCircle,
   ShoppingCart,
   ArrowLeft,
+  EditIcon,
 } from 'lucide-react';
 
 import { useClientOrder } from '@/app/client/orders/functions/';
 import { useRouter } from 'next/navigation';
+import StatusOrderComponent from '@/components/StatusOrder/statusOrderComponent';
+import { TitleH1 } from '@/components/Titles/Titles';
+import { useState } from 'react';
+import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
+import useClientCheckout from '../../checkout/functions';
 
 interface ClientOrderDetailsInterface extends ProfilePageProps {
   id: string;
@@ -30,13 +38,27 @@ export default function ClientOrderDetailsPage({
   id,
   session,
 }: ClientOrderDetailsInterface) {
-  const { handleCancelOrderByClient, content, isLoading } = useClientOrder({
+  const {
+    handleCancelOrderByClient,
+    editOrder,
+    contentOrderByClientId,
+    isLoading,
+  } = useClientOrder({
     session,
     id,
   });
 
-  const navigate = useRouter();
+  const { paymentMethods, isLoading: loadingClientCheckout } =
+    useClientCheckout({
+      session,
+    });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const navigate = useRouter();
   return (
     <main className="flex justify-center">
       <div className="w-full max-w-lg">
@@ -48,33 +70,28 @@ export default function ClientOrderDetailsPage({
           <ArrowLeft /> Voltar
         </p>
         <div className="mx-auto mt-8 w-full max-w-lg overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg">
-          <div className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-600 p-6 text-white">
-            <div>
-              <h1 className="flex items-center gap-2 text-2xl font-bold">
-                <ShoppingCart className="h-6 w-6" />
-                Pedido #{content?.numeroPedido}
-              </h1>
-              <p className="mt-1 text-sm opacity-90">
-                Status atual:{' '}
-                <span
-                  className={twMerge(
-                    'rounded-md px-1 py-2 sm:min-h-3 sm:min-w-3',
-                    content?.status === StatusOrder.PENDENTE
-                      ? 'bg-details-pending'
-                      : content?.status === StatusOrder.PREPARANDO
-                        ? 'bg-details-inProgress'
-                        : content?.status === StatusOrder.CANCELADO
-                          ? 'bg-details-canceled'
-                          : content?.status === StatusOrder.ENTREGUE
-                            ? 'bg-details-delivered'
-                            : content?.status === StatusOrder.ACEITO
-                              ? 'bg-details-accept'
-                              : 'bg-gray-500',
-                  )}
+          <div className="flex items-center bg-gradient-to-r from-slate-800 to-slate-600 p-6 text-white">
+            <div className="flex w-full flex-col">
+              <div className="flex w-full items-center justify-between">
+                <TitleH1 className="mb-0 flex items-center gap-2 text-2xl font-bold text-white">
+                  <ShoppingCart className="h-6 w-6" />
+                  Pedido #{contentOrderByClientId?.numeroPedido}
+                </TitleH1>
+
+                <p
+                  className="flex cursor-pointer items-center gap-2"
+                  onClick={() => openModal()}
                 >
-                  {content?.status}
-                </span>
-              </p>
+                  <EditIcon size={22} /> Editar
+                </p>
+              </div>
+
+              <div className="mt-1">
+                <StatusOrderComponent
+                  content={contentOrderByClientId?.status}
+                  description="Status Atual: "
+                />
+              </div>
             </div>
           </div>
 
@@ -87,7 +104,9 @@ export default function ClientOrderDetailsPage({
                 <div>
                   <p className="text-sm text-gray-500">Data de agendamento</p>
                   <p className="font-medium">
-                    {formatDatePtBr(content?.dataAgendamento || '')}
+                    {formatDatePtBr(
+                      contentOrderByClientId?.dataAgendamento || '',
+                    )}
                   </p>
                 </div>
               </div>
@@ -97,7 +116,8 @@ export default function ClientOrderDetailsPage({
                 <div>
                   <p className="text-sm text-gray-500">Horário de entrega</p>
                   <p className="font-medium">
-                    {content?.horarioInicio} - {content?.horarioFim}
+                    {contentOrderByClientId?.horarioInicio} -{' '}
+                    {contentOrderByClientId?.horarioFim}
                   </p>
                 </div>
               </div>
@@ -108,7 +128,9 @@ export default function ClientOrderDetailsPage({
               <CreditCard className="h-5 w-5 text-text-green" />
               <div>
                 <p className="text-sm text-gray-500">Meio de pagamento</p>
-                <p className="font-medium">{content?.metodoPagamento.nome}</p>
+                <p className="font-medium">
+                  {contentOrderByClientId?.metodoPagamento.nome}
+                </p>
               </div>
             </div>
 
@@ -118,7 +140,7 @@ export default function ClientOrderDetailsPage({
               <div>
                 <p className="text-sm text-gray-500">Observação</p>
                 <p className="font-medium">
-                  {content?.observacao || 'Nenhuma observação'}
+                  {contentOrderByClientId?.observacao || 'Nenhuma observação'}
                 </p>
               </div>
             </div>
@@ -133,18 +155,20 @@ export default function ClientOrderDetailsPage({
               </div>
 
               <ul className="ml-2 list-inside list-disc text-gray-600">
-                {content?.carrinho.carrinhoItens.map((item, index) => (
-                  <li key={index}>
-                    {formartQuantityItem(item)}x{' '}
-                    {item.item.itemDescription.nome}
-                  </li>
-                ))}
+                {contentOrderByClientId?.carrinho.carrinhoItens.map(
+                  (item, index) => (
+                    <li key={index}>
+                      {formartQuantityItem(item)}x{' '}
+                      {item.item?.itemDescription?.nome}
+                    </li>
+                  ),
+                )}
               </ul>
 
               <p className="mt-4 text-lg font-semibold">
                 Total:{' '}
                 <span className="text-text-green">
-                  {normalizeCurrency(content?.precoTotal || '')}
+                  {normalizeCurrency(contentOrderByClientId?.precoTotal || '')}
                 </span>
               </p>
             </div>
@@ -157,26 +181,35 @@ export default function ClientOrderDetailsPage({
               <div>
                 <p className="text-sm text-gray-500">Entrega em</p>
                 <p className="font-medium">
-                  {content?.endereco.rua} - {content?.endereco.numero} -{' '}
-                  {content?.endereco.bairro} - {content?.endereco.cidade}/
-                  {content?.endereco.estado} {content?.endereco.complemento}
+                  {contentOrderByClientId?.endereco.rua} -{' '}
+                  {contentOrderByClientId?.endereco.numero} -{' '}
+                  {contentOrderByClientId?.endereco.bairro} -{' '}
+                  {contentOrderByClientId?.endereco.cidade}/
+                  {contentOrderByClientId?.endereco.estado}{' '}
+                  {contentOrderByClientId?.endereco.complemento}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Rodapé */}
-          {content?.status !== StatusOrder.PREPARANDO && (
+          {contentOrderByClientId?.status !== StatusOrder.PREPARANDO && (
             <div className="flex justify-end bg-gray-50 p-6">
               <ButtonDefault
                 variant="fourth"
                 className={twMerge(
                   '!bg-red-500 text-white',
-                  content?.status === StatusOrder.CANCELADO ? 'opacity-75' : '',
+                  contentOrderByClientId?.status === StatusOrder.CANCELADO
+                    ? 'opacity-75'
+                    : '',
                 )}
-                onClick={() => handleCancelOrderByClient(content?.id || '')}
+                onClick={() =>
+                  handleCancelOrderByClient(contentOrderByClientId?.id || '')
+                }
                 disabled={
-                  content?.status === StatusOrder.CANCELADO ? true : false
+                  contentOrderByClientId?.status === StatusOrder.CANCELADO
+                    ? true
+                    : false
                 }
               >
                 Cancelar Pedido
@@ -187,6 +220,19 @@ export default function ClientOrderDetailsPage({
           {isLoading && <LoadingComponent mode="fullScreen" />}
         </div>
       </div>
+      {isModalOpen && (
+        <EditOrderModal
+          closeModal={closeModal}
+          content={contentOrderByClientId!}
+          isLoading={isLoading || loadingClientCheckout}
+          paymentMethods={paymentMethods}
+          isModalOpen={isModalOpen}
+          submit={editOrder}
+          title="Editar Pedido! "
+          role={AccessProfile.CLIENT}
+          description="Editar"
+        />
+      )}
     </main>
   );
 }

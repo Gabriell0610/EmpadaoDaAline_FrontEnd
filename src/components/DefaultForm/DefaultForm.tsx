@@ -7,7 +7,7 @@ import {
   UseFormReturn,
 } from 'react-hook-form';
 import { TypeOf, ZodSchema } from 'zod';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 interface FormProps<T extends ZodSchema<any>> {
   schema: T;
@@ -25,6 +25,14 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  const { reset } = methods;
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
 
   return (
     <FormProvider {...methods}>

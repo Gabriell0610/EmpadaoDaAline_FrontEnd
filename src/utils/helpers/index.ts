@@ -1,8 +1,19 @@
-import { ItemCarrinho } from '../types/cart.type';
+import { ItemCarrinhoInterface } from '../types/cart.type';
+import { ItemInCartItens } from '../types/orderClient';
 import { cellphoneNumberRegex, cepRegex } from '../validators';
 
 export const normalizeCurrency = (value: string | number) => {
   return `R$ ${value}`;
+};
+
+export const handleMessageWhenObservationIsNull = (
+  observation: string | null | undefined,
+) => {
+  if (observation == null || observation === undefined) {
+    return 'Sem Observação';
+  }
+
+  return observation;
 };
 
 // utils/helpers.ts
@@ -45,10 +56,19 @@ export const baseUrl = () => {
 };
 
 export const formatDatePtBr = (date: Date | string) => {
+  if (!date) {
+    return 'ERRO DATA';
+  }
   return new Date(date).toLocaleDateString('pt-BR');
 };
 
-export function formartQuantityItem(data: ItemCarrinho) {
+export function formatDate(date: Date) {
+  return new Date(date).toISOString().split('T')[0];
+}
+
+export function formartQuantityItem(
+  data: ItemInCartItens | ItemCarrinhoInterface,
+) {
   const quantity = data.item.unidades
     ? Number(data.item.unidades) + data.quantidade - 1
     : data.quantidade;

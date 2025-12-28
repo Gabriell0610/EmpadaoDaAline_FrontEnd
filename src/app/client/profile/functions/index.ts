@@ -8,8 +8,8 @@ import { StatusHttp } from '@/constants/enums/StautsHttp';
 
 import { getSafeErrorMessage } from '@/utils/helpers';
 import toast from 'react-hot-toast';
-import { addressUserData } from '@/utils/schemas/address.schema';
-import { personalUserData } from '@/utils/schemas/personalUser.schema';
+import { AddressUserData } from '@/utils/schemas/address.schema';
+import { PersonalUserData } from '@/utils/schemas/personalUser.schema';
 
 export default function useProfileRequests({ session }: ProfilePageProps) {
   const [dataUserLogged, setDataUserLogged] = useState<ListDataUserLogged>();
@@ -22,7 +22,7 @@ export default function useProfileRequests({ session }: ProfilePageProps) {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleDataUser = useCallback(async () => {
+  const GetDataUser = useCallback(async () => {
     const res = await call<null, ListDataUserLogged>({
       token: session?.user.accessToken || '',
       method: StatusHttp.GET,
@@ -36,8 +36,8 @@ export default function useProfileRequests({ session }: ProfilePageProps) {
     setDataUserLogged(res.data);
   }, [call, session?.user.accessToken]);
 
-  const handleEditPersonalUserData = async (data: personalUserData) => {
-    const res = await call<personalUserData, null>({
+  const editPersonalUserData = async (data: PersonalUserData) => {
+    const res = await call<PersonalUserData, null>({
       method: StatusHttp.PUT,
       url: USER,
       body: data,
@@ -46,13 +46,13 @@ export default function useProfileRequests({ session }: ProfilePageProps) {
     if (!res.success) {
       toast.error(getSafeErrorMessage(res.message));
     }
-    await handleDataUser();
+    await GetDataUser();
     closeModal();
   };
 
-  const handleEditAddressUserData = useCallback(
-    async (data: addressUserData) => {
-      const res = await call<addressUserData, null>({
+  const editAddressUserData = useCallback(
+    async (data: AddressUserData) => {
+      const res = await call<AddressUserData, null>({
         method: StatusHttp.PUT,
         url: `${EDIT_USER_ADDRESS}${idAddress}`,
         body: data,
@@ -65,24 +65,24 @@ export default function useProfileRequests({ session }: ProfilePageProps) {
 
       toast.success(res.message);
 
-      await handleDataUser();
+      await GetDataUser();
       closeModal();
     },
-    [call, session?.user.accessToken, handleDataUser, idAddress],
+    [call, session?.user.accessToken, GetDataUser, idAddress],
   );
 
   useEffect(() => {
-    handleDataUser();
-  }, [handleDataUser]);
+    GetDataUser();
+  }, [GetDataUser]);
 
   return {
     openModal,
     closeModal,
     setIdAddress,
-    handleDataUser,
+    GetDataUser,
     setSelectAddress,
-    handleEditAddressUserData,
-    handleEditPersonalUserData,
+    editAddressUserData,
+    editPersonalUserData,
     dataUserLogged,
     selectAddress,
     isModalOpen,

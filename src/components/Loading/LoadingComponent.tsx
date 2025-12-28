@@ -6,7 +6,7 @@ import colors from 'tailwindcss/colors';
 
 export const LoadingComponent = ({
   size = 60,
-  mode = '',
+  mode,
 }: LoadingComponentInterface) => {
   return (
     <div

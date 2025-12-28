@@ -23,8 +23,8 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     itemsWithLoggedUser,
     isLoading,
     quantity,
-    incrementOrDecrementItem,
-    removeItem,
+    incrementOrDecrementItemCart,
+    removeItemCart,
     session,
   } = useCart();
 
@@ -119,7 +119,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                         <div className="flex items-center gap-4">
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'decrement',
                                 content.item?.id,
                               )
@@ -136,7 +136,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           </span>
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'increment',
                                 content.item?.id,
                               )
@@ -145,7 +145,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                             <FaPlus />
                           </ButtonDefault>
                           <ButtonDefault
-                            onClick={() => removeItem(content.item?.id)}
+                            onClick={() => removeItemCart(content.item?.id)}
                           >
                             <FaRegTrashAlt />
                           </ButtonDefault>
@@ -178,7 +178,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                         <div className="flex items-center gap-4">
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'decrement',
                                 content.itemId,
                               )
@@ -195,7 +195,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           </span>
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'increment',
                                 content.itemId,
                               )
@@ -205,7 +205,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           </ButtonDefault>
 
                           <ButtonDefault
-                            onClick={() => removeItem(content.itemId)}
+                            onClick={() => removeItemCart(content.itemId)}
                           >
                             <FaRegTrashAlt size={15} />
                           </ButtonDefault>

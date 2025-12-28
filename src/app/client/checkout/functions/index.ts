@@ -8,7 +8,7 @@ import {
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
-import { addressUserData } from '@/utils/schemas/address.schema';
+import { AddressUserData } from '@/utils/schemas/address.schema';
 import { OrderDto } from '@/utils/schemas/order.schema';
 import { ListAddressUserById } from '@/utils/types/address.type';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
@@ -41,7 +41,7 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     }
 
     setAddress(res.data);
-  }, [session?.user?.accessToken, call]);
+  }, [session?.user?.accessToken]);
 
   const listAllPaymentMethods = useCallback(async () => {
     if (!session?.user?.accessToken) return;
@@ -58,11 +58,11 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     }
 
     setPaymentMethods(res.data);
-  }, [session?.user?.accessToken, call]);
+  }, [session?.user?.accessToken]);
 
-  async function addAddress(addressDto: addressUserData) {
+  async function addAddress(addressDto: AddressUserData) {
     console.log('testando envio de endereco', addressDto);
-    const res = await call<addressUserData, null>({
+    const res = await call<AddressUserData, null>({
       method: StatusHttp.POST,
       url: `${ADD_ADDRESS}`,
       token: session?.user.accessToken,

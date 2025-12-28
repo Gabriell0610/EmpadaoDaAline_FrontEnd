@@ -25,9 +25,9 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     setIdAddress,
     setSelectAddress,
     isModalOpen,
-    handleEditPersonalUserData,
+    editPersonalUserData,
     selectAddress,
-    handleEditAddressUserData,
+    editAddressUserData,
   } = useProfileRequests({ session });
 
   const prepareAddressEdit = (idAddress: string) => {
@@ -148,7 +148,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
       <Modal isOpen={isModalOpen} onClose={closeModal} title={titleModal}>
         {modeModal === 'personal' ? (
           <DefaultForm
-            onSubmit={handleEditPersonalUserData}
+            onSubmit={editPersonalUserData}
             schema={personalUserDataSchema}
             isLoading={isLoading}
           >
@@ -180,7 +180,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
           </DefaultForm>
         ) : (
           <DefaultForm
-            onSubmit={handleEditAddressUserData}
+            onSubmit={editAddressUserData}
             schema={addressUserDataSchema}
             isLoading={isLoading}
           >

@@ -14,13 +14,14 @@ import {
   CartItemLocal,
 } from '@/utils/types/providers/cartProvider.type';
 import { AuxiliarCartGuestUserProvider } from './function/guestUser';
-import { AuxiliarCartLoggedUserProvider } from './function/loggedUser';
+import { AuxiliarLoggedUserProviderCart } from './function/loggedUser';
 import toast from 'react-hot-toast';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { StatusCart } from '@/constants/enums/StatusCart';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { CART } from '@/constants';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -85,6 +86,9 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
 
   const listCart = useCallback(async () => {
+    if (session?.user.role === AccessProfile.ADMIN) {
+      return;
+    }
     const token = session?.user?.accessToken || '';
     const res = await call<null, Carrinho>({
       token,
@@ -115,39 +119,36 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     }
   }, [session?.user?.accessToken, listCart]);
 
-  const {
-    handleLoggedAdd,
-    incrementOrDecrementItemLoggedUser,
-    removeItemLoggedUser,
-  } = AuxiliarCartLoggedUserProvider({
-    session,
-    listCart,
-  });
+  const { handleItemAdd, incrementOrDecrementItem, removeItem } =
+    AuxiliarLoggedUserProviderCart({
+      session,
+      listCart,
+    });
 
   const addItemInCart = useCallback(
     async (itemId: string) => {
       if (!session?.user?.accessToken) {
         await handleGuestAdd(itemId);
       } else {
-        await handleLoggedAdd(itemId);
+        await handleItemAdd(itemId);
       }
     },
-    [handleGuestAdd, handleLoggedAdd, session?.user?.accessToken],
+    [handleGuestAdd, handleItemAdd, session?.user?.accessToken],
   );
 
-  const incrementOrDecrementItem = async (act: string, itemId: string) => {
+  const incrementOrDecrementItemCart = async (act: string, itemId: string) => {
     if (!session?.user.accessToken) {
       incrementOrDecrementItemGuestUser(act, itemId);
     } else {
-      await incrementOrDecrementItemLoggedUser(act, itemId);
+      await incrementOrDecrementItem(act, itemId);
     }
   };
 
-  const removeItem = async (itemId: string) => {
+  const removeItemCart = async (itemId: string) => {
     if (!session?.user.accessToken) {
       removeItemGuestUser(itemId);
     } else {
-      await removeItemLoggedUser(itemId);
+      await removeItem(itemId);
     }
   };
 
@@ -160,8 +161,8 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         isLoading,
         quantity,
         addItemInCart,
-        incrementOrDecrementItem,
-        removeItem,
+        incrementOrDecrementItemCart,
+        removeItemCart,
       }}
     >
       {children}

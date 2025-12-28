@@ -3,9 +3,9 @@
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
 import Image, { StaticImageData } from 'next/image';
 import { twMerge } from 'tailwind-merge';
-import { useRouter } from 'next/navigation';
 import { TitleH1 } from '../Titles/Titles';
-import { ArrowLeft } from 'lucide-react';
+import BackPageButton from '../BackPageButton/backPageButton';
+
 
 
 interface LayoutProps extends SomeChildrenInterface {
@@ -22,15 +22,12 @@ export const AuthLayout = ({
   title,
   mode,
 }: LayoutProps) => {
-  const navigate = useRouter();
   return (
     <main className="flex h-screen flex-col md:flex-row">
       {/* Seção do formulário */}
       <section className="flex flex-1 flex-col items-center justify-center overflow-y-auto lg:w-1/2">
         <div className="mx-auto w-full max-w-[600px] px-8 py-2 md:max-w-[500px]">
-          <span onClick={() => navigate.back()} className='flex items-center gap-1 text-lg cursor-pointer'>
-            <ArrowLeft /> Voltar
-          </span>
+          <BackPageButton/>
           <TitleH1 className='mt-3 mb-1 lg:text-2xl'>
             {title}
           </TitleH1>

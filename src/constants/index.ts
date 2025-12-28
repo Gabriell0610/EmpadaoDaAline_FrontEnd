@@ -10,6 +10,8 @@ export const AUTH_REFRESH = `auth/refresh`;
 export const ORDER_CANCEL = `order/cancel`;
 export const ORDER_ME = `order/me`;
 export const ORDER = `order`;
+export const CHANGE_STATUS_ORDER = `changeStatus/order`;
+export const ADMIN_EDIT_OTDER = `order/admin`;
 
 //USER
 export const USER_ME = `users/me`;

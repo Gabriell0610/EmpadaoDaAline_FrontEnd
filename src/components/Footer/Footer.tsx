@@ -6,7 +6,7 @@ import { CustomLink } from '../LinkComponent/Link';
 
 export const Footer = () => {
   return (
-    <footer className="bg-primary-greenFooter px-6 text-text-primary">
+    <footer className="bg-green_details-greenFooter px-6 text-text-primary">
       <div className="container mx-auto flex flex-wrap justify-between gap-6 px-4 py-6">
         <div className="my-3 mb-6 flex min-w-[220px] flex-col items-start">
           <TitleH2>Conheça nosso site</TitleH2>

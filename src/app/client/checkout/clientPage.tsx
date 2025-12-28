@@ -5,7 +5,7 @@ import useClientCheckout from './functions';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import {
-  orderDetailsDto,
+  OrderDetailsDto,
   orderDetailsSchema,
 } from '@/utils/schemas/order.schema';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
@@ -27,7 +27,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
 
   const setOrder = useOrderStore((state) => state.setOrder);
 
-  const handleDetailsOrder = (data: orderDetailsDto) => {
+  const handleDetailsOrder = (data: OrderDetailsDto) => {
     setOrder(data);
     <LoadingComponent mode="fullScreen" />;
     navigate.push('/client/checkout/summary');
@@ -72,14 +72,14 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
             <div className="flex gap-4">
               <InputField
                 label="Horário Inicio"
-                name="deliveryTimeStart"
+                name="startTime"
                 type="time"
                 disabled={isLoading}
               />
 
               <InputField
                 label="Horário Fim"
-                name="deliveryTimeEnd"
+                name="endTime"
                 type="time"
                 disabled={isLoading}
               />

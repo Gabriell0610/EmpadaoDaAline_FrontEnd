@@ -36,8 +36,8 @@ export const ButtonDefault = ({
         href={href || ''}
         className={twMerge(
           isLoading
-            ? 'pointer-events-none cursor-not-allowed text-primary-greenLight opacity-50'
-            : 'text-primary-greenLight hover:underline',
+            ? 'pointer-events-none cursor-not-allowed text-green_details-greenLight opacity-50'
+            : 'text-green_details-greenLight hover:underline',
           className,
         )}
       >
@@ -58,9 +58,9 @@ export const ButtonDefault = ({
       className={twMerge(
         'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary
-          ? 'bg-primary-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
+          ? 'bg-green_details-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
           : isSecondary
-            ? 'border-primary-greenLight bg-neutral-white text-xs font-semibold text-text-primary hover:opacity-80'
+            ? 'border-green_details-greenLight bg-neutral-white text-xs font-semibold text-text-primary hover:opacity-80'
             : isThird
               ? 'w-full rounded border border-green-700 py-2 font-medium text-green-700 transition-colors duration-200 hover:bg-green-700 hover:text-white'
               : isFourth

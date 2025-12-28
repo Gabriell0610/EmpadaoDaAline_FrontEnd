@@ -1,8 +1,10 @@
 import { ORDER, ORDER_CANCEL, ORDER_ME } from '@/constants';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
+import { OrderUpdateDto } from '@/utils/schemas/order.schema';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { ListOrderByClient } from '@/utils/types/orderClient';
 import { useCallback, useEffect, useState } from 'react';
@@ -13,13 +15,14 @@ interface UpdateStatusSocket {
   newStatus: StatusOrder;
 }
 
-interface UseClientOrderInterface extends ProfilePageProps {
+export interface UseClientOrderInterface extends ProfilePageProps {
   id?: string;
 }
 
 export function useClientOrder({ session, id }: UseClientOrderInterface) {
   const { call, isLoading } = useFetch();
-  const [content, setContent] = useState<ListOrderByClient>();
+  const [contentOrderByClientId, setContentOrderByClientId] =
+    useState<ListOrderByClient>();
   const [listOrder, setListOrder] = useState<ListOrderByClient[]>([]);
 
   const handleCancelOrderByClient = async (id: string) => {
@@ -35,10 +38,10 @@ export function useClientOrder({ session, id }: UseClientOrderInterface) {
     }
 
     toast.success(response.message);
-    await handleOrderDetails(id);
+    await listOrderByClientId(id);
   };
 
-  const handleOrderDetails = useCallback(
+  const listOrderByClientId = useCallback(
     async (id: string) => {
       const response = await call<null, ListOrderByClient>({
         method: StatusHttp.GET,
@@ -51,15 +54,15 @@ export function useClientOrder({ session, id }: UseClientOrderInterface) {
         return;
       }
       console.log(response.data);
-      setContent(response.data);
+      setContentOrderByClientId(response.data);
     },
     [call, session?.user.accessToken],
   );
 
   useEffect(() => {
     if (!id) return;
-    handleOrderDetails(id);
-  }, [id, handleOrderDetails]);
+    listOrderByClientId(id);
+  }, [id, listOrderByClientId]);
 
   const getOrderClient = useCallback(async () => {
     if (!session?.user?.accessToken) return;
@@ -81,8 +84,11 @@ export function useClientOrder({ session, id }: UseClientOrderInterface) {
   }, [session?.user?.accessToken, call]);
 
   useEffect(() => {
+    if (session?.user.role == AccessProfile.ADMIN) {
+      return;
+    }
     getOrderClient();
-  }, [getOrderClient]);
+  }, [getOrderClient, session?.user.role]);
 
   // cria o socket apenas uma vez
   useEffect(() => {
@@ -103,7 +109,7 @@ export function useClientOrder({ session, id }: UseClientOrderInterface) {
       );
 
       // Atualiza o pedido atual (detalhe)
-      setContent((prevContent) =>
+      setContentOrderByClientId((prevContent) =>
         prevContent && prevContent.id === data.orderId
           ? { ...prevContent, status: data.newStatus }
           : prevContent,
@@ -115,13 +121,36 @@ export function useClientOrder({ session, id }: UseClientOrderInterface) {
     };
   }, [session?.user.id]);
 
+  async function editOrder(data: OrderUpdateDto) {
+    console.log('editando esses dados', data);
+    const result = await call<OrderUpdateDto, null>({
+      method: StatusHttp.PUT,
+      url: `${ORDER}/${id}`,
+      token: session?.user.accessToken,
+      body: data,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    toast.success(result.message);
+
+    if (!id) {
+      toast.error('Erro inesperado, por favor entre em contato com suporte');
+    } else {
+      await listOrderByClientId(id);
+    }
+  }
+
   return {
     handleCancelOrderByClient,
-    handleOrderDetails,
+    listOrderByClientId,
     getOrderClient,
-    setContent,
+    setContentOrderByClientId,
+    editOrder,
     isLoading,
-    content,
+    contentOrderByClientId,
     listOrder,
   };
 }

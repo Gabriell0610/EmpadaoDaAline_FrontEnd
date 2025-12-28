@@ -18,3 +18,7 @@ export const cepValidation = z
   .refine((value) => value.length === 8, {
     message: 'CEP inválido',
   });
+
+export const startAndEndTimeValidation = z
+  .string()
+  .regex(/^\d{2}:\d{2}$/, 'Formato deve ser HH:mm');

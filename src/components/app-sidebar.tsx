@@ -7,6 +7,7 @@ import {
   ShoppingBasketIcon,
   TicketPercent,
   MessageSquareWarning,
+  HomeIcon,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -39,6 +40,11 @@ export function AppSidebar({ session, ...props }: AppSidebarInterface) {
       },
     ],
     navMain: [
+      {
+        title: 'Home',
+        url: '/admin',
+        icon: HomeIcon,
+      },
       {
         title: 'Adicionar novos itens',
         url: '/newItems',

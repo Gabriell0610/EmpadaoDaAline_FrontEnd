@@ -1,10 +1,10 @@
-import { orderDetailsDto } from '@/utils/schemas/order.schema';
+import { OrderDetailsDto } from '@/utils/schemas/order.schema';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface OrderStore {
-  order: orderDetailsDto | null;
-  setOrder: (data: orderDetailsDto) => void;
+  order: OrderDetailsDto | null;
+  setOrder: (data: OrderDetailsDto) => void;
   clearOrder: () => void;
 }
 

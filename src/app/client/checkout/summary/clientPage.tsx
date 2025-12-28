@@ -77,8 +77,8 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       idCart: itemsWithLoggedUser!.id,
       idAddress: addressId,
       shipping: shipping!,
-      deliveryTimeEnd: orderDetails!.deliveryTimeEnd,
-      deliveryTimeStart: orderDetails!.deliveryTimeStart,
+      endTime: orderDetails!.endTime,
+      startTime: orderDetails!.startTime,
       idPaymentMethod: orderDetails!.idPaymentMethod,
       schedulingDate: orderDetails!.schedulingDate,
     };
@@ -203,7 +203,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                     </div>
 
                     <InputField
-                      label="Complemento"
+                      label="Complemento (obrigatório)"
                       name="complement"
                       type="text"
                       placeholder="Ex: Bloco2/apto:402"
@@ -240,7 +240,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
           </p>
           <p>
             <span className="font-semibold"> Horário de entrega entre: </span>{' '}
-            {orderDetails?.deliveryTimeStart} - {orderDetails?.deliveryTimeEnd}
+            {orderDetails?.startTime} - {orderDetails?.endTime}
           </p>
           <p>
             <span className="font-semibold">Método de pagamento: </span>
@@ -269,6 +269,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
             onClick={() => handleSubmitOrder()}
             className="mt-4"
             variant="primary"
+            disabled={address?.length === 0}
           >
             Fazer Pedido
           </ButtonDefault>

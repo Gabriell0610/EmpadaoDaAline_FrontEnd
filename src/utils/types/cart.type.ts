@@ -7,7 +7,7 @@ export interface DecrementOrIncrementOrRemoveInterface {
   itemId: string;
 }
 
-export interface ItemCarrinho {
+export interface ItemCarrinhoInterface {
   id: string;
   itemId: string;
   carrinhoId: string;
@@ -34,5 +34,5 @@ export interface Carrinho {
   dataCriacao: string;
   usuarioId: string;
   valorTotal: string;
-  carrinhoItens: ItemCarrinho[];
+  carrinhoItens: ItemCarrinhoInterface[];
 }

@@ -7,13 +7,13 @@ import { AuxiliarCartLoggedUserProviderInterface } from '@/utils/types/providers
 import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 
-export const AuxiliarCartLoggedUserProvider = ({
+export const AuxiliarLoggedUserProviderCart = ({
   session,
   listCart,
 }: AuxiliarCartLoggedUserProviderInterface) => {
   const { call, isLoading } = useFetch();
 
-  const handleLoggedAdd = useCallback(
+  const handleItemAdd = useCallback(
     async (itemId: string) => {
       const res = await call({
         method: StatusHttp.POST,
@@ -32,10 +32,7 @@ export const AuxiliarCartLoggedUserProvider = ({
     [session?.user?.accessToken, session?.user?.id, call, listCart],
   );
 
-  const incrementOrDecrementItemLoggedUser = async (
-    act: string,
-    itemId: string,
-  ) => {
+  const incrementOrDecrementItem = async (act: string, itemId: string) => {
     const res = await call({
       token: session?.user.accessToken || '',
       body: { itemId: itemId },
@@ -50,7 +47,7 @@ export const AuxiliarCartLoggedUserProvider = ({
     await listCart();
   };
 
-  const removeItemLoggedUser = async (itemId: string) => {
+  const removeItem = async (itemId: string) => {
     const res = await call({
       method: StatusHttp.DELETE,
       token: session?.user.accessToken || '',
@@ -65,9 +62,9 @@ export const AuxiliarCartLoggedUserProvider = ({
   };
 
   return {
-    handleLoggedAdd,
-    incrementOrDecrementItemLoggedUser,
-    removeItemLoggedUser,
+    handleItemAdd,
+    incrementOrDecrementItem,
+    removeItem,
     listCart,
     isLoading,
   };

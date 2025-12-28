@@ -1,6 +1,5 @@
 'use client';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-import { baseUrl } from '@/utils/helpers';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { useCallback, useContext } from 'react';
 
@@ -26,22 +25,25 @@ export function useFetch() {
       try {
         setIsLoading(true);
 
-        const request = await fetch(`${baseUrl()}/${url}`, {
-          method,
+        const request = await fetch('/api/server', {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
-          body: body ? JSON.stringify(body) : undefined,
+          body: JSON.stringify({
+            method,
+            url,
+            body,
+            token,
+          }),
         });
 
         const response: ApiResponse<TResponse> = await request.json();
-
-        if (request.status >= 400) {
-          return { ...response, success: false };
-        }
-
-        return { ...response, success: true };
+        console.log(response);
+        return {
+          ...response,
+          success: response.success,
+        };
       } catch (error) {
         console.error(error);
         return {

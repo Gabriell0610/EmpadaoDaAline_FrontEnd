@@ -18,7 +18,7 @@ export default withAuth(function middleware(req: NextRequestWithAuth) {
 
   const isClient = userRole === AccessProfile.CLIENT;
 
-  // Redireciona cliente que tentar acessar home
+  // Redireciona cliente que tenta acessar home
   if (isClient && token && isHomeRoute) {
     return NextResponse.redirect(new URL('/client', req.url));
   }
