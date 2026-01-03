@@ -14,6 +14,7 @@ export interface ItemCarrinhoInterface {
   quantidade: number;
   precoAtual: string;
   item: {
+    id: string;
     preco: string;
     precoUnitario: string;
     disponivel: string;
@@ -24,6 +25,8 @@ export interface ItemCarrinhoInterface {
       descricao: string;
       nome: string;
       tipo: string;
+      id: string;
+      disponivel: string;
     };
   };
 }

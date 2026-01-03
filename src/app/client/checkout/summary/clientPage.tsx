@@ -4,7 +4,11 @@ import useClientCheckout from '../functions';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { useOrderStore } from '@/stores/orderDetails-store';
 import { TitleH1, TitleH4 } from '@/components/Titles/Titles';
-import { formartQuantityItem, normalizeCurrency } from '@/utils/helpers';
+import {
+  formartQuantityItem,
+  formatDatePtBr,
+  normalizeCurrency,
+} from '@/utils/helpers';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { addressUserDataSchema } from '@/utils/schemas/address.schema';
@@ -17,7 +21,7 @@ import toast from 'react-hot-toast';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 //import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import EmptyContent from '@/components/EmptyContent/emptyContent';
+import { Trash2 } from 'lucide-react';
 export default function SummaryClientPage({ session }: ProfilePageProps) {
   const {
     isLoading,
@@ -27,6 +31,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
     calculateShipping,
     addAddress,
     createOrder,
+    removeAddress,
   } = useClientCheckout({ session });
 
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
@@ -46,21 +51,6 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       (Number(itemsWithLoggedUser?.valorTotal) || 0) + (Number(shipping) || 0);
     setTotalPrice(total);
   }, [shipping, itemsWithLoggedUser]);
-
-  if (!itemsWithLoggedUser) {
-    navigate.push('/');
-  } else if (
-    itemsWithLoggedUser &&
-    itemsWithLoggedUser.carrinhoItens.length === 0
-  ) {
-    return (
-      <EmptyContent
-        title="Adicione itens na sacola para continuar nessa página"
-        description="Não perca tempo e compre conosco já!!!"
-        alt="sacola de mercado"
-      />
-    );
-  }
 
   const paymentMethod = paymentMethods?.find(
     (data) => data.id === orderDetails?.idPaymentMethod,
@@ -83,6 +73,9 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       schedulingDate: orderDetails!.schedulingDate,
     };
     const order = await createOrder(createOrderObj);
+    if (order?.id == null) {
+      return;
+    }
     navigate.push(`/client/orders/${order?.id}`);
   }
 
@@ -96,23 +89,28 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
 
             {address && address.length > 0 ? (
               address.map((address) => (
-                <label
-                  key={address.endereco.id}
-                  className="flex cursor-pointer items-center gap-2"
-                >
-                  <input
-                    type="radio"
-                    name="selectedAddress"
-                    value={address.endereco.id}
-                    className="h-4 w-4"
-                    onClick={() => calculateTotalPrice(address.endereco.id)}
+                <div className="flex justify-between" key={address.endereco.id}>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="selectedAddress"
+                      value={address.endereco.id}
+                      className="h-4 w-4"
+                      onClick={() => calculateTotalPrice(address.endereco.id)}
+                    />
+                    <span className="text-sm text-text-secondary">
+                      {address.endereco.rua}, {address.endereco.numero} -{' '}
+                      {address.endereco.bairro}, {address.endereco.cidade} -{' '}
+                      {address.endereco.estado} (CEP {address.endereco.cep})
+                    </span>
+                  </label>
+                  <Trash2
+                    size={18}
+                    color="#b81414"
+                    className="cursor-pointer"
+                    onClick={() => removeAddress(address.enderecoId)}
                   />
-                  <span className="text-sm text-text-secondary">
-                    {address.endereco.rua}, {address.endereco.numero} -{' '}
-                    {address.endereco.bairro}, {address.endereco.cidade} -{' '}
-                    {address.endereco.estado} (CEP {address.endereco.cep})
-                  </span>
-                </label>
+                </div>
               ))
             ) : (
               <div>
@@ -139,10 +137,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                       methods.setValue('city', data.localidade);
                       methods.setValue('state', data.uf);
                     } else {
-                      methods.setValue('street', '');
-                      methods.setValue('neighborhood', '');
-                      methods.setValue('city', '');
-                      methods.setValue('state', '');
+                      methods.reset();
                     }
                   } catch (error) {
                     console.error(error);
@@ -236,7 +231,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
           <p>
             {' '}
             <span className="font-semibold">Data de entrega: </span>{' '}
-            {orderDetails?.schedulingDate}
+            {formatDatePtBr(orderDetails?.schedulingDate || '')}
           </p>
           <p>
             <span className="font-semibold"> Horário de entrega entre: </span>{' '}

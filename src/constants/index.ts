@@ -34,3 +34,6 @@ export const PAYMENT_METHODS = `paymentMethods`;
 
 //SHIPPING
 export const SHIPPING = `shipping`;
+
+//ANY CONTENT
+export const WITHOUTCONTENT = '...';

@@ -4,6 +4,7 @@ import {
   ORDER,
   PAYMENT_METHODS,
   SHIPPING,
+  USER,
 } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
@@ -111,17 +112,29 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     });
 
     if (!res.success) {
-      toast.error(
-        getSafeErrorMessage(
-          'Erro ao realizar pedido, tente novamente ou entre em contato com o suporte',
-        ),
-      );
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
 
     toast.success(res.message);
 
     return res.data;
+  }
+
+  async function removeAddress(addressId: string) {
+    const res = await call({
+      method: StatusHttp.DELETE,
+      url: `${USER}/${addressId}/address`,
+      token: session?.user.accessToken,
+    });
+
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
+      return;
+    }
+
+    toast.success(res.message);
+    await listAddressByUserId();
   }
 
   return {
@@ -133,5 +146,6 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     calculateShipping,
     setShipping,
     createOrder,
+    removeAddress,
   };
 }

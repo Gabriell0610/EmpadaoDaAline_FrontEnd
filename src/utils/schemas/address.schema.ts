@@ -11,7 +11,7 @@ export const addressUserDataSchema = z.object({
     .string()
     .nonempty('O Estado é obrigatório')
     .min(2, 'O estado deve ter no mínimo dois caracteres'),
-  complement: z.string(),
+  complement: z.string().nonempty('complemento é obrigatório'),
 });
 
 export type AddressUserData = z.infer<typeof addressUserDataSchema>;

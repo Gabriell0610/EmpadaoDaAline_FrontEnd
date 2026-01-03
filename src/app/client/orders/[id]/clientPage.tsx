@@ -8,7 +8,7 @@ import {
   formatDatePtBr,
   normalizeCurrency,
 } from '@/utils/helpers';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
+import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import {
   Calendar,
@@ -31,13 +31,10 @@ import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import useClientCheckout from '../../checkout/functions';
 
-interface ClientOrderDetailsInterface extends ProfilePageProps {
-  id: string;
-}
 export default function ClientOrderDetailsPage({
   id,
   session,
-}: ClientOrderDetailsInterface) {
+}: DetailsPageProps) {
   const {
     handleCancelOrderByClient,
     editOrder,

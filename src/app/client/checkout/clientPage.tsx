@@ -28,77 +28,115 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const setOrder = useOrderStore((state) => state.setOrder);
 
   const handleDetailsOrder = (data: OrderDetailsDto) => {
+    console.log(data);
     setOrder(data);
     <LoadingComponent mode="fullScreen" />;
     navigate.push('/client/checkout/summary');
   };
 
+  function gerarHorarios(inicio = 7, fim = 18, intervalo = 30) {
+    const horarios: string[] = [];
+
+    for (let h = inicio; h <= fim; h++) {
+      for (let m = 0; m < 60; m += intervalo) {
+        if (h === fim && m > 0) continue;
+
+        horarios.push(
+          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
+        );
+      }
+    }
+
+    return horarios;
+  }
+
+  const horarios = gerarHorarios(7, 18, 30);
+
   return (
     <main className="flex items-center justify-center">
-      <article className="mb-5 md:w-2/4">
-        <section>
-          <div className="mb-2 flex cursor-pointer gap-1">
-            <ArrowLeft onClick={() => navigate.push('/')} /> Voltar
-          </div>
-          <TitleH1 className="mb-0">Detalhes do pedido</TitleH1>
-          <p className="mb-3 text-text-secondary">
-            Escolha a data de entrega, o método de pagamento e o melhor horário
-            para o pedido ser entregue!
-          </p>
-          <DefaultForm
-            schema={orderDetailsSchema}
-            onSubmit={handleDetailsOrder}
-            isLoading={isLoading}
-          >
-            <InputField
-              label="Data de entrega"
-              name="schedulingDate"
-              type="date"
-              disabled={isLoading}
-            />
+      <article className="">
+        <div className="mb-2 flex cursor-pointer gap-1">
+          <ArrowLeft onClick={() => navigate.push('/')} /> Voltar
+        </div>
+        <TitleH1 className="mb-0">Detalhes do pedido</TitleH1>
+        <p className="mb-3 text-text-secondary">
+          Escolha a data de entrega, o método de pagamento e o melhor horário
+          para o pedido ser entregue!
+        </p>
+        <DefaultForm
+          schema={orderDetailsSchema}
+          onSubmit={handleDetailsOrder}
+          isLoading={isLoading}
+        >
+          <InputField
+            label="Data de entrega"
+            name="schedulingDate"
+            type="date"
+            disabled={isLoading}
+          />
 
+          <InputField
+            label="Método de pagamento"
+            name="idPaymentMethod"
+            type="select"
+            placeholder="Selecione o método de pagamento"
+            defaultValue=""
+            options={paymentMethods?.map((p) => ({
+              label: p.nome,
+              value: p.id,
+            }))}
+            disabled={isLoading}
+          />
+          <div className="flex flex-col gap-4 md:flex-row">
             <InputField
-              label="Método de pagamento"
-              name="idPaymentMethod"
+              label="Horário Inicio"
+              name="startTime"
               type="select"
-              placeholder="Selecione o método de pagamento"
-              defaultValue=""
-              options={paymentMethods?.map((p) => ({
-                label: p.nome,
-                value: p.id,
-              }))}
+              options={[
+                { label: 'Selecione um horário de entrega', value: '' },
+                ...horarios.map((h) => ({
+                  label: h,
+                  value: h,
+                })),
+              ]}
               disabled={isLoading}
             />
-            <div className="flex gap-4">
-              <InputField
-                label="Horário Inicio"
-                name="startTime"
-                type="time"
-                disabled={isLoading}
-              />
 
-              <InputField
-                label="Horário Fim"
-                name="endTime"
-                type="time"
-                disabled={isLoading}
-              />
-            </div>
-            <ButtonDefault
-              type="submit"
-              variant="primary"
-              isLoading={isLoading}
-              disabled={
-                itemsWithLoggedUser &&
-                itemsWithLoggedUser.carrinhoItens.length === 0
-                  ? true
-                  : false
-              }
-            >
-              Continuar
-            </ButtonDefault>
-          </DefaultForm>
-        </section>
+            <InputField
+              label="Horário Fim"
+              name="endTime"
+              type="select"
+              options={[
+                { label: 'Selecione um horário de entrega', value: '' },
+                ...horarios.map((h) => ({
+                  label: h,
+                  value: h,
+                })),
+              ]}
+              disabled={isLoading}
+            />
+          </div>
+          <InputField
+            label="Observação"
+            name="observation"
+            type="text"
+            placeholder="Ex: Sem coentro"
+            disabled={isLoading}
+          />
+          <ButtonDefault
+            type="submit"
+            variant="primary"
+            isLoading={isLoading}
+            disabled={
+              itemsWithLoggedUser &&
+              itemsWithLoggedUser.carrinhoItens.length === 0
+                ? true
+                : false
+            }
+          >
+            Continuar
+          </ButtonDefault>
+        </DefaultForm>
       </article>
       {isLoading && <LoadingComponent mode="fullScreen" />}
     </main>

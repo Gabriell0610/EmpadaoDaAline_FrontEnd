@@ -1,3 +1,4 @@
+import { WITHOUTCONTENT } from '@/constants';
 import { ItemCarrinhoInterface } from '../types/cart.type';
 import { ItemInCartItens } from '../types/orderClient';
 import { cellphoneNumberRegex, cepRegex } from '../validators';
@@ -57,9 +58,20 @@ export const baseUrl = () => {
 
 export const formatDatePtBr = (date: Date | string) => {
   if (!date) {
-    return 'ERRO DATA';
+    return WITHOUTCONTENT;
   }
-  return new Date(date).toLocaleDateString('pt-BR');
+  if (date instanceof Date) {
+    return date.toLocaleDateString('pt-BR');
+  }
+
+  if (date.includes('T')) {
+    return new Date(date).toLocaleDateString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+    });
+  }
+
+  const [year, month, day] = date.split('-');
+  return `${day}/${month}/${year}`;
 };
 
 export function formatDate(date: Date) {

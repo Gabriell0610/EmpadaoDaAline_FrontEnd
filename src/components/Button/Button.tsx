@@ -5,7 +5,13 @@ import { twMerge } from 'tailwind-merge';
 import { LoadingComponent } from '../Loading/LoadingComponent';
 
 type ButtonProps = ComponentProps<'button'>;
-type VariantButton = 'primary' | 'third' | 'link' | 'secondary' | 'fourth';
+type VariantButton =
+  | 'primary'
+  | 'third'
+  | 'link'
+  | 'secondary'
+  | 'fourth'
+  | 'normal';
 
 interface ButtonInterface extends ButtonProps {
   variant?: VariantButton;
@@ -29,6 +35,7 @@ export const ButtonDefault = ({
   const isSecondary = variant === 'secondary';
   const isThird = variant === 'third';
   const isFourth = variant === 'fourth';
+  const isNormal = variant === 'normal';
 
   if (isLink) {
     return (
@@ -53,10 +60,10 @@ export const ButtonDefault = ({
       disabled={disabled}
       onClick={(event) => {
         if (disabled) return;
-        onClick?.(event); // NÃO interfere no submit
+        onClick?.(event);
       }}
       className={twMerge(
-        'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
+        isNormal ? '' : 'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary
           ? 'bg-green_details-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
           : isSecondary

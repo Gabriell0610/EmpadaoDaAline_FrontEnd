@@ -136,6 +136,18 @@ export interface ListAllOrdersInterface extends PaginationInterface {
   }[];
 }
 
+export interface OrderCreateReturnDto {
+  id: string;
+  numeroPedido: number;
+  status: StatusOrder;
+  dataCriacao: Date | null;
+}
+
 export interface UpdateStatusOrderInterface {
   status: StatusOrder;
+}
+
+export interface UpdateStatusSocket {
+  orderId: string;
+  newStatus: StatusOrder;
 }

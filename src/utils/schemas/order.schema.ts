@@ -1,7 +1,16 @@
 import z from 'zod';
 import { startAndEndTimeValidation } from '../validators';
 
-export const orderDetailsSchema = z.object({
+function getTodayISO() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export const orderDetailsBaseSchema = z.object({
   schedulingDate: z
     .string({
       required_error: 'A data de agendamento é obrigatória',
@@ -15,7 +24,23 @@ export const orderDetailsSchema = z.object({
   observation: z.string().optional(),
 });
 
-export const orderSchema = orderDetailsSchema.extend({
+export const orderDetailsSchema = orderDetailsBaseSchema
+  .refine((data) => data.endTime >= data.startTime, {
+    message: 'O horário final deve ser maior que o inicial',
+    path: ['endTime'],
+  })
+  .refine(
+    (data) => {
+      const hoje = getTodayISO();
+      return data.schedulingDate >= hoje;
+    },
+    {
+      message: 'A data de entrega não pode ser anterior a data de hoje',
+      path: ['schedulingDate'],
+    },
+  );
+
+export const orderSchema = orderDetailsBaseSchema.extend({
   idCart: z.string(),
   idUser: z.string(),
   idAddress: z.string(),

@@ -13,3 +13,7 @@ export interface PageProps {
     id: string;
   };
 }
+
+export interface DetailsPageProps extends ProfilePageProps {
+  id?: string;
+}

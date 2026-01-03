@@ -1,25 +1,18 @@
 import { ORDER, ORDER_CANCEL, ORDER_ME } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
-import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
-import { ListOrderByClient } from '@/utils/types/orderClient';
+import { DetailsPageProps } from '@/utils/types/generics/layout.type';
+import {
+  ListOrderByClient,
+  UpdateStatusSocket,
+} from '@/utils/types/orderClient';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import io from 'socket.io-client';
-interface UpdateStatusSocket {
-  orderId: string;
-  newStatus: StatusOrder;
-}
-
-export interface UseClientOrderInterface extends ProfilePageProps {
-  id?: string;
-}
-
-export function useClientOrder({ session, id }: UseClientOrderInterface) {
+export function useClientOrder({ session, id }: DetailsPageProps) {
   const { call, isLoading } = useFetch();
   const [contentOrderByClientId, setContentOrderByClientId] =
     useState<ListOrderByClient>();

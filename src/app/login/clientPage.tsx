@@ -7,11 +7,13 @@ import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageLogin() {
   const router = useRouter();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
@@ -63,6 +65,8 @@ export default function ClientPageLogin() {
           label="Senha"
           type="password"
           placeholder="Digite sua senha"
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
         />
         <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
           Login

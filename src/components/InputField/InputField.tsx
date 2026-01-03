@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Eye, EyeClosed } from 'lucide-react';
+import { Dispatch, SetStateAction } from 'react';
 import { FieldError, useFormContext } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
+import { ButtonDefault } from '../Button/Button';
 
 type CommonProps = {
   label: string;
@@ -12,7 +15,11 @@ type CommonProps = {
   disabled?: boolean | undefined;
   minLength?: number | undefined;
   maxLength?: number | undefined;
+  min?: number | string | undefined;
+  max?: number | string | undefined;
   onBlur?: (event: any) => void;
+  setShowPassword?: Dispatch<SetStateAction<boolean>> | undefined;
+  showPassword?: boolean;
 };
 
 interface InputProps extends CommonProps {
@@ -38,6 +45,8 @@ export function InputField(props: InputsFieldsProps) {
     maxLength,
     minLength,
     onBlur,
+    setShowPassword,
+    showPassword,
   } = props;
 
   const {
@@ -47,7 +56,7 @@ export function InputField(props: InputsFieldsProps) {
   const error = errors[name as keyof typeof errors] as FieldError | undefined;
 
   const baseClass =
-    'rounded-md border border-text-secondary px-4 py-2 focus:outline-none cursor-pointer';
+    'rounded-md border border-text-secondary px-4 py-2 focus:outline-none cursor-text';
 
   const selectClass = twMerge(
     baseClass,
@@ -78,18 +87,41 @@ export function InputField(props: InputsFieldsProps) {
           ))}
         </select>
       ) : (
-        <input
-          id={name}
-          {...register(name)}
-          type={type}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          className={baseClass}
-          disabled={disabled}
-          minLength={minLength}
-          maxLength={maxLength}
-          onBlur={onBlur}
-        />
+        <div className="relative">
+          <input
+            id={name}
+            {...register(name)}
+            type={
+              type === 'password' ? (showPassword ? 'text' : 'password') : type
+            }
+            placeholder={placeholder}
+            defaultValue={defaultValue}
+            className={twMerge(
+              baseClass,
+              'w-full',
+              type === 'password' && 'pr-10',
+            )}
+            disabled={disabled}
+            minLength={minLength}
+            maxLength={maxLength}
+            onBlur={onBlur}
+          />
+          {type === 'password' && setShowPassword && (
+            <ButtonDefault
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              variant="normal"
+            >
+              {showPassword ? (
+                <EyeClosed className="text-text-primary" />
+              ) : (
+                <Eye className="text-text-primary" />
+              )}
+            </ButtonDefault>
+          )}
+        </div>
       )}
 
       {error && (

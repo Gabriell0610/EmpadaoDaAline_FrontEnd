@@ -1,13 +1,11 @@
 'use client';
-import {
-  useClientOrder,
-  UseClientOrderInterface,
-} from '@/app/client/orders/functions';
+import { useClientOrder } from '@/app/client/orders/functions';
 import { ADMIN_EDIT_OTDER, CHANGE_STATUS_ORDER, ORDER } from '@/constants';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
+import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 import {
   ListAllOrdersInterface,
   UpdateStatusOrderInterface,
@@ -15,7 +13,7 @@ import {
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export function useAdminRequest({ session, id }: UseClientOrderInterface) {
+export function useAdminRequest({ session, id }: DetailsPageProps) {
   const { accessToken } = session!.user;
   const { call, isLoading } = useFetch();
   const [orders, setOrders] = useState<ListAllOrdersInterface | null>(null);

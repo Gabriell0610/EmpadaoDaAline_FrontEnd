@@ -20,7 +20,6 @@ import {
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { ButtonDefault } from '@/components/Button/Button';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
-import { Session } from 'next-auth';
 import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import React, { useState } from 'react';
@@ -28,16 +27,12 @@ import { useAdminRequest } from '../../functions';
 import { TitleH2 } from '@/components/Titles/Titles';
 import { twMerge } from 'tailwind-merge';
 import useClientCheckout from '@/app/client/checkout/functions';
-
-interface AdminOrderDetailsPageInterface {
-  id: string;
-  session: Session | null;
-}
+import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 
 export default function AdminOrderDetailsPage({
   id,
   session,
-}: AdminOrderDetailsPageInterface) {
+}: DetailsPageProps) {
   const { paymentMethods, isLoading: loadingClientCheckout } =
     useClientCheckout({
       session,
