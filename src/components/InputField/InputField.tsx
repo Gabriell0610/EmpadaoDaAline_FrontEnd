@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { ButtonDefault } from '../Button/Button';
 
 type CommonProps = {
-  label: string;
+  label?: string;
   name: string;
   defaultValue?: string;
   className?: string;
@@ -20,6 +20,7 @@ type CommonProps = {
   onBlur?: (event: any) => void;
   setShowPassword?: Dispatch<SetStateAction<boolean>> | undefined;
   showPassword?: boolean;
+  onChange?: (e: any) => void;
 };
 
 interface InputProps extends CommonProps {
@@ -47,6 +48,7 @@ export function InputField(props: InputsFieldsProps) {
     onBlur,
     setShowPassword,
     showPassword,
+    onChange,
   } = props;
 
   const {
@@ -76,6 +78,7 @@ export function InputField(props: InputsFieldsProps) {
           defaultValue={defaultValue}
           className={selectClass}
           disabled={disabled}
+          onChange={onChange}
         >
           <option value="" disabled>
             {placeholder || 'Selecione uma opção'}

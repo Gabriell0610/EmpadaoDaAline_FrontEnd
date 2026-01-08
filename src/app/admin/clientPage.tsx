@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
+import { ButtonDefault } from '@/components/Button/Button';
 
 export default function DashboardClientPage({ session }: ProfilePageProps) {
   const {
@@ -48,7 +49,7 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
               setPage(1);
               setStatus((e.target.value as StatusOrder) || undefined);
             }}
-            className="rounded-md border px-2 py-2 text-sm"
+            className="ap rounded-md border py-2 text-sm"
           >
             <option value="">Todos</option>
             {Object.values(StatusOrder).map((s) => (
@@ -64,7 +65,7 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
           orders.data.map((order) => (
             <div
               key={order.id}
-              className="cursor-pointer rounded-xl bg-muted/90 px-2 py-4 shadow-sm transition hover:shadow-md"
+              className="cursor-pointer rounded-xl border border-black bg-muted/90 px-2 py-4 shadow-sm transition hover:shadow-md"
               onClick={() => navigate.push(`/admin/order/${order.id}`)}
             >
               <div>
@@ -104,25 +105,27 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
           ))}
       </div>
       <div className="flex items-center justify-end gap-2">
-        <button
+        <ButtonDefault
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
           className="cursor-pointer rounded border px-3 py-1 disabled:opacity-50"
+          variant="secondary"
         >
           Anterior
-        </button>
+        </ButtonDefault>
 
         <span className="text-sm">
           Página {orders?.page} de {orders?.totalPages}
         </span>
 
-        <button
+        <ButtonDefault
           disabled={page === orders?.totalPages}
           onClick={() => setPage((p) => p + 1)}
           className="rounded border px-3 py-1 disabled:opacity-50"
+          variant="secondary"
         >
           Próxima
-        </button>
+        </ButtonDefault>
       </div>
       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
         <h1>Dados dos pedidos</h1>
