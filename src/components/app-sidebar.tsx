@@ -8,6 +8,7 @@ import {
   TicketPercent,
   MessageSquareWarning,
   HomeIcon,
+  ChartNoAxesCombined,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -46,18 +47,23 @@ export function AppSidebar({ session, ...props }: AppSidebarInterface) {
         icon: HomeIcon,
       },
       {
+        title: 'Dashboard',
+        url: '/admin/dashboard',
+        icon: ChartNoAxesCombined,
+      },
+      {
         title: 'Adicionar novos itens',
-        url: '/newItems',
+        url: '/admin/newItems',
         icon: ShoppingBasketIcon,
       },
       {
         title: 'Reclamações',
-        url: '/complaints',
+        url: '/admin/complaints',
         icon: MessageSquareWarning,
       },
       {
         title: 'Cupons',
-        url: '/coupons',
+        url: '/admin/coupons',
         icon: TicketPercent,
       },
       // {

@@ -66,7 +66,7 @@ export default function StatusOrderComponent({
             e.stopPropagation();
             handleChange(e);
           }}
-          className="w-28 rounded-none border-0 border-b border-black bg-transparent px-0 py-1 outline-none focus:ring-0 lg:w-full"
+          className="w-38 rounded-none border-0 border-b border-black bg-transparent px-0 py-1 outline-none focus:ring-0 lg:w-full"
         >
           {Object.values(StatusOrder).map((status) => (
             <option key={status} value={status}>

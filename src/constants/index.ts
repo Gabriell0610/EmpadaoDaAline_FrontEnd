@@ -35,5 +35,9 @@ export const PAYMENT_METHODS = `paymentMethods`;
 //SHIPPING
 export const SHIPPING = `shipping`;
 
+//DASHBOARD
+export const GET_DASHBOARD_SUMMARY = `dashboard/summary`;
+export const GET_DASHBOARD_REVENUE = `dashboard/revenue`;
+
 //ANY CONTENT
 export const WITHOUTCONTENT = '...';

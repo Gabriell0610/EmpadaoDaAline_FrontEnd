@@ -1,10 +1,21 @@
 'use client';
 import { useClientOrder } from '@/app/client/orders/functions';
-import { ADMIN_EDIT_OTDER, CHANGE_STATUS_ORDER, ORDER } from '@/constants';
+import {
+  ADMIN_EDIT_OTDER,
+  CHANGE_STATUS_ORDER,
+  GET_DASHBOARD_REVENUE,
+  GET_DASHBOARD_SUMMARY,
+  ORDER,
+} from '@/constants';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
+import {
+  DashboardPeriodType,
+  DashboardRevenueInterface,
+  DashboardSummaryDto,
+} from '@/utils/types/dashboard.type';
 import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 import {
   ListAllOrdersInterface,
@@ -21,6 +32,18 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StatusOrder | undefined>();
+  const [startDate, setStartDatePeriod] = useState<string | null>(null);
+  const [endDate, setEndDatePeriod] = useState<string | null>(null);
+
+  const [dashboardPeriod, setDashboardPeriod] =
+    useState<DashboardPeriodType>('1m');
+
+  const [contentDashboardSummary, setContentDashboardSummary] =
+    useState<DashboardSummaryDto | null>(null);
+
+  const [contentDashboardRevenue, setContentDashboardRevenue] = useState<
+    DashboardRevenueInterface[] | null
+  >(null);
 
   const { contentOrderByClientId, listOrderByClientId } = useClientOrder({
     session,
@@ -30,7 +53,9 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
   async function listOrders() {
     const params = new URLSearchParams({
       page: String(page),
-      size: '9',
+      size: '5',
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
       ...(search && { search }),
       ...(status && { status }),
     });
@@ -91,9 +116,52 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     }
   }
 
+  async function getDashboardSummary(dashboardPeriod: DashboardPeriodType) {
+    const params = new URLSearchParams({
+      period: dashboardPeriod,
+    });
+
+    const result = await call<null, DashboardSummaryDto>({
+      method: StatusHttp.GET,
+      url: `${GET_DASHBOARD_SUMMARY}?${params.toString()}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    console.log(result.data);
+
+    setContentDashboardSummary(result.data);
+  }
+
+  async function getDashboardRevenue(dashboardPeriod: DashboardPeriodType) {
+    const params = new URLSearchParams({
+      period: dashboardPeriod,
+    });
+
+    const result = await call<null, DashboardRevenueInterface[]>({
+      method: StatusHttp.GET,
+      url: `${GET_DASHBOARD_REVENUE}?${params.toString()}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    setContentDashboardRevenue(result.data);
+  }
+
+  useEffect(() => {
+    getDashboardSummary(dashboardPeriod);
+    getDashboardRevenue(dashboardPeriod);
+  }, [dashboardPeriod]);
+
   useEffect(() => {
     listOrders();
-  }, [page, search, status]);
+  }, [page, search, status, startDate, endDate]);
 
   return {
     isLoading,
@@ -102,10 +170,18 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     search,
     status,
     contentOrderByClientId,
+    dashboardPeriod,
+    contentDashboardSummary,
+    contentDashboardRevenue,
+    setDashboardPeriod,
     updateStatusOrder,
     adminEditOrder,
     setPage,
     setSearch,
     setStatus,
+    getDashboardSummary,
+    setContentDashboardSummary,
+    setStartDatePeriod,
+    setEndDatePeriod,
   };
 }

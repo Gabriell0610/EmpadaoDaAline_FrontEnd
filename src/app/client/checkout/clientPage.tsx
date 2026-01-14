@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/stores/orderDetails-store';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ArrowLeft } from 'lucide-react';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
@@ -123,6 +124,23 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
             placeholder="Ex: Sem coentro"
             disabled={isLoading}
           />
+          {session?.user.role === AccessProfile.ADMIN && (
+            <div>
+              <InputField
+                label="Nome do cliente"
+                name="clientName"
+                type="text"
+                placeholder="João Silva"
+              />
+              <InputField
+                label="Telefone"
+                name="cellphone"
+                type="text"
+                placeholder="Ex: (21) 98665-3321"
+              />
+            </div>
+          )}
+
           <ButtonDefault
             type="submit"
             variant="primary"

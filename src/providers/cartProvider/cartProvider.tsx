@@ -21,7 +21,6 @@ import { StatusCart } from '@/constants/enums/StatusCart';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { CART } from '@/constants';
-import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
@@ -86,9 +85,9 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
 
   const listCart = useCallback(async () => {
-    if (session?.user.role === AccessProfile.ADMIN) {
-      return;
-    }
+    // if (session?.user.role === AccessProfile.ADMIN) {
+    //   return;
+    // }
     const token = session?.user?.accessToken || '';
     const res = await call<null, Carrinho>({
       token,

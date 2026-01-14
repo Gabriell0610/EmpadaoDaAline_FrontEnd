@@ -203,7 +203,6 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                       type="text"
                       placeholder="Ex: Bloco2/apto:402"
                     />
-
                     <ButtonDefault type="submit" variant="primary">
                       Salvar Endereço
                     </ButtonDefault>
