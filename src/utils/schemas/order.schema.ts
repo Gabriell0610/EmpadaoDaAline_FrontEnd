@@ -22,6 +22,16 @@ export const orderDetailsBaseSchema = z.object({
   startTime: z.string().nonempty('O horário inicial é obrigatório'),
   endTime: z.string().nonempty('O horário final é obrigatório'),
   observation: z.string().optional(),
+
+  nameClient: z.string().optional(),
+  cellphoneClient: z
+    .string()
+    .transform((val) => (val === '' ? undefined : val))
+    .optional()
+    .refine(
+      (val) => val === undefined || /^\d{11}$/.test(val),
+      'Telefone deve conter 11 dígitos numéricos',
+    ),
 });
 
 export const orderDetailsSchema = orderDetailsBaseSchema

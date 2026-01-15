@@ -47,6 +47,15 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
     setEndDatePeriod(data.endDate || null);
   }
 
+  const isToday = (isoDate?: string | null) => {
+    if (!isoDate) return false;
+
+    const dateOnly = isoDate.split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
+    return dateOnly === today;
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="mr-5 mt-3 flex flex-wrap justify-between">
@@ -141,9 +150,18 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
                   />
                 </div>
                 <div className="mt-4">
-                  <p className="text-sm font-medium">{order.usuario.nome}</p>
+                  <p className="text-sm font-medium">
+                    {order.usuario.role === AccessProfile.ADMIN
+                      ? order.nomeCliente
+                      : order.usuario.nome}
+                  </p>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Celular: {normalizeCellphoneNumber(order.usuario.telefone)}
+                    Celular:{' '}
+                    {normalizeCellphoneNumber(
+                      order.usuario.role === AccessProfile.ADMIN
+                        ? order.celularCliente
+                        : order.usuario.telefone,
+                    )}
                   </p>
                   <p className="mt-2 text-xs text-muted-foreground">
                     Agendado: {formatDatePtBr(order.dataAgendamento || '')} |{' '}
@@ -158,6 +176,11 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
                     {order.metodoPagamento.nome}
                   </span>
                 </div>
+                {isToday(order.dataAgendamento) && (
+                  <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
+                    <p>Entregar Hoje</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}

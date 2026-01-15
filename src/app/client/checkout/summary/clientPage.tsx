@@ -42,6 +42,8 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [addressId, setAddressId] = useState('');
 
+  const [addressSelected, setAddressSelected] = useState(false);
+
   //zustand
   const orderDetails = useOrderStore((state) => state.order);
 
@@ -59,6 +61,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
   const calculateTotalPrice = (addressId: string) => {
     setAddressId(addressId);
     calculateShipping(addressId);
+    setAddressSelected(true);
   };
 
   async function handleSubmitOrder() {
@@ -70,6 +73,9 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       endTime: orderDetails!.endTime,
       startTime: orderDetails!.startTime,
       idPaymentMethod: orderDetails!.idPaymentMethod,
+      nameClient: orderDetails!.nameClient,
+      cellphoneClient: orderDetails!.cellphoneClient,
+      observation: orderDetails!.observation,
       schedulingDate: orderDetails!.schedulingDate,
     };
     const order = await createOrder(createOrderObj);
@@ -263,7 +269,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
             onClick={() => handleSubmitOrder()}
             className="mt-4"
             variant="primary"
-            disabled={address?.length === 0}
+            disabled={address?.length === 0 || addressSelected === false}
           >
             Fazer Pedido
           </ButtonDefault>

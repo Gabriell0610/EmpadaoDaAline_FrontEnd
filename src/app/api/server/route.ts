@@ -11,6 +11,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${token}`,
     },
     body: body ? JSON.stringify(body) : undefined,
+    cache: 'no-cache',
   });
 
   const response = await req.json();

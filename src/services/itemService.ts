@@ -9,6 +9,7 @@ export async function listActiveItem(): Promise<
 > {
   const req = await fetch(`${baseUrl()}/${ITENS_ACTIVE}`, {
     method: StatusHttp.GET,
+    cache: 'no-cache',
   });
 
   const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();

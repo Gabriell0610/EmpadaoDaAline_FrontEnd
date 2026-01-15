@@ -1,6 +1,7 @@
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { ListActiveItemsInterface } from './items.type';
 import { PaginationInterface } from './paginate';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export interface ItemInCartItens {
   precoAtual: number;
@@ -103,9 +104,11 @@ export interface ListAllOrdersInterface extends PaginationInterface {
     precoTotal: number;
     status: StatusOrder;
     observacao: string | null;
-    dataAgendamento: Date;
+    dataAgendamento: string;
     horarioInicio: string;
     horarioFim: string;
+    celularCliente: string | null;
+    nomeCliente: string | null;
     metodoPagamento: {
       id: string;
       nome: string;
@@ -114,6 +117,7 @@ export interface ListAllOrdersInterface extends PaginationInterface {
       nome: string;
       telefone: string;
       email: string;
+      role: AccessProfile;
     };
     carrinho: {
       status: string;

@@ -40,6 +40,12 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     }
   }
 
+  // useEffect(() => {
+  //   if (itemsWithLoggedUser?.status === StatusCart.FINALIZADO) {
+  //     navigation.refresh();
+  //   }
+  // }, [itemsWithLoggedUser?.status]);
+
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
       const totalPrice = itemsWithGuestUser

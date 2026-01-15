@@ -16,6 +16,7 @@ import { useOrderStore } from '@/stores/orderDetails-store';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ArrowLeft } from 'lucide-react';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
+import { gerarHorarios } from '@/utils/helpers';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
@@ -29,27 +30,11 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const setOrder = useOrderStore((state) => state.setOrder);
 
   const handleDetailsOrder = (data: OrderDetailsDto) => {
-    console.log(data);
+    console.log('dados do detalhe', data);
     setOrder(data);
     <LoadingComponent mode="fullScreen" />;
     navigate.push('/client/checkout/summary');
   };
-
-  function gerarHorarios(inicio = 7, fim = 18, intervalo = 30) {
-    const horarios: string[] = [];
-
-    for (let h = inicio; h <= fim; h++) {
-      for (let m = 0; m < 60; m += intervalo) {
-        if (h === fim && m > 0) continue;
-
-        horarios.push(
-          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
-        );
-      }
-    }
-
-    return horarios;
-  }
 
   const horarios = gerarHorarios(7, 18, 30);
 
@@ -69,25 +54,45 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
           onSubmit={handleDetailsOrder}
           isLoading={isLoading}
         >
-          <InputField
-            label="Data de entrega"
-            name="schedulingDate"
-            type="date"
-            disabled={isLoading}
-          />
+          {session?.user.role === AccessProfile.ADMIN && (
+            <div className="flex flex-col gap-4 md:flex-row">
+              <InputField
+                label="Nome do cliente"
+                name="nameClient"
+                type="text"
+                placeholder="João Silva"
+              />
+              <InputField
+                label="Telefone"
+                name="cellphoneClient"
+                type="number"
+                placeholder="Ex: (21) 98665-3321"
+                maxLength={11}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-4 md:flex-row">
+            <InputField
+              label="Data de entrega"
+              name="schedulingDate"
+              type="date"
+              disabled={isLoading}
+            />
 
-          <InputField
-            label="Método de pagamento"
-            name="idPaymentMethod"
-            type="select"
-            placeholder="Selecione o método de pagamento"
-            defaultValue=""
-            options={paymentMethods?.map((p) => ({
-              label: p.nome,
-              value: p.id,
-            }))}
-            disabled={isLoading}
-          />
+            <InputField
+              label="Método de pagamento"
+              name="idPaymentMethod"
+              type="select"
+              placeholder="Selecione o método de pagamento"
+              defaultValue=""
+              options={paymentMethods?.map((p) => ({
+                label: p.nome,
+                value: p.id,
+              }))}
+              disabled={isLoading}
+            />
+          </div>
+
           <div className="flex flex-col gap-4 md:flex-row">
             <InputField
               label="Horário Inicio"
@@ -124,22 +129,6 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
             placeholder="Ex: Sem coentro"
             disabled={isLoading}
           />
-          {session?.user.role === AccessProfile.ADMIN && (
-            <div>
-              <InputField
-                label="Nome do cliente"
-                name="clientName"
-                type="text"
-                placeholder="João Silva"
-              />
-              <InputField
-                label="Telefone"
-                name="cellphone"
-                type="text"
-                placeholder="Ex: (21) 98665-3321"
-              />
-            </div>
-          )}
 
           <ButtonDefault
             type="submit"

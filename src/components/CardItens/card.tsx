@@ -14,6 +14,8 @@ interface CardProps {
 export const Card = ({ content, handleOpenCart }: CardProps) => {
   const [selectedItemId, setSelectedItemId] = useState(content.item[0]?.id);
   const selectedItem = content.item.find((item) => item.id === selectedItemId);
+  // console.log('item selecionado', selectedItemId);
+  // console.log('itens no card', content);
 
   return (
     <>

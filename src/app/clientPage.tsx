@@ -20,6 +20,7 @@ export default function Home({ activeItems }: ClientPageProps) {
   const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
 
   function handleOpenCart(itemId: string) {
+    console.log("id do item", itemId)
     setOpenCart(true);
     addItemInCart(itemId);
   }

@@ -41,7 +41,10 @@ export const getSafeErrorMessage = (errorMessage?: string): string => {
   return errorMessage;
 };
 
-export const normalizeCellphoneNumber = (cellphoneNumber: string) => {
+export const normalizeCellphoneNumber = (cellphoneNumber: string | null) => {
+  if (!cellphoneNumber) {
+    return;
+  }
   const digitsOnly = cellphoneNumber.replace(/\D/g, '');
   return digitsOnly.replace(cellphoneNumberRegex, '($1) $2-$3');
 };
@@ -56,21 +59,15 @@ export const baseUrl = () => {
   return url;
 };
 
-export const formatDatePtBr = (date: Date | string) => {
-  if (!date) {
-    return WITHOUTCONTENT;
-  }
+export const formatDatePtBr = (date?: string | Date) => {
+  if (!date) return WITHOUTCONTENT;
+
   if (date instanceof Date) {
     return date.toLocaleDateString('pt-BR');
   }
 
-  if (date.includes('T')) {
-    return new Date(date).toLocaleDateString('pt-BR', {
-      timeZone: 'America/Sao_Paulo',
-    });
-  }
-
-  const [year, month, day] = date.split('-');
+  // Remove tudo após o T (UTC)
+  const [year, month, day] = date.split('T')[0].split('-');
   return `${day}/${month}/${year}`;
 };
 
@@ -90,3 +87,19 @@ export function formartQuantityItem(
 
 export const DEFAULTMESSAGEERROAPI =
   'Erro inesperado entre em contato com o suporte!';
+
+export function gerarHorarios(inicio = 7, fim = 18, intervalo = 30) {
+  const horarios: string[] = [];
+
+  for (let h = inicio; h <= fim; h++) {
+    for (let m = 0; m < 60; m += intervalo) {
+      if (h === fim && m > 0) continue;
+
+      horarios.push(
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
+      );
+    }
+  }
+
+  return horarios;
+}

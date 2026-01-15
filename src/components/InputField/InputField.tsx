@@ -81,7 +81,7 @@ export function InputField(props: InputsFieldsProps) {
           onChange={onChange}
         >
           <option value="" disabled>
-            {placeholder || 'Selecione uma opção'}
+            {placeholder}
           </option>
           {options?.map((opt) => (
             <option key={opt.value} value={opt.value}>
