@@ -11,4 +11,12 @@ export interface DashboardRevenueInterface {
   value: number;
 }
 
+export interface DashboardQuickStatsInterface {
+  scheduledToday: number;
+  deliveriesDueToday: number;
+  canceledToday: number;
+  totalDelivered: number;
+  inProgressOrdersToday: number;
+}
+
 export type DashboardPeriodType = 'today' | '7d' | '1m';

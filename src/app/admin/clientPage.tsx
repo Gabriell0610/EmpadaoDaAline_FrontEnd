@@ -25,6 +25,8 @@ import {
   DashboardFilterByPeriodData,
 } from '@/utils/schemas/dashboard.schema';
 import { SlidersHorizontal } from 'lucide-react';
+import { CardContent } from '@/components/CardContent/cardContent';
+import { Card } from '@/components/Card/card';
 export default function DashboardClientPage({ session }: ProfilePageProps) {
   const {
     isLoading,
@@ -32,6 +34,7 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
     page,
     search,
     status,
+    contentDashboardQuickStats,
     updateStatusOrder,
     setPage,
     setSearch,
@@ -178,7 +181,10 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
                 </div>
                 {isToday(order.dataAgendamento) && (
                   <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
-                    <p>Entregar Hoje</p>
+                    <p>
+                      {order.status === StatusOrder.ENTREGUE ||
+                        (StatusOrder.CANCELADO ? '' : 'Entregar Hoje')}
+                    </p>
                   </div>
                 )}
               </div>
@@ -208,31 +214,60 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
           Próxima
         </ButtonDefault>
       </div>
-      {/* <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+      {contentDashboardQuickStats && (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
+          <Card>
             <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">Pedidos recentes</h2>
-              <ul className="space-y-2 text-sm">
-                <li>#1025 — Em preparo — 12 min</li>
-                <li>#1026 — Novo — 3 min</li>
-                <li>#1024 — Entregue — 28 min</li>
-              </ul>
+              <h2 className="mb-2 font-medium">Total pedidos agendados</h2>
+              <p className="font-semibold">
+                {contentDashboardQuickStats?.scheduledToday}
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">Indicadores rápidos</h2>
-              <ul className="space-y-2 text-sm">
-                <li>Cupons usados: 18%</li>
-                <li>Forma pagamento: PIX</li>
-                <li>Reclamações abertas: 2</li>
-              </ul>
+              <h2 className="mb-2 font-medium">Encomendas para hoje</h2>
+              <p className="font-semibold">
+                {contentDashboardQuickStats?.deliveriesDueToday}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="mb-2 font-medium">
+                Total pedidos cancelados hoje
+              </h2>
+              <p className="font-semibold">
+                {contentDashboardQuickStats?.canceledToday}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="mb-2 font-medium">
+                Total pedidos em progresso hoje
+              </h2>
+              <p className="font-semibold">
+                {contentDashboardQuickStats?.inProgressOrdersToday}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="mb-2 font-medium">
+                Total pedidos entregues até hoje
+              </h2>
+              <p className="font-semibold">
+                {contentDashboardQuickStats?.totalDelivered}
+              </p>
             </CardContent>
           </Card>
         </div>
-      </div> */}
+      )}
       {isLoading && <LoadingComponent mode="fullScreen" />}
     </div>
   );

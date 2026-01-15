@@ -3,6 +3,7 @@ import { useClientOrder } from '@/app/client/orders/functions';
 import {
   ADMIN_EDIT_OTDER,
   CHANGE_STATUS_ORDER,
+  GET_DASHBOARD_QUICK_STATS,
   GET_DASHBOARD_REVENUE,
   GET_DASHBOARD_SUMMARY,
   ORDER,
@@ -13,6 +14,7 @@ import { useFetch } from '@/hooks/useFetch/useFetch';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
 import {
   DashboardPeriodType,
+  DashboardQuickStatsInterface,
   DashboardRevenueInterface,
   DashboardSummaryDto,
 } from '@/utils/types/dashboard.type';
@@ -44,6 +46,9 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
   const [contentDashboardRevenue, setContentDashboardRevenue] = useState<
     DashboardRevenueInterface[] | null
   >(null);
+
+  const [contentDashboardQuickStats, setContentDashboardQuickStats] =
+    useState<DashboardQuickStatsInterface | null>(null);
 
   const { contentOrderByClientId, listOrderByClientId } = useClientOrder({
     session,
@@ -91,6 +96,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     }
 
     await listOrders();
+    await getDashboardQuickStats();
     await listOrderByClientId(id);
   }
 
@@ -154,6 +160,20 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     setContentDashboardRevenue(result.data);
   }
 
+  async function getDashboardQuickStats() {
+    const result = await call<null, DashboardQuickStatsInterface[]>({
+      method: StatusHttp.GET,
+      url: `${GET_DASHBOARD_QUICK_STATS}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    setContentDashboardQuickStats(result.data[0]);
+  }
+
   useEffect(() => {
     getDashboardSummary(dashboardPeriod);
     getDashboardRevenue(dashboardPeriod);
@@ -162,6 +182,10 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
   useEffect(() => {
     listOrders();
   }, [page, search, status, startDate, endDate]);
+
+  useEffect(() => {
+    getDashboardQuickStats();
+  }, []);
 
   return {
     isLoading,
@@ -173,6 +197,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     dashboardPeriod,
     contentDashboardSummary,
     contentDashboardRevenue,
+    contentDashboardQuickStats,
     setDashboardPeriod,
     updateStatusOrder,
     adminEditOrder,

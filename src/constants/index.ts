@@ -38,6 +38,7 @@ export const SHIPPING = `shipping`;
 //DASHBOARD
 export const GET_DASHBOARD_SUMMARY = `dashboard/summary`;
 export const GET_DASHBOARD_REVENUE = `dashboard/revenue`;
+export const GET_DASHBOARD_QUICK_STATS = `dashboard/quick-stats`;
 
 //ANY CONTENT
 export const WITHOUTCONTENT = '...';
