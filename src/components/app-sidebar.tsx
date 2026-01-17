@@ -52,7 +52,7 @@ export function AppSidebar({ session, ...props }: AppSidebarInterface) {
         icon: ChartNoAxesCombined,
       },
       {
-        title: 'Adicionar novos itens',
+        title: 'Itens',
         url: '/admin/newItems',
         icon: ShoppingBasketIcon,
       },

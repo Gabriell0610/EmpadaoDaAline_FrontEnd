@@ -8,15 +8,42 @@ import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from '../functions';
 
 export function ClientItensPage({ session }: ProfilePageProps) {
-  const { listAllItens, selectedItem, setSelectedItem } = useAdminRequest({
-    session,
-  });
+  const { listAllItens, selectedItem, setSelectedItem, inativeItem } =
+    useAdminRequest({
+      session,
+    });
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <TitleH1>Sessão de itens</TitleH1>
-      <article className="flex flex-col justify-between gap-4 px-5 lg:flex-row">
+      <article className="flex flex-col justify-between gap-4 lg:flex-row">
+        <section className="flex flex-col gap-2">
+          <TitleH3>Selecione um item para inativar ou editar</TitleH3>
+          <select
+            className="rounded-md border py-2 text-sm"
+            value={selectedItem ?? ''}
+            onChange={(e) => setSelectedItem(e.target.value)}
+          >
+            <option value="">Selecione o item</option>
+            {listAllItens?.map((item) => (
+              <option value={item.id} key={item.id}>
+                {item.nome}
+              </option>
+            ))}
+          </select>
+          <ButtonDefault
+            variant="primary"
+            onClick={() => inativeItem(selectedItem)}
+            disabled={selectedItem !== '' ? false : true}
+          >
+            Inativar item selecionado
+          </ButtonDefault>
+        </section>
         <section className="w-full lg:w-[60%]">
-          <TitleH3>Cadastre um novo item</TitleH3>
+          <TitleH3>
+            {selectedItem == ''
+              ? 'Cadastre um novo item'
+              : 'Edite o item selecionado'}
+          </TitleH3>
           <DefaultForm onSubmit={() => null} schema={itensSchema}>
             <div className="flex flex-col gap-2 lg:flex-row">
               <InputField
@@ -58,28 +85,13 @@ export function ClientItensPage({ session }: ProfilePageProps) {
               name="description"
             />
             <ButtonDefault type="submit" variant="primary">
-              Criar
+              {selectedItem == '' ? 'Criar' : 'Editar'}
             </ButtonDefault>
           </DefaultForm>
         </section>
-        <section className="mt-5 text-left">
-          <TitleH3>Adicione um cupom</TitleH3>
-        </section>
       </article>
-      <section className="mt-5">
-        <TitleH3>Inative algum item</TitleH3>
-        <select
-          className="rounded-md border py-2 text-sm"
-          value={selectedItem ?? ''}
-          onChange={(e) => setSelectedItem(e.target.value)}
-        >
-          <option value="">Selecione o item</option>
-          {listAllItens?.map((item) => (
-            <option value={item.id} key={item.id}>
-              {item.nome}
-            </option>
-          ))}
-        </select>
+      <section className="mt-5 text-left">
+        <TitleH3>Adicione um cupom</TitleH3>
       </section>
     </main>
   );

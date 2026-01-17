@@ -57,7 +57,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     id,
   });
 
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState<string>('');
 
   const [listAllItens, setListAllItens] = useState<
     ListActiveItemsInterface[] | null
@@ -196,9 +196,23 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     setListAllItens(result.data);
   }
 
-  async function inativeItem() {
+  async function inativeItem(itemId: string) {
     const result = await call<null, null>({
       method: StatusHttp.PATCH,
+      url: `${ITENS}/${itemId}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    toast.success(result.message);
+  }
+
+  async function editItem() {
+    const result = await call<null, null>({
+      method: StatusHttp.PUT,
       url: `${ITENS}/${selectedItem}`,
       token: session?.user.accessToken,
     });
@@ -224,10 +238,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     getAllItens();
   }, []);
 
-  useEffect(() => {
-    inativeItem();
-  }, [selectedItem]);
-
   return {
     isLoading,
     orders,
@@ -252,5 +262,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     setContentDashboardSummary,
     setStartDatePeriod,
     setEndDatePeriod,
+    inativeItem,
   };
 }
