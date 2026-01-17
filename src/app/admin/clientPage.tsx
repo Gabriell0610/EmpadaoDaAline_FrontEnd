@@ -1,5 +1,5 @@
 'use client';
-import { TitleH3, TitleH4 } from '@/components/Titles/Titles';
+import { TitleH1, TitleH3, TitleH4 } from '@/components/Titles/Titles';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from './functions';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
@@ -27,6 +27,7 @@ import {
 import { SlidersHorizontal } from 'lucide-react';
 import { CardContent } from '@/components/CardContent/cardContent';
 import { Card } from '@/components/Card/card';
+
 export default function DashboardClientPage({ session }: ProfilePageProps) {
   const {
     isLoading,
@@ -215,58 +216,61 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
         </ButtonDefault>
       </div>
       {contentDashboardQuickStats && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">Total pedidos agendados</h2>
-              <p className="font-semibold">
-                {contentDashboardQuickStats?.scheduledToday}
-              </p>
-            </CardContent>
-          </Card>
+        <section>
+          <TitleH1>Resumo de hoje</TitleH1>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="mb-2 font-medium">Encomendas para hoje</h2>
+                <p className="font-semibold">
+                  {contentDashboardQuickStats?.ordersScheduledToday}
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">Encomendas para hoje</h2>
-              <p className="font-semibold">
-                {contentDashboardQuickStats?.deliveriesDueToday}
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="mb-2 font-medium">Pedidos entregues hoje</h2>
+                <p className="font-semibold">
+                  {contentDashboardQuickStats?.deliveriesDueToday}
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">
-                Total pedidos cancelados hoje
-              </h2>
-              <p className="font-semibold">
-                {contentDashboardQuickStats?.canceledToday}
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="mb-2 font-medium">
+                  Total pedidos cancelados hoje
+                </h2>
+                <p className="font-semibold">
+                  {contentDashboardQuickStats?.canceledToday}
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">
-                Total pedidos em progresso hoje
-              </h2>
-              <p className="font-semibold">
-                {contentDashboardQuickStats?.inProgressOrdersToday}
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="mb-2 font-medium">
+                  Total pedidos em progresso hoje
+                </h2>
+                <p className="font-semibold">
+                  {contentDashboardQuickStats?.inProgressOrdersToday}
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="mb-2 font-medium">
-                Total pedidos entregues até hoje
-              </h2>
-              <p className="font-semibold">
-                {contentDashboardQuickStats?.totalDelivered}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="mb-2 font-medium">
+                  Total pedidos entregues até hoje
+                </h2>
+                <p className="font-semibold">
+                  {contentDashboardQuickStats?.totalDelivered}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       )}
       {isLoading && <LoadingComponent mode="fullScreen" />}
     </div>

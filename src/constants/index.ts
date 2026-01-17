@@ -24,6 +24,7 @@ export const CART_ITEM = `cart/item`;
 
 //ITENS
 export const ITENS_ACTIVE = `itens/active`;
+export const ITENS = `itens`;
 
 //ADDRESS
 export const ADDRESS_ME = `users/address/me`;

@@ -6,6 +6,7 @@ import {
   GET_DASHBOARD_QUICK_STATS,
   GET_DASHBOARD_REVENUE,
   GET_DASHBOARD_SUMMARY,
+  ITENS,
   ORDER,
 } from '@/constants';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
@@ -19,6 +20,7 @@ import {
   DashboardSummaryDto,
 } from '@/utils/types/dashboard.type';
 import { DetailsPageProps } from '@/utils/types/generics/layout.type';
+import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import {
   ListAllOrdersInterface,
   UpdateStatusOrderInterface,
@@ -54,6 +56,12 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     session,
     id,
   });
+
+  const [selectedItem, setSelectedItem] = useState('');
+
+  const [listAllItens, setListAllItens] = useState<
+    ListActiveItemsInterface[] | null
+  >(null);
 
   async function listOrders() {
     const params = new URLSearchParams({
@@ -174,6 +182,34 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     setContentDashboardQuickStats(result.data[0]);
   }
 
+  async function getAllItens() {
+    const result = await call<null, ListActiveItemsInterface[]>({
+      method: StatusHttp.GET,
+      url: `${ITENS}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+    console.log('listando todos os itens', result.data);
+    setListAllItens(result.data);
+  }
+
+  async function inativeItem() {
+    const result = await call<null, null>({
+      method: StatusHttp.PATCH,
+      url: `${ITENS}/${selectedItem}`,
+      token: session?.user.accessToken,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    toast.success(result.message);
+  }
+
   useEffect(() => {
     getDashboardSummary(dashboardPeriod);
     getDashboardRevenue(dashboardPeriod);
@@ -185,7 +221,12 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
 
   useEffect(() => {
     getDashboardQuickStats();
+    getAllItens();
   }, []);
+
+  useEffect(() => {
+    inativeItem();
+  }, [selectedItem]);
 
   return {
     isLoading,
@@ -198,6 +239,9 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     contentDashboardSummary,
     contentDashboardRevenue,
     contentDashboardQuickStats,
+    listAllItens,
+    selectedItem,
+    setSelectedItem,
     setDashboardPeriod,
     updateStatusOrder,
     adminEditOrder,

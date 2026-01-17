@@ -135,6 +135,13 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     [handleGuestAdd, handleItemAdd, session?.user?.accessToken],
   );
 
+  const clearCart = useCallback(() => {
+    setItemsWithLoggedUser(null);
+    setItemsWithGuestUser([]);
+    localStorage.removeItem('cart-items');
+    setQuantity(0);
+  }, []);
+
   const incrementOrDecrementItemCart = async (act: string, itemId: string) => {
     if (!session?.user.accessToken) {
       incrementOrDecrementItemGuestUser(act, itemId);
@@ -162,6 +169,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
         addItemInCart,
         incrementOrDecrementItemCart,
         removeItemCart,
+        clearCart,
       }}
     >
       {children}

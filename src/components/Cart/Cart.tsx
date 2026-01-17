@@ -40,12 +40,6 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     }
   }
 
-  // useEffect(() => {
-  //   if (itemsWithLoggedUser?.status === StatusCart.FINALIZADO) {
-  //     navigation.refresh();
-  //   }
-  // }, [itemsWithLoggedUser?.status]);
-
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
       const totalPrice = itemsWithGuestUser
@@ -69,13 +63,6 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     (session?.user.accessToken &&
       (!itemsWithLoggedUser?.carrinhoItens ||
         itemsWithLoggedUser.carrinhoItens.length === 0));
-
-  // useEffect(() => {
-  //   console.log('dados carrinho logado', itemsWithLoggedUser);
-  // }, [itemsWithLoggedUser]);
-  // useEffect(() => {
-  //   console.log('dados carrinho local', itemsWithGuestUser);
-  // }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root
       size={'sm'}

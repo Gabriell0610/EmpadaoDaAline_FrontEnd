@@ -138,38 +138,41 @@ export default function DashboardAdmin({ session }: ProfilePageProps) {
         </Card>
       </div>
 
-      {/* Main Chart Placeholder */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <Card className="h-64">
-          <CardContent className="h-full p-4">
-            <h2 className="mb-2 font-medium">Faturamento por período</h2>
+      {dashboardPeriod !== 'today' && (
+        <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="h-64">
+              <CardContent className="h-full p-4">
+                <h2 className="mb-2 font-medium">Faturamento por período</h2>
 
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={revenueData}
-                margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-              >
-                <XAxis dataKey="label" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) =>
-                    typeof value === 'number' ? `R$ ${value}` : value
-                  }
-                />
-                <Line
-                  type="linear"
-                  dataKey="value"
-                  strokeWidth={2}
-                  dot={true}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </motion.div>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={revenueData}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+                  >
+                    <XAxis dataKey="label" />
+                    <YAxis />
+                    <Tooltip
+                      formatter={(value) =>
+                        typeof value === 'number' ? `R$ ${value}` : value
+                      }
+                    />
+                    <Line
+                      type="linear"
+                      dataKey="value"
+                      strokeWidth={2}
+                      dot={true}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </>
+      )}
     </div>
   );
 }

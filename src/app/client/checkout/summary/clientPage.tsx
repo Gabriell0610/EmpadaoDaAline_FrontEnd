@@ -65,6 +65,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
   };
 
   async function handleSubmitOrder() {
+    setIsLoading(true);
     const createOrderObj: OrderDto = {
       idUser: session!.user.id,
       idCart: itemsWithLoggedUser!.id,
@@ -83,6 +84,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       return;
     }
     navigate.push(`/client/orders/${order?.id}`);
+    setIsLoading(false);
   }
 
   return (
@@ -160,7 +162,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                         label="CEP"
                         name="zipCode"
                         type="text"
-                        disabled={isLoading}
+                        disabled={isLoading || loading}
                         placeholder="Digite seu cep"
                         onBlur={(e) => consultaViaCep(e.target.value)}
                       />
@@ -168,7 +170,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                         label="Rua"
                         name="street"
                         type="text"
-                        disabled={isLoading}
+                        disabled={isLoading || loading}
                         placeholder="Ex: Roberto Silveira"
                       />
                     </div>
@@ -179,12 +181,14 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                         name="neighborhood"
                         type="text"
                         placeholder="Ex: Fonseca"
+                        disabled={isLoading || loading}
                       />
                       <InputField
                         label="Cidade"
                         name="city"
                         type="text"
                         placeholder="Ex: Niterói"
+                        disabled={isLoading || loading}
                       />
                     </div>
 
@@ -194,12 +198,14 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                         name="state"
                         type="text"
                         placeholder="Ex: RJ"
+                        disabled={isLoading || loading}
                       />
                       <InputField
                         label="Número"
                         name="number"
                         type="number"
                         placeholder="Ex: 33"
+                        disabled={isLoading || loading}
                       />
                     </div>
 
@@ -208,8 +214,13 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                       name="complement"
                       type="text"
                       placeholder="Ex: Bloco2/apto:402"
+                      disabled={isLoading || loading}
                     />
-                    <ButtonDefault type="submit" variant="primary">
+                    <ButtonDefault
+                      type="submit"
+                      variant="primary"
+                      isLoading={isLoading || loading}
+                    >
                       Salvar Endereço
                     </ButtonDefault>
                   </>

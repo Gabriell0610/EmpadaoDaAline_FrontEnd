@@ -12,7 +12,7 @@ export interface DashboardRevenueInterface {
 }
 
 export interface DashboardQuickStatsInterface {
-  scheduledToday: number;
+  ordersScheduledToday: number;
   deliveriesDueToday: number;
   canceledToday: number;
   totalDelivered: number;

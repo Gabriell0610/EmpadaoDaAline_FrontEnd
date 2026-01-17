@@ -17,9 +17,12 @@ import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ArrowLeft } from 'lucide-react';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { gerarHorarios } from '@/utils/helpers';
+import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { useContext } from 'react';
 
 export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const navigate = useRouter();
+  const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
   const { paymentMethods, isLoading } = useClientCheckout({
     session,
@@ -30,10 +33,10 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
   const setOrder = useOrderStore((state) => state.setOrder);
 
   const handleDetailsOrder = (data: OrderDetailsDto) => {
-    console.log('dados do detalhe', data);
+    setIsLoading(true);
     setOrder(data);
-    <LoadingComponent mode="fullScreen" />;
     navigate.push('/client/checkout/summary');
+    setIsLoading(false);
   };
 
   const horarios = gerarHorarios(7, 18, 30);
@@ -52,7 +55,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
         <DefaultForm
           schema={orderDetailsSchema}
           onSubmit={handleDetailsOrder}
-          isLoading={isLoading}
+          isLoading={isLoading || loading}
         >
           {session?.user.role === AccessProfile.ADMIN && (
             <div className="flex flex-col gap-4 md:flex-row">
@@ -61,6 +64,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                 name="nameClient"
                 type="text"
                 placeholder="João Silva"
+                disabled={isLoading || loading}
               />
               <InputField
                 label="Telefone"
@@ -68,6 +72,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                 type="number"
                 placeholder="Ex: (21) 98665-3321"
                 maxLength={11}
+                disabled={isLoading || loading}
               />
             </div>
           )}
@@ -76,7 +81,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
               label="Data de entrega"
               name="schedulingDate"
               type="date"
-              disabled={isLoading}
+              disabled={isLoading || loading}
             />
 
             <InputField
@@ -89,7 +94,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                 label: p.nome,
                 value: p.id,
               }))}
-              disabled={isLoading}
+              disabled={isLoading || loading}
             />
           </div>
 
@@ -105,7 +110,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                   value: h,
                 })),
               ]}
-              disabled={isLoading}
+              disabled={isLoading || loading}
             />
 
             <InputField
@@ -119,7 +124,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                   value: h,
                 })),
               ]}
-              disabled={isLoading}
+              disabled={isLoading || loading}
             />
           </div>
           <InputField
@@ -127,13 +132,13 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
             name="observation"
             type="text"
             placeholder="Ex: Sem coentro"
-            disabled={isLoading}
+            disabled={isLoading || loading}
           />
 
           <ButtonDefault
             type="submit"
             variant="primary"
-            isLoading={isLoading}
+            isLoading={isLoading || loading}
             disabled={
               itemsWithLoggedUser &&
               itemsWithLoggedUser.carrinhoItens.length === 0

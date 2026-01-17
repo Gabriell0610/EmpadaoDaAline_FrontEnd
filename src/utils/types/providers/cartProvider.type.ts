@@ -19,4 +19,5 @@ export interface CartContextType {
   isLoading: boolean;
   quantity: number;
   session: Session | null;
+  clearCart: () => void;
 }

@@ -8,6 +8,7 @@ import {
 } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { AddressUserData } from '@/utils/schemas/address.schema';
 import { OrderDto } from '@/utils/schemas/order.schema';
@@ -26,6 +27,8 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     useState<PaymenMethodsInterface[]>();
 
   const [shipping, setShipping] = useState<string | null>(null);
+
+  const { clearCart } = useCart();
 
   const listAddressByUserId = useCallback(async () => {
     if (!session?.user?.accessToken) return;
@@ -117,7 +120,7 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     }
 
     toast.success(res.message);
-
+    clearCart();
     return res.data;
   }
 
