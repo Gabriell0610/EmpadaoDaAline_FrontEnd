@@ -20,6 +20,7 @@ type CommonProps = {
   onBlur?: (event: any) => void;
   setShowPassword?: Dispatch<SetStateAction<boolean>> | undefined;
   showPassword?: boolean;
+  step?: number | string;
   onChange?: (e: any) => void;
 };
 
@@ -49,6 +50,7 @@ export function InputField(props: InputsFieldsProps) {
     setShowPassword,
     showPassword,
     onChange,
+    step,
   } = props;
 
   const {
@@ -108,6 +110,7 @@ export function InputField(props: InputsFieldsProps) {
             minLength={minLength}
             maxLength={maxLength}
             onBlur={onBlur}
+            step={step}
           />
           {type === 'password' && setShowPassword && (
             <ButtonDefault

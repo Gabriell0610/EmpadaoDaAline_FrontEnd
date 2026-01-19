@@ -3,15 +3,37 @@ import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { InputField } from '@/components/InputField/InputField';
 import { TitleH1, TitleH3 } from '@/components/Titles/Titles';
-import { itensSchema } from '@/utils/schemas/itens.schema';
+import {
+  editItensSchema,
+  EditItensSchemaDto,
+  itensSchema,
+  ItensSchemaDto,
+} from '@/utils/schemas/itens.schema';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from '../functions';
 
 export function ClientItensPage({ session }: ProfilePageProps) {
-  const { listAllItens, selectedItem, setSelectedItem, inativeItem } =
-    useAdminRequest({
-      session,
-    });
+  const {
+    listAllItens,
+    selectedItem,
+    setSelectedItem,
+    inativeItem,
+    editItem,
+    createItem,
+  } = useAdminRequest({
+    session,
+  });
+
+  async function handleEditOrCreateItem(
+    data: ItensSchemaDto | EditItensSchemaDto,
+  ) {
+    console.log('é editar ou criar?', data);
+    if (selectedItem) {
+      await editItem(selectedItem, data as EditItensSchemaDto);
+    }
+
+    await createItem(data as ItensSchemaDto);
+  }
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <TitleH1>Sessão de itens</TitleH1>
@@ -44,7 +66,10 @@ export function ClientItensPage({ session }: ProfilePageProps) {
               ? 'Cadastre um novo item'
               : 'Edite o item selecionado'}
           </TitleH3>
-          <DefaultForm onSubmit={() => null} schema={itensSchema}>
+          <DefaultForm
+            onSubmit={() => handleEditOrCreateItem}
+            schema={selectedItem ? editItensSchema : itensSchema}
+          >
             <div className="flex flex-col gap-2 lg:flex-row">
               <InputField
                 type="text"
@@ -54,11 +79,12 @@ export function ClientItensPage({ session }: ProfilePageProps) {
                 name="name"
               />
               <InputField
-                type="text"
+                type="number"
                 disabled={false}
                 placeholder="ex: 23.99"
                 label="Preço"
                 name="price"
+                step="0.01"
               />
             </div>
             <div className="flex flex-col gap-2 lg:flex-row">
@@ -77,13 +103,23 @@ export function ClientItensPage({ session }: ProfilePageProps) {
                 name="size"
               />
             </div>
-            <InputField
-              type="text"
-              disabled={false}
-              placeholder="ex: Panqueca suculenta"
-              label="Descrição"
-              name="description"
-            />
+            <div className="flex flex-col gap-2 lg:flex-row">
+              <InputField
+                type="text"
+                disabled={false}
+                placeholder="ex: Panqueca suculenta"
+                label="Descrição"
+                name="description"
+              />
+              <InputField
+                type="number"
+                disabled={false}
+                placeholder="ex: 3.88"
+                label="Preço unitário"
+                name="unitPrice"
+                step="0.01"
+              />
+            </div>
             <ButtonDefault type="submit" variant="primary">
               {selectedItem == '' ? 'Criar' : 'Editar'}
             </ButtonDefault>
@@ -92,6 +128,7 @@ export function ClientItensPage({ session }: ProfilePageProps) {
       </article>
       <section className="mt-5 text-left">
         <TitleH3>Adicione um cupom</TitleH3>
+        <p>Sessão ainda em construção...</p>
       </section>
     </main>
   );

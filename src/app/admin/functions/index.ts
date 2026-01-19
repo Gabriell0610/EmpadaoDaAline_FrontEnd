@@ -12,6 +12,10 @@ import {
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import {
+  EditItensSchemaDto,
+  ItensSchemaDto,
+} from '@/utils/schemas/itens.schema';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
 import {
   DashboardPeriodType,
@@ -210,11 +214,27 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     toast.success(result.message);
   }
 
-  async function editItem() {
-    const result = await call<null, null>({
+  async function editItem(itemId: string, data: EditItensSchemaDto) {
+    const result = await call<EditItensSchemaDto, null>({
       method: StatusHttp.PUT,
-      url: `${ITENS}/${selectedItem}`,
+      url: `${ITENS}/${itemId}`,
       token: session?.user.accessToken,
+      body: data,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+    }
+
+    toast.success(result.message);
+  }
+
+  async function createItem(data: ItensSchemaDto) {
+    const result = await call<ItensSchemaDto, null>({
+      method: StatusHttp.POST,
+      url: `${ITENS}`,
+      token: session?.user.accessToken,
+      body: data,
     });
 
     if (!result.success) {
@@ -263,5 +283,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     setStartDatePeriod,
     setEndDatePeriod,
     inativeItem,
+    editItem,
+    createItem,
   };
 }
