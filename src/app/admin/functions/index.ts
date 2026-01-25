@@ -7,6 +7,7 @@ import {
   GET_DASHBOARD_REVENUE,
   GET_DASHBOARD_SUMMARY,
   ITENS,
+  ITENS_ACTIVE,
   ORDER,
 } from '@/constants';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
@@ -189,7 +190,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
   async function getAllItens() {
     const result = await call<null, ListActiveItemsInterface[]>({
       method: StatusHttp.GET,
-      url: `${ITENS}`,
+      url: `${ITENS_ACTIVE}`,
       token: session?.user.accessToken,
     });
 
@@ -227,6 +228,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     }
 
     toast.success(result.message);
+    await getAllItens();
   }
 
   async function createItem(data: ItensSchemaDto) {
@@ -242,6 +244,7 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     }
 
     toast.success(result.message);
+    await getAllItens();
   }
 
   useEffect(() => {

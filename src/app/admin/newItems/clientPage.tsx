@@ -143,6 +143,7 @@ export function ClientItensPage({ session }: ProfilePageProps) {
                 type="select"
                 disabled={isLoading}
                 label="Tipo do item"
+                placeholder="Selecione o Tipo"
                 name="type"
                 options={[
                   { label: 'Selecione o tipo', value: '' },
