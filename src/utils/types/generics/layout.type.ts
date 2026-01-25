@@ -14,6 +14,6 @@ export interface PageProps {
   };
 }
 
-export interface DetailsPageProps extends ProfilePageProps {
+export interface DetailsPageProps {
   id?: string;
 }

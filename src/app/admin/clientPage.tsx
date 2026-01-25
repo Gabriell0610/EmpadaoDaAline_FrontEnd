@@ -1,6 +1,5 @@
 'use client';
 import { TitleH1, TitleH3, TitleH4 } from '@/components/Titles/Titles';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from './functions';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import StatusOrderComponent from '@/components/StatusOrder/statusOrderComponent';
@@ -28,7 +27,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { CardContent } from '@/components/CardContent/cardContent';
 import { Card } from '@/components/Card/card';
 
-export default function DashboardClientPage({ session }: ProfilePageProps) {
+export default function DashboardClientPage() {
   const {
     isLoading,
     orders,
@@ -42,7 +41,7 @@ export default function DashboardClientPage({ session }: ProfilePageProps) {
     setStatus,
     setEndDatePeriod,
     setStartDatePeriod,
-  } = useAdminRequest({ session });
+  } = useAdminRequest({});
   const navigate = useRouter();
 
   function submitFilterOrderByPeriod(data: DashboardFilterByPeriodData) {

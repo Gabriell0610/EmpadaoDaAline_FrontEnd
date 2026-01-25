@@ -8,19 +8,19 @@ import {
 } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { AddressUserData } from '@/utils/schemas/address.schema';
 import { OrderDto } from '@/utils/schemas/order.schema';
 import { ListAddressUserById } from '@/utils/types/address.type';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { OrderCreateReturnDto } from '@/utils/types/orderClient';
 import { PaymenMethodsInterface } from '@/utils/types/paymentMethods.type';
 import { PostShippingInterface } from '@/utils/types/shipping';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export default function useClientCheckout({ session }: ProfilePageProps) {
+export default function useClientCheckout() {
   const { call, isLoading } = useFetch();
   const [address, setAddress] = useState<ListAddressUserById[] | undefined>();
   const [paymentMethods, setPaymentMethods] =
@@ -29,14 +29,14 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   const [shipping, setShipping] = useState<string | null>(null);
 
   const { clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
 
   const listAddressByUserId = useCallback(async () => {
-    if (!session?.user?.accessToken) return;
+    if (!isAuthenticated) return;
 
     const res = await call<null, ListAddressUserById[] | undefined>({
       method: StatusHttp.GET,
       url: ADDRESS_ME,
-      token: session.user.accessToken,
     });
 
     if (!res.success) {
@@ -45,15 +45,14 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     }
 
     setAddress(res.data);
-  }, [session?.user?.accessToken]);
+  }, [isAuthenticated, call]);
 
   const listAllPaymentMethods = useCallback(async () => {
-    if (!session?.user?.accessToken) return;
+    if (!isAuthenticated) return;
 
     const res = await call<null, PaymenMethodsInterface[]>({
       method: StatusHttp.GET,
       url: PAYMENT_METHODS,
-      token: session.user.accessToken,
     });
 
     if (!res.success) {
@@ -62,14 +61,13 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     }
 
     setPaymentMethods(res.data);
-  }, [session?.user?.accessToken]);
+  }, []);
 
   async function addAddress(addressDto: AddressUserData) {
     console.log('testando envio de endereco', addressDto);
     const res = await call<AddressUserData, null>({
       method: StatusHttp.POST,
       url: `${ADD_ADDRESS}`,
-      token: session?.user.accessToken,
       body: addressDto,
     });
 
@@ -87,7 +85,6 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     const res = await call<PostShippingInterface, null>({
       method: StatusHttp.POST,
       url: `${SHIPPING}`,
-      token: session?.user.accessToken,
       body: { id: idAddress },
     });
 
@@ -101,16 +98,15 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
   }
 
   useEffect(() => {
-    if (!session?.user?.accessToken) return;
+    if (!isAuthenticated) return;
 
     Promise.all([listAddressByUserId(), listAllPaymentMethods()]);
-  }, [session?.user?.accessToken, listAddressByUserId, listAllPaymentMethods]);
+  }, [isAuthenticated, listAddressByUserId, listAllPaymentMethods]);
 
   async function createOrder(orderDto: OrderDto) {
     const res = await call<OrderDto, OrderCreateReturnDto>({
       method: StatusHttp.POST,
       url: `${ORDER}`,
-      token: session?.user.accessToken,
       body: orderDto,
     });
 
@@ -128,7 +124,6 @@ export default function useClientCheckout({ session }: ProfilePageProps) {
     const res = await call({
       method: StatusHttp.DELETE,
       url: `${USER}/${addressId}/address`,
-      token: session?.user.accessToken,
     });
 
     if (!res.success) {

@@ -25,7 +25,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     quantity,
     incrementOrDecrementItemCart,
     removeItemCart,
-    session,
+    isAuthenticated,
   } = useCart();
 
   const navigation = useRouter();
@@ -33,7 +33,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
   function handleSubmitForm() {
     setOpenCart(false); // <-- fecha o drawer
 
-    if (!session?.user.accessToken) {
+    if (!isAuthenticated) {
       navigation.push('/login');
     } else {
       navigation.push('/client/checkout');
@@ -41,7 +41,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
   }
 
   const getTotalPrice = () => {
-    if (!session?.user.accessToken) {
+    if (!isAuthenticated) {
       const totalPrice = itemsWithGuestUser
         .map((item) => {
           const newQuantity = item.item.unidades!
@@ -59,8 +59,8 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
   };
 
   const isCartEmpty =
-    (!session?.user.accessToken && itemsWithGuestUser.length === 0) ||
-    (session?.user.accessToken &&
+    (!isAuthenticated && itemsWithGuestUser.length === 0) ||
+    (isAuthenticated &&
       (!itemsWithLoggedUser?.carrinhoItens ||
         itemsWithLoggedUser.carrinhoItens.length === 0));
   return (
@@ -90,7 +90,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                     Navegue pelo site e adicine itens para realizar sua compra!
                   </p>
                 </div>
-              ) : !session?.user.accessToken ? (
+              ) : !isAuthenticated ? (
                 itemsWithGuestUser.map((content) => (
                   <div
                     className="mb-5 flex gap-2 bg-white px-2 py-2"
@@ -226,9 +226,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 onClick={() => handleSubmitForm()}
                 disabled={isCartEmpty ? isCartEmpty : false}
               >
-                {!session?.user.accessToken
-                  ? 'Login / Cadastro'
-                  : 'Finalizar Pedido'}
+                {!isAuthenticated ? 'Login / Cadastro' : 'Finalizar Pedido'}
               </ButtonDefault>
             </Drawer.Footer>
 

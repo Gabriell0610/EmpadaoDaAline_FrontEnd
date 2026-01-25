@@ -7,7 +7,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useSession } from 'next-auth/react';
 import { Carrinho } from '@/utils/types/cart.type';
 import {
   CartContextType,
@@ -21,13 +20,15 @@ import { StatusCart } from '@/constants/enums/StatusCart';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { CART } from '@/constants';
+import { useAuth } from '../authProvider';
 
 export const CartContext = createContext<CartContextType | undefined>(
   undefined,
 );
 
 export const CartProvider = ({ children }: SomeChildrenInterface) => {
-  const { data: session } = useSession();
+  const { isAuthenticated } = useAuth();
+
   const [quantity, setQuantity] = useState(0);
   const [itemsWithGuestUser, setItemsWithGuestUser] = useState<CartItemLocal[]>(
     [],
@@ -57,7 +58,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
 
   useEffect(() => {
     let newQuantity: number = 0;
-    if (!session?.user.accessToken) {
+    if (!isAuthenticated) {
       localStorage.setItem('cart-items', JSON.stringify(itemsWithGuestUser));
       itemsWithGuestUser
         .map((item) => {
@@ -82,15 +83,10 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
 
       setQuantity(newQuantity || 0);
     }
-  }, [itemsWithGuestUser, itemsWithLoggedUser, session?.user.accessToken]);
+  }, [itemsWithGuestUser, itemsWithLoggedUser, isAuthenticated]);
 
   const listCart = useCallback(async () => {
-    // if (session?.user.role === AccessProfile.ADMIN) {
-    //   return;
-    // }
-    const token = session?.user?.accessToken || '';
     const res = await call<null, Carrinho>({
-      token,
       method: StatusHttp.GET,
       url: CART,
     });
@@ -110,29 +106,28 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
     }
 
     setItemsWithLoggedUser(res.data);
-  }, [call, session]);
+  }, [call]);
 
   useEffect(() => {
-    if (session?.user?.accessToken) {
+    if (isAuthenticated) {
       listCart();
     }
-  }, [session?.user?.accessToken, listCart]);
+  }, [isAuthenticated, listCart]);
 
   const { handleItemAdd, incrementOrDecrementItem, removeItem } =
     AuxiliarLoggedUserProviderCart({
-      session,
       listCart,
     });
 
   const addItemInCart = useCallback(
     async (itemId: string) => {
-      if (!session?.user?.accessToken) {
+      if (!isAuthenticated) {
         await handleGuestAdd(itemId);
       } else {
         await handleItemAdd(itemId);
       }
     },
-    [handleGuestAdd, handleItemAdd, session?.user?.accessToken],
+    [handleGuestAdd, handleItemAdd, isAuthenticated],
   );
 
   const clearCart = useCallback(() => {
@@ -143,7 +138,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   }, []);
 
   const incrementOrDecrementItemCart = async (act: string, itemId: string) => {
-    if (!session?.user.accessToken) {
+    if (!isAuthenticated) {
       incrementOrDecrementItemGuestUser(act, itemId);
     } else {
       await incrementOrDecrementItem(act, itemId);
@@ -151,7 +146,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   };
 
   const removeItemCart = async (itemId: string) => {
-    if (!session?.user.accessToken) {
+    if (!isAuthenticated) {
       removeItemGuestUser(itemId);
     } else {
       await removeItem(itemId);
@@ -161,7 +156,7 @@ export const CartProvider = ({ children }: SomeChildrenInterface) => {
   return (
     <CartContext.Provider
       value={{
-        session,
+        isAuthenticated,
         itemsWithGuestUser,
         itemsWithLoggedUser,
         isLoading,

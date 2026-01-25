@@ -2,6 +2,7 @@ import { ORDER, ORDER_CANCEL, ORDER_ME } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
 import { DetailsPageProps } from '@/utils/types/generics/layout.type';
@@ -12,7 +13,9 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import io from 'socket.io-client';
-export function useClientOrder({ session, id }: DetailsPageProps) {
+export function useClientOrder({ id }: DetailsPageProps) {
+  const { isAuthenticated, user } = useAuth();
+
   const { call, isLoading } = useFetch();
   const [contentOrderByClientId, setContentOrderByClientId] =
     useState<ListOrderByClient>();
@@ -22,7 +25,6 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
     const response = await call({
       method: StatusHttp.PATCH,
       url: `${ORDER_CANCEL}/${id}`,
-      token: session?.user.accessToken,
     });
 
     if (!response.success) {
@@ -39,7 +41,6 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
       const response = await call<null, ListOrderByClient>({
         method: StatusHttp.GET,
         url: `${ORDER}/${id}`,
-        token: session?.user.accessToken,
       });
 
       if (!response.success) {
@@ -49,7 +50,7 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
       console.log(response.data);
       setContentOrderByClientId(response.data);
     },
-    [call, session?.user.accessToken],
+    [call],
   );
 
   useEffect(() => {
@@ -58,10 +59,9 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
   }, [id, listOrderByClientId]);
 
   const getOrderClient = useCallback(async () => {
-    if (!session?.user?.accessToken) return;
+    if (!isAuthenticated) return;
 
     const resListOrdersByClient = await call<null, ListOrderByClient[]>({
-      token: session.user.accessToken,
       method: StatusHttp.GET,
       url: ORDER_ME,
     });
@@ -74,20 +74,20 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
     }
 
     setListOrder(resListOrdersByClient.data);
-  }, [session?.user?.accessToken, call]);
+  }, [call]);
 
   useEffect(() => {
-    if (session?.user.role == AccessProfile.ADMIN) {
+    if (user?.role == AccessProfile.ADMIN) {
       return;
     }
     getOrderClient();
-  }, [getOrderClient, session?.user.role]);
+  }, [getOrderClient, user?.role]);
 
   // cria o socket apenas uma vez
   useEffect(() => {
     const socket = io('http://localhost:1338', {
       query: {
-        userId: session?.user.id,
+        userId: user?.id,
       },
     });
 
@@ -112,14 +112,13 @@ export function useClientOrder({ session, id }: DetailsPageProps) {
     return () => {
       socket.disconnect();
     };
-  }, [session?.user.id]);
+  }, [user?.id]);
 
   async function editOrder(data: OrderUpdateDto) {
     console.log('editando esses dados', data);
     const result = await call<OrderUpdateDto, null>({
       method: StatusHttp.PUT,
       url: `${ORDER}/${id}`,
-      token: session?.user.accessToken,
       body: data,
     });
 

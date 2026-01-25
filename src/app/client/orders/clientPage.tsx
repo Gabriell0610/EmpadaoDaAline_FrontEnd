@@ -2,13 +2,12 @@
 import CardOrder from '@/components/CardOrder/cardOrder';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useClientOrder } from './functions';
 import ImageEmptyCart from '../../../../public/assets/empty_cart_doubt-2.png';
 import EmptyContent from '@/components/EmptyContent/emptyContent';
 
-export default function ClientOrderPage({ session }: ProfilePageProps) {
-  const { isLoading, listOrder } = useClientOrder({ session });
+export default function ClientOrderPage() {
+  const { isLoading, listOrder } = useClientOrder({});
 
   return (
     <div>

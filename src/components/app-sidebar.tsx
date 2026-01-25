@@ -21,17 +21,17 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { Session } from 'next-auth';
+import { useAuth } from '@/providers/authProvider';
 
-interface AppSidebarInterface extends React.ComponentProps<typeof Sidebar> {
-  session: Session | null;
-}
+type AppSidebarInterface = React.ComponentProps<typeof Sidebar>;
 
-export function AppSidebar({ session, ...props }: AppSidebarInterface) {
+export function AppSidebar({ ...props }: AppSidebarInterface) {
+  const { user } = useAuth();
+
   const data = {
     user: {
-      name: session?.user.role.toUpperCase(),
-      email: session?.user.email || 'Error',
+      name: user!.role.toUpperCase(),
+      email: user!.email || 'Error',
       avatar: 'A',
     },
     teams: [

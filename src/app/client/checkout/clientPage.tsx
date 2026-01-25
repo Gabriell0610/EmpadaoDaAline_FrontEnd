@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import useClientCheckout from './functions';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
@@ -19,14 +18,15 @@ import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { gerarHorarios } from '@/utils/helpers';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useContext } from 'react';
+import { useAuth } from '@/providers/authProvider';
 
-export default function ClientCheckoutPage({ session }: ProfilePageProps) {
+export default function ClientCheckoutPage() {
+  const { user } = useAuth();
+
   const navigate = useRouter();
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
-  const { paymentMethods, isLoading } = useClientCheckout({
-    session,
-  });
+  const { paymentMethods, isLoading } = useClientCheckout();
 
   const { itemsWithLoggedUser } = useCart();
 
@@ -57,7 +57,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
           onSubmit={handleDetailsOrder}
           isLoading={isLoading || loading}
         >
-          {session?.user.role === AccessProfile.ADMIN && (
+          {user?.role === AccessProfile.ADMIN && (
             <div className="flex flex-col gap-4 md:flex-row">
               <InputField
                 label="Nome do cliente"

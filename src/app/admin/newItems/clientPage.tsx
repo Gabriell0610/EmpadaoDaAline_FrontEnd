@@ -10,12 +10,11 @@ import {
   itensSchema,
   ItensSchemaDto,
 } from '@/utils/schemas/itens.schema';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from '../functions';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { UseFormReturn } from 'react-hook-form';
 
-export function ClientItensPage({ session }: ProfilePageProps) {
+export function ClientItensPage() {
   const {
     listAllItens,
     selectedItem,
@@ -24,9 +23,7 @@ export function ClientItensPage({ session }: ProfilePageProps) {
     editItem,
     createItem,
     isLoading,
-  } = useAdminRequest({
-    session,
-  });
+  } = useAdminRequest({});
 
   async function handleEditOrCreateItem(
     data: ItensSchemaDto | EditItensSchemaDto,

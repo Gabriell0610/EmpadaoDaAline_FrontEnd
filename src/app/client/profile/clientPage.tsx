@@ -8,13 +8,12 @@ import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
 import { addressUserDataSchema } from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
 import { signOut } from 'next-auth/react';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
 import { InputField } from '@/components/InputField/InputField';
 import useProfileRequests from './functions';
 
-export default function ProfilePageClient({ session }: ProfilePageProps) {
+export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
   const {
@@ -28,7 +27,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     editPersonalUserData,
     selectAddress,
     editAddressUserData,
-  } = useProfileRequests({ session });
+  } = useProfileRequests();
 
   const prepareAddressEdit = (idAddress: string) => {
     setTitleModal('Editar Endereço');

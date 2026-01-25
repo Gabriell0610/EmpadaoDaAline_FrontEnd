@@ -1,4 +1,3 @@
-import { Session } from 'next-auth';
 import { ListActiveItemsByIdInterface } from '../items.type';
 import { Carrinho } from '../cart.type';
 
@@ -18,6 +17,6 @@ export interface CartContextType {
   removeItemCart: (itemId: string) => Promise<void> | void;
   isLoading: boolean;
   quantity: number;
-  session: Session | null;
+  isAuthenticated: boolean;
   clearCart: () => void;
 }

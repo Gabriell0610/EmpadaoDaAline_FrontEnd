@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { InputField } from '@/components/InputField/InputField';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { baseUrl } from '@/utils/helpers';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
-import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -18,30 +20,35 @@ export default function ClientPageLogin() {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const handleLogin = async (data: loginDto) => {
-    console.log(data);
     try {
       setIsLoading(true);
-      const res = await signIn('credentials', {
-        redirect: false,
-        email: data.email,
-        password: data.password,
+
+      const res = await fetch(`${baseUrl()}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
       });
 
-      if (!res?.error) {
-        const session = await getSession(); // Pega a session atualizada do usuário logado
-
-        if (session?.user.role === AccessProfile.ADMIN) {
-          router.push('/admin');
-        } else {
-          router.push('/client');
-        }
-        toast.success('Login efetuado com sucesso');
-      } else {
-        console.error(res.error);
-        toast.error(res.error);
+      if (!res.ok) {
+        toast.error('Email ou senha inválidos');
       }
-    } catch (error) {
-      console.log(error);
+
+      // backend já setou os cookies
+      const me = await fetch(`${baseUrl()}/users/me`, {
+        method: StatusHttp.GET,
+        credentials: 'include',
+      }).then((r) => r.json());
+
+      if (me.role === AccessProfile.ADMIN) {
+        router.push('/admin');
+      } else {
+        router.push('/client');
+      }
+
+      toast.success('Login efetuado com sucesso');
+    } catch (error: any) {
+      toast.error('Erro ao realizar login', error);
     } finally {
       setIsLoading(false);
     }

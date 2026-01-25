@@ -33,8 +33,7 @@ import {
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export function useAdminRequest({ session, id }: DetailsPageProps) {
-  const { accessToken } = session!.user;
+export function useAdminRequest({ id }: DetailsPageProps) {
   const { call, isLoading } = useFetch();
   const [orders, setOrders] = useState<ListAllOrdersInterface | null>(null);
 
@@ -58,7 +57,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     useState<DashboardQuickStatsInterface | null>(null);
 
   const { contentOrderByClientId, listOrderByClientId } = useClientOrder({
-    session,
     id,
   });
 
@@ -81,7 +79,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const response = await call<null, ListAllOrdersInterface>({
       method: StatusHttp.GET,
       url: `${ORDER}?${params.toString()}`,
-      token: accessToken,
     });
 
     if (!response.success) {
@@ -99,7 +96,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const response = await call<UpdateStatusOrderInterface, null>({
       method: StatusHttp.PATCH,
       url: `${CHANGE_STATUS_ORDER}/${id}`,
-      token: accessToken,
       body: data,
     });
 
@@ -118,7 +114,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<OrderUpdateDto, null>({
       method: StatusHttp.PUT,
       url: `${ADMIN_EDIT_OTDER}/${id}`,
-      token: session?.user.accessToken,
       body: data,
     });
 
@@ -143,7 +138,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<null, DashboardSummaryDto>({
       method: StatusHttp.GET,
       url: `${GET_DASHBOARD_SUMMARY}?${params.toString()}`,
-      token: session?.user.accessToken,
     });
 
     if (!result.success) {
@@ -163,7 +157,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<null, DashboardRevenueInterface[]>({
       method: StatusHttp.GET,
       url: `${GET_DASHBOARD_REVENUE}?${params.toString()}`,
-      token: session?.user.accessToken,
     });
 
     if (!result.success) {
@@ -177,7 +170,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<null, DashboardQuickStatsInterface[]>({
       method: StatusHttp.GET,
       url: `${GET_DASHBOARD_QUICK_STATS}`,
-      token: session?.user.accessToken,
     });
 
     if (!result.success) {
@@ -191,7 +183,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<null, ListActiveItemsInterface[]>({
       method: StatusHttp.GET,
       url: `${ITENS_ACTIVE}`,
-      token: session?.user.accessToken,
     });
 
     if (!result.success) {
@@ -205,7 +196,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<null, null>({
       method: StatusHttp.PATCH,
       url: `${ITENS}/${itemId}`,
-      token: session?.user.accessToken,
     });
 
     if (!result.success) {
@@ -219,7 +209,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<EditItensSchemaDto, null>({
       method: StatusHttp.PUT,
       url: `${ITENS}/${itemId}`,
-      token: session?.user.accessToken,
       body: data,
     });
 
@@ -235,7 +224,6 @@ export function useAdminRequest({ session, id }: DetailsPageProps) {
     const result = await call<ItensSchemaDto, null>({
       method: StatusHttp.POST,
       url: `${ITENS}`,
-      token: session?.user.accessToken,
       body: data,
     });
 

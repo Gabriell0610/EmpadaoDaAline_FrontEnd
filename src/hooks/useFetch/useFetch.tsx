@@ -9,24 +9,19 @@ interface RequestApi<TBody> {
   method: Method;
   url: string;
   body?: TBody;
-  token?: string;
 }
 
 export function useFetch() {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const call = useCallback(
-    async <TBody, TResponse>({
-      method,
-      url,
-      body,
-      token,
-    }: RequestApi<TBody>) => {
+    async <TBody, TResponse>({ method, url, body }: RequestApi<TBody>) => {
       try {
         setIsLoading(true);
 
         const request = await fetch('/api/server', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -34,7 +29,6 @@ export function useFetch() {
             method,
             url,
             body,
-            token,
           }),
         });
 

@@ -1,5 +1,4 @@
 'use client';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import useClientCheckout from '../functions';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { useOrderStore } from '@/stores/orderDetails-store';
@@ -22,7 +21,8 @@ import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 //import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
-export default function SummaryClientPage({ session }: ProfilePageProps) {
+import { useAuth } from '@/providers/authProvider';
+export default function SummaryClientPage() {
   const {
     isLoading,
     address,
@@ -32,7 +32,9 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
     addAddress,
     createOrder,
     removeAddress,
-  } = useClientCheckout({ session });
+  } = useClientCheckout();
+
+  const { user } = useAuth();
 
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
@@ -67,7 +69,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
   async function handleSubmitOrder() {
     setIsLoading(true);
     const createOrderObj: OrderDto = {
-      idUser: session!.user.id,
+      idUser: user!.id,
       idCart: itemsWithLoggedUser!.id,
       idAddress: addressId,
       shipping: shipping!,

@@ -29,14 +29,9 @@ import { twMerge } from 'tailwind-merge';
 import useClientCheckout from '@/app/client/checkout/functions';
 import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 
-export default function AdminOrderDetailsPage({
-  id,
-  session,
-}: DetailsPageProps) {
+export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
   const { paymentMethods, isLoading: loadingClientCheckout } =
-    useClientCheckout({
-      session,
-    });
+    useClientCheckout();
 
   const {
     updateStatusOrder,
@@ -44,7 +39,6 @@ export default function AdminOrderDetailsPage({
     isLoading,
     contentOrderByClientId,
   } = useAdminRequest({
-    session,
     id,
   });
 
