@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
@@ -11,6 +12,8 @@ import {
 } from '@/utils/schemas/itens.schema';
 import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { useAdminRequest } from '../functions';
+import { LoadingComponent } from '@/components/Loading/LoadingComponent';
+import { UseFormReturn } from 'react-hook-form';
 
 export function ClientItensPage({ session }: ProfilePageProps) {
   const {
@@ -20,20 +23,25 @@ export function ClientItensPage({ session }: ProfilePageProps) {
     inativeItem,
     editItem,
     createItem,
+    isLoading,
   } = useAdminRequest({
     session,
   });
 
   async function handleEditOrCreateItem(
     data: ItensSchemaDto | EditItensSchemaDto,
+    { reset }: UseFormReturn<any>,
   ) {
-    console.log('é editar ou criar?', data);
     if (selectedItem) {
       await editItem(selectedItem, data as EditItensSchemaDto);
+      reset();
+      return;
     }
 
     await createItem(data as ItensSchemaDto);
+    reset();
   }
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <TitleH1>Sessão de itens</TitleH1>
@@ -46,11 +54,14 @@ export function ClientItensPage({ session }: ProfilePageProps) {
             onChange={(e) => setSelectedItem(e.target.value)}
           >
             <option value="">Selecione o item</option>
-            {listAllItens?.map((item) => (
-              <option value={item.id} key={item.id}>
-                {item.nome}
-              </option>
-            ))}
+
+            {listAllItens?.map((itemDescription) =>
+              itemDescription.item.map((data) => (
+                <option value={data.id} key={data.id}>
+                  {itemDescription.nome} - {data.pesoReal}
+                </option>
+              )),
+            )}
           </select>
           <ButtonDefault
             variant="primary"
@@ -67,20 +78,20 @@ export function ClientItensPage({ session }: ProfilePageProps) {
               : 'Edite o item selecionado'}
           </TitleH3>
           <DefaultForm
-            onSubmit={() => handleEditOrCreateItem}
+            onSubmit={handleEditOrCreateItem}
             schema={selectedItem ? editItensSchema : itensSchema}
           >
             <div className="flex flex-col gap-2 lg:flex-row">
               <InputField
                 type="text"
-                disabled={false}
+                disabled={isLoading}
                 placeholder="ex: Empadão de frango"
                 label="Nome do item"
                 name="name"
               />
               <InputField
                 type="number"
-                disabled={false}
+                disabled={isLoading}
                 placeholder="ex: 23.99"
                 label="Preço"
                 name="price"
@@ -90,33 +101,62 @@ export function ClientItensPage({ session }: ProfilePageProps) {
             <div className="flex flex-col gap-2 lg:flex-row">
               <InputField
                 type="text"
-                disabled={false}
+                disabled={isLoading}
                 placeholder="ex: url da imagem"
                 label="URL da imagem"
                 name="image"
               />
               <InputField
-                type="text"
-                disabled={false}
+                type="select"
+                disabled={isLoading}
                 placeholder="ex: P | M | G | GG"
                 label="Tamanho"
                 name="size"
+                options={[
+                  { label: 'Selecione um tamanho', value: '' },
+                  { label: 'Pequeno (P)', value: 'P' },
+                  { label: 'Médio (M)', value: 'M' },
+                  { label: 'Grande (G)', value: 'G' },
+                  { label: 'Extra grande (GG)', value: 'GG' },
+                ]}
               />
             </div>
             <div className="flex flex-col gap-2 lg:flex-row">
               <InputField
                 type="text"
-                disabled={false}
+                disabled={isLoading}
                 placeholder="ex: Panqueca suculenta"
                 label="Descrição"
                 name="description"
               />
               <InputField
                 type="number"
-                disabled={false}
+                disabled={isLoading}
                 placeholder="ex: 3.88"
                 label="Preço unitário"
                 name="unitPrice"
+                step="0.01"
+              />
+            </div>
+            <div className="flex flex-col gap-2 lg:flex-row">
+              <InputField
+                type="select"
+                disabled={isLoading}
+                label="Tipo do item"
+                name="type"
+                options={[
+                  { label: 'Selecione o tipo', value: '' },
+                  { label: 'EMPADAO', value: 'EMPADAO' },
+                  { label: 'PANQUECA', value: 'PANQUECA' },
+                  { label: 'ALMODENGA', value: 'ALMODENGA' },
+                ]}
+              />
+              <InputField
+                type="number"
+                disabled={isLoading}
+                placeholder="ex: 6"
+                label="Unidades"
+                name="unity"
                 step="0.01"
               />
             </div>
@@ -130,6 +170,7 @@ export function ClientItensPage({ session }: ProfilePageProps) {
         <TitleH3>Adicione um cupom</TitleH3>
         <p>Sessão ainda em construção...</p>
       </section>
+      {isLoading && <LoadingComponent mode="fullScreen" />}
     </main>
   );
 }

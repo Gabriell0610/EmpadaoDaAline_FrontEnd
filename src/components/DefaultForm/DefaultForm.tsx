@@ -11,7 +11,10 @@ import { ReactNode, useEffect } from 'react';
 
 interface FormProps<T extends ZodSchema<any>> {
   schema: T;
-  onSubmit: (data: TypeOf<T>) => void;
+  onSubmit: (
+    data: TypeOf<T>,
+    methods: UseFormReturn<TypeOf<T>>,
+  ) => void | Promise<void>;
   isLoading?: boolean;
   className?: string;
   children: ReactNode | ((methods: UseFormReturn<TypeOf<T>>) => ReactNode);
@@ -36,7 +39,10 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className={className}>
+      <form
+        onSubmit={methods.handleSubmit((data) => onSubmit(data, methods))}
+        className={className}
+      >
         <div className="flex flex-col gap-4">
           {typeof children === 'function' ? children(methods) : children}
         </div>
