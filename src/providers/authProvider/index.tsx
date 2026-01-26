@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshAuth = async () => {
     try {
-      const res = await fetch(`${baseUrl()}/api/auth/me`, {
+      const res = await fetch(`${baseUrl()}/users/me`, {
         credentials: 'include',
       });
 
