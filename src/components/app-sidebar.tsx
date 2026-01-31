@@ -30,8 +30,8 @@ export function AppSidebar({ ...props }: AppSidebarInterface) {
 
   const data = {
     user: {
-      name: user!.role.toUpperCase(),
-      email: user!.email || 'Error',
+      name: user?.nome.toUpperCase(),
+      email: user?.email || 'Error',
       avatar: 'A',
     },
     teams: [

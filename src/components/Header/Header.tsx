@@ -15,9 +15,28 @@ import { useAuth } from '@/providers/authProvider';
 
 export function Header() {
   const navigate = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [openCart, setOpenCart] = useState(false);
   const { quantity } = useCart();
+
+  function HeaderSkeleton() {
+    return (
+      <header className="px-8 py-8">
+        <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between">
+          <div className="h-14 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="flex gap-4">
+            <div className="h-10 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-28 animate-pulse rounded bg-gray-200" />
+          </div>
+        </nav>
+      </header>
+    );
+  }
+
+  if (isLoading) {
+    return <HeaderSkeleton />;
+  }
+
   return (
     <header className="px-8 py-8">
       <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between">

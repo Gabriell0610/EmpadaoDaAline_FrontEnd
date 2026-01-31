@@ -7,15 +7,22 @@ import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
 import { addressUserDataSchema } from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
-import { signOut } from 'next-auth/react';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
 import { InputField } from '@/components/InputField/InputField';
 import useProfileRequests from './functions';
+import { useAuth } from '@/providers/authProvider';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { AUTH_LOGOUT } from '@/constants';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
+  const { refreshAuth } = useAuth();
+  const { call } = useFetch();
+  const navigation = useRouter();
   const {
     dataUserLogged,
     openModal,
@@ -50,6 +57,16 @@ export default function ProfilePageClient() {
     'Nome Completo: ': dataUserLogged?.nome,
     'Email: ': dataUserLogged?.email,
     'Celular: ': normalizeCellphoneNumber(dataUserLogged?.telefone || ''),
+  };
+
+  const handleLogout = async () => {
+    await call({
+      method: StatusHttp.POST,
+      url: AUTH_LOGOUT,
+    });
+
+    await refreshAuth(); // vai setar user = null
+    navigation.push('/login');
   };
 
   return (
@@ -135,7 +152,7 @@ export default function ProfilePageClient() {
         <div className="mt-10 flex justify-center">
           <ButtonDefault
             variant="primary"
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={handleLogout}
             className="px-8 py-2 text-base font-medium"
           >
             Sair da conta

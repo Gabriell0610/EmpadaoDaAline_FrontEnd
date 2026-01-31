@@ -11,6 +11,7 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { twMerge } from 'tailwind-merge';
+import toast from 'react-hot-toast';
 
 interface CartProps {
   openCart: boolean;
@@ -38,6 +39,8 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     } else {
       navigation.push('/client/checkout');
     }
+
+    toast.success('Aguarde você sera redirecionado...');
   }
 
   const getTotalPrice = () => {

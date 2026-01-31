@@ -3,54 +3,40 @@
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { InputField } from '@/components/InputField/InputField';
+import { AUTH_LOGIN } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-import { baseUrl } from '@/utils/helpers';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { useRouter } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageLogin() {
-  const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
-
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
+  const { call, isLoading } = useFetch();
+  const router = useRouter();
+  const { refreshAuth, user } = useAuth();
 
   const handleLogin = async (data: loginDto) => {
-    try {
-      setIsLoading(true);
+    const res = await call<loginDto, null>({
+      method: StatusHttp.POST,
+      url: AUTH_LOGIN,
+      body: data,
+    });
 
-      const res = await fetch(`${baseUrl()}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
+    if (!res.success) {
+      toast.error(res.message);
+      return;
+    }
 
-      if (!res.ok) {
-        toast.error('Email ou senha inválidos');
-      }
+    await refreshAuth();
 
-      // backend já setou os cookies
-      const me = await fetch(`${baseUrl()}/users/me`, {
-        method: StatusHttp.GET,
-        credentials: 'include',
-      }).then((r) => r.json());
-
-      if (me.role === AccessProfile.ADMIN) {
-        router.push('/admin');
-      } else {
-        router.push('/client');
-      }
-
-      toast.success('Login efetuado com sucesso');
-    } catch (error: any) {
-      toast.error('Erro ao realizar login', error);
-    } finally {
-      setIsLoading(false);
+    if (user?.role === AccessProfile.ADMIN) {
+      router.push('/admin');
+    } else {
+      router.push('/client');
     }
   };
 

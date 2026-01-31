@@ -19,7 +19,7 @@ export const Card = ({ content, handleOpenCart }: CardProps) => {
     <>
       <div className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white">
         <Image
-          src={content.image || ImageFood}
+          src={ImageFood}
           alt="Empadão"
           className="h-40 w-full object-cover"
         />

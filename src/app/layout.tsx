@@ -22,15 +22,15 @@ export default async function RootLayout({ children }: SomeChildrenInterface) {
         suppressHydrationWarning={true}
         className="flex min-h-screen flex-col antialiased"
       >
-        <AuthProvider>
-          <LoadingProvider>
+        <LoadingProvider>
+          <AuthProvider>
             <CartProvider>
               <Provider>
                 <main className="flex-grow">{children}</main>
               </Provider>
             </CartProvider>
-          </LoadingProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </LoadingProvider>
         <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>

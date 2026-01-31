@@ -1,6 +1,9 @@
 'use client';
+import { USER_ME } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
-import { baseUrl } from '@/utils/helpers';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 export type AuthUser = {
@@ -13,8 +16,9 @@ export type AuthUser = {
 type AuthState = {
   isAuthenticated: boolean;
   user: AuthUser | null;
-  loading: boolean;
+  isLoading: boolean;
   refreshAuth: () => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState | null>(null);
@@ -22,31 +26,34 @@ export const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const { call } = useFetch();
+  const router = useRouter();
 
   const refreshAuth = async () => {
     try {
-      const res = await fetch(`${baseUrl()}/users/me`, {
-        credentials: 'include',
+      const res = await call<null, AuthUser>({
+        method: StatusHttp.GET,
+        url: USER_ME,
       });
 
-      if (!res.ok) {
+      if (!res?.success) {
         setUser(null);
         return;
       }
 
-      const json = await res.json();
-
-      const user: AuthUser = {
-        id: json.data.id,
-        nome: json.data.nome,
-        email: json.data.email,
-        role: json.data.role,
-      };
-
-      setUser(user);
+      setUser(res.data);
     } finally {
       setLoading(false);
     }
+  };
+
+  const logout = async () => {
+    await call<null, null>({
+      method: 'POST',
+      url: 'auth/logout',
+    });
+    setUser(null);
+    router.push('/login');
   };
 
   useEffect(() => {
@@ -56,10 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: !!user,
         user,
-        loading,
+        isAuthenticated: !!user,
+        isLoading: loading,
         refreshAuth,
+        logout,
       }}
     >
       {children}

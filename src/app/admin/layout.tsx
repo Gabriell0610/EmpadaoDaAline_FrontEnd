@@ -1,3 +1,4 @@
+'use client';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
 import { AppSidebar } from '@/components/app-sidebar';
 import {
@@ -12,8 +13,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { useRoleGuard } from '@/hooks/userGuard/useGuard';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 
-export default async function AdminLayout({ children }: SomeChildrenInterface) {
+export default function AdminLayout({ children }: SomeChildrenInterface) {
+  useRoleGuard(AccessProfile.ADMIN);
   return (
     <main>
       <SidebarProvider>

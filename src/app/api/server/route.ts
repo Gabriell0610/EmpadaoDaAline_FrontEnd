@@ -1,24 +1,17 @@
 import { baseUrl } from '@/utils/helpers';
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   const { body, method, url } = await request.json();
-
-  const cookieStore = cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ');
 
   const req = await fetch(`${baseUrl()}/${url}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader, // 👈 repassa cookies
     },
     body: body ? JSON.stringify(body) : undefined,
     cache: 'no-cache',
+    credentials: 'include',
   });
 
   const response = await req.json();
@@ -28,6 +21,7 @@ export async function POST(request: Request) {
       {
         ...response,
         success: false,
+        code: req.status,
       },
       { status: req.status },
     );

@@ -10,9 +10,9 @@ import {
   itensSchema,
   ItensSchemaDto,
 } from '@/utils/schemas/itens.schema';
-import { useAdminRequest } from '../functions';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { UseFormReturn } from 'react-hook-form';
+import NewItemRequest from './function';
 
 export function ClientItensPage() {
   const {
@@ -23,7 +23,7 @@ export function ClientItensPage() {
     editItem,
     createItem,
     isLoading,
-  } = useAdminRequest({});
+  } = NewItemRequest();
 
   async function handleEditOrCreateItem(
     data: ItensSchemaDto | EditItensSchemaDto,
