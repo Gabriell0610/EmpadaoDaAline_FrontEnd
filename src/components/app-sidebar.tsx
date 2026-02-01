@@ -5,7 +5,6 @@ import {
   //Container,
   GalleryVerticalEnd,
   ShoppingBasketIcon,
-  TicketPercent,
   MessageSquareWarning,
   HomeIcon,
   ChartNoAxesCombined,
@@ -61,16 +60,6 @@ export function AppSidebar({ session, ...props }: AppSidebarInterface) {
         url: '/admin/complaints',
         icon: MessageSquareWarning,
       },
-      {
-        title: 'Cupons',
-        url: '/admin/coupons',
-        icon: TicketPercent,
-      },
-      // {
-      //   title: 'Frete',
-      //   url: '/freight',
-      //   icon: Container,
-      // },
     ],
   };
 
