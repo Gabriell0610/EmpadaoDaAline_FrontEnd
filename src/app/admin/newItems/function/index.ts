@@ -2,6 +2,7 @@
 import { ITENS, ITENS_ACTIVE } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
 import {
   EditItensSchemaDto,
   ItensSchemaDto,
@@ -11,6 +12,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function NewItemRequest() {
+  const { isAuthenticated } = useAuth();
   const { call, isLoading } = useFetch();
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [listAllItens, setListAllItens] = useState<
@@ -25,7 +27,6 @@ export default function NewItemRequest() {
     if (!result.success) {
       toast.error(result.message);
     }
-    console.log('listando todos os itens', result.data);
     setListAllItens(result.data);
   }
 
@@ -73,8 +74,9 @@ export default function NewItemRequest() {
   }
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     getAllItens();
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     inativeItem,

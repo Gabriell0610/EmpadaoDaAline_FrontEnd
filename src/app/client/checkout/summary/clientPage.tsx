@@ -22,6 +22,7 @@ import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { useAuth } from '@/providers/authProvider';
+import BackPageButton from '@/components/BackPageButton/backPageButton';
 export default function SummaryClientPage() {
   const {
     isLoading,
@@ -92,6 +93,7 @@ export default function SummaryClientPage() {
   return (
     <main className="flex flex-col gap-10 md2:flex-row md2:items-start md2:gap-12 lg:gap-20">
       <section className="w-full md2:w-[60%] lg:w-[55%]">
+        <BackPageButton />
         <TitleH1 className="mb-2">Endereço de entrega</TitleH1>
         <div>
           <div className="mb-4 flex flex-col gap-2 rounded-md border border-text-secondary p-3">

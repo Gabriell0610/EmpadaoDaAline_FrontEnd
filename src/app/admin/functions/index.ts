@@ -11,6 +11,7 @@ import {
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
 import { OrderUpdateDto } from '@/utils/schemas/order.schema';
 import {
   DashboardPeriodType,
@@ -29,6 +30,7 @@ import toast from 'react-hot-toast';
 export function useAdminRequest({ id }: DetailsPageProps) {
   const { call, isLoading } = useFetch();
   const [orders, setOrders] = useState<ListAllOrdersInterface | null>(null);
+  const { isAuthenticated } = useAuth();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -166,17 +168,20 @@ export function useAdminRequest({ id }: DetailsPageProps) {
     setContentDashboardQuickStats(result.data[0]);
   }
   useEffect(() => {
+    if (!isAuthenticated) return;
     getDashboardSummary(dashboardPeriod);
     getDashboardRevenue(dashboardPeriod);
-  }, [dashboardPeriod]);
+  }, [isAuthenticated, dashboardPeriod]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     listOrders();
-  }, [page, search, status, startDate, endDate]);
+  }, [isAuthenticated, page, search, status, startDate, endDate]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     getDashboardQuickStats();
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     isLoading,

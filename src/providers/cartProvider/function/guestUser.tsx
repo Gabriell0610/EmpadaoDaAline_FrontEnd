@@ -1,4 +1,5 @@
 'use client';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import {
@@ -21,12 +22,12 @@ export const AuxiliarCartGuestUserProvider = ({
         BodyItemInterface,
         ListActiveItemsByIdInterface
       >({
-        method: 'GET',
+        method: StatusHttp.GET,
         url: `itens/${itemId}`,
-        body: { itemId },
       });
 
       if (!response.success) {
+        console.log(response.message);
         toast.error(getSafeErrorMessage(response.message));
         return;
       }

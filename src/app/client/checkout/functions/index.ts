@@ -48,8 +48,6 @@ export default function useClientCheckout() {
   }, [isAuthenticated, call]);
 
   const listAllPaymentMethods = useCallback(async () => {
-    if (!isAuthenticated) return;
-
     const res = await call<null, PaymenMethodsInterface[]>({
       method: StatusHttp.GET,
       url: PAYMENT_METHODS,

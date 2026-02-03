@@ -38,6 +38,8 @@ export default function ClientPageLogin() {
     } else {
       router.push('/client');
     }
+
+    toast.success('Você será redirecionado...');
   };
 
   return (

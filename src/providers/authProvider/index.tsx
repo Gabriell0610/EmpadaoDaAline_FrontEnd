@@ -3,7 +3,6 @@ import { USER_ME } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
-import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 export type AuthUser = {
@@ -17,8 +16,6 @@ type AuthState = {
   isAuthenticated: boolean;
   user: AuthUser | null;
   isLoading: boolean;
-  refreshAuth: () => Promise<void>;
-  logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState | null>(null);
@@ -27,38 +24,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const { call } = useFetch();
-  const router = useRouter();
 
-  const refreshAuth = async () => {
-    try {
+  useEffect(() => {
+    (async () => {
       const res = await call<null, AuthUser>({
         method: StatusHttp.GET,
         url: USER_ME,
       });
 
-      if (!res?.success) {
+      if (res?.success) {
+        setUser(res.data);
+      } else {
         setUser(null);
-        return;
       }
 
-      setUser(res.data);
-    } finally {
       setLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    await call<null, null>({
-      method: 'POST',
-      url: 'auth/logout',
-    });
-    setUser(null);
-    router.push('/login');
-  };
-
-  useEffect(() => {
-    refreshAuth();
+    })();
   }, []);
+
+  if (loading) {
+    return null; // 🔒 trava o app inteiro
+  }
 
   return (
     <AuthContext.Provider
@@ -66,8 +52,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading: loading,
-        refreshAuth,
-        logout,
       }}
     >
       {children}

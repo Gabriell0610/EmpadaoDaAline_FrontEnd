@@ -45,7 +45,6 @@ export default function DashboardClientPage() {
   const navigate = useRouter();
 
   function submitFilterOrderByPeriod(data: DashboardFilterByPeriodData) {
-    console.log('periodo por data', data);
     setStartDatePeriod(data.startDate || null);
     setEndDatePeriod(data.endDate || null);
   }

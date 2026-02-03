@@ -1,8 +1,15 @@
 // middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { decode, JwtPayload } from 'jsonwebtoken';
+import { AccessProfile } from './constants/enums/AccessProfile';
 
-export function middleware(req: NextRequest) {
+interface JwtCustomPayload extends JwtPayload {
+  role: AccessProfile;
+}
+
+export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('access_token');
+
   const pathname = req.nextUrl.pathname;
 
   const publicRoutes = [
@@ -13,12 +20,18 @@ export function middleware(req: NextRequest) {
     '/newPassword',
   ];
 
-  if (publicRoutes.includes(pathname)) {
-    return NextResponse.next();
+  if (accessToken) {
+    const decoded = decode(accessToken.value) as JwtCustomPayload | null;
+    if (
+      decoded?.role !== AccessProfile.ADMIN &&
+      pathname.startsWith('/admin')
+    ) {
+      return NextResponse.redirect(new URL('/client', req.url));
+    }
   }
 
-  if (!accessToken) {
-    return NextResponse.redirect(new URL('/login', req.url));
+  if (publicRoutes.includes(pathname)) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();

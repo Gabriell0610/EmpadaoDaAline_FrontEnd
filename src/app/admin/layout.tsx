@@ -13,11 +13,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useRoleGuard } from '@/hooks/userGuard/useGuard';
-import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export default function AdminLayout({ children }: SomeChildrenInterface) {
-  useRoleGuard(AccessProfile.ADMIN);
   return (
     <main>
       <SidebarProvider>
