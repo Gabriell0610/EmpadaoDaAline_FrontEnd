@@ -20,7 +20,6 @@ export default function Home({ activeItems }: ClientPageProps) {
   const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
 
   function handleOpenCart(itemId: string) {
-    console.log("id do item", itemId)
     setOpenCart(true);
     addItemInCart(itemId);
   }
@@ -35,15 +34,15 @@ export default function Home({ activeItems }: ClientPageProps) {
               <span className="text-yellow-600">aquecem</span> o coração e{' '}
               <span className="text-text-green">encantam</span> o paladar.
             </TitleH1>
-            <p className="text-text-secondary text-sm sm:text-base">
+            <p className="text-sm text-text-secondary sm:text-base">
               Prove o melhor da nossa cozinha: receitas com ingredientes
               selecionados, preparo artesanal e muito sabor. Surpreenda-se e
               transforme cada refeição em um momento especial.
             </p>
             <ButtonDefault
               onClick={() => navigate.push('/menu')}
-              variant='primary'
-              className='w-fit'
+              variant="primary"
+              className="w-fit"
             >
               Veja nosso Menu
             </ButtonDefault>

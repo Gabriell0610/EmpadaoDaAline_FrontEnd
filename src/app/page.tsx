@@ -8,7 +8,13 @@ export default async function HomePage() {
   const responseActiveItem = await listActiveItem();
 
   if (!responseActiveItem.success) {
-    console.error(responseActiveItem.message);
+    console.log(
+      'erro ao cair aqui',
+      'message: ',
+      responseActiveItem.message,
+      'data: ',
+      responseActiveItem.data,
+    );
   }
 
   return (

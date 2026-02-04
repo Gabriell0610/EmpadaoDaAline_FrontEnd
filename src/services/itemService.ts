@@ -19,5 +19,8 @@ export async function listActiveItem(): Promise<
     const error = { ...response, success: false };
     return error;
   }
-  return response;
+  return {
+    ...response,
+    success: true,
+  };
 }

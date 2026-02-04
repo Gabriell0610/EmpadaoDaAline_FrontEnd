@@ -1,4 +1,3 @@
-'use client';
 import { SomeChildrenInterface } from '@/utils/types/generics/layout.type';
 import { AppSidebar } from '@/components/app-sidebar';
 import {

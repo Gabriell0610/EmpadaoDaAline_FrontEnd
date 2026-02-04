@@ -101,8 +101,11 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut onClick={() => forceLogout(router)} />
+            <DropdownMenuItem
+              onClick={() => forceLogout(router)}
+              className="cursor-pointer"
+            >
+              <LogOut />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

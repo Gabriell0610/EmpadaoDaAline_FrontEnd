@@ -8,6 +8,7 @@ import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { useAuth } from '@/providers/authProvider';
+import { getSafeErrorMessage } from '@/utils/helpers';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -17,7 +18,7 @@ export default function ClientPageLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const { call, isLoading } = useFetch();
   const router = useRouter();
-  const { refreshAuth, user } = useAuth();
+  const { user } = useAuth();
 
   const handleLogin = async (data: loginDto) => {
     const res = await call<loginDto, null>({
@@ -27,11 +28,9 @@ export default function ClientPageLogin() {
     });
 
     if (!res.success) {
-      toast.error(res.message);
+      toast.error(getSafeErrorMessage(res.message));
       return;
     }
-
-    await refreshAuth();
 
     if (user?.role === AccessProfile.ADMIN) {
       router.push('/admin');

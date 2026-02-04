@@ -26,25 +26,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { call } = useFetch();
 
   useEffect(() => {
-    (async () => {
-      const res = await call<null, AuthUser>({
-        method: StatusHttp.GET,
-        url: USER_ME,
-      });
+    const loadUser = async () => {
+      try {
+        const res = await call<null, AuthUser>({
+          method: StatusHttp.GET,
+          url: USER_ME,
+        });
 
-      if (res?.success) {
-        setUser(res.data);
-      } else {
+        if (res?.success) {
+          setUser(res.data);
+        } else {
+          setUser(null);
+        }
+      } catch {
         setUser(null);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setLoading(false);
-    })();
+    loadUser();
   }, []);
-
-  if (loading) {
-    return null; // 🔒 trava o app inteiro
-  }
 
   return (
     <AuthContext.Provider
