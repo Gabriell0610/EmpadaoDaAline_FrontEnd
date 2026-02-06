@@ -11,14 +11,14 @@ import { useAuth } from '@/providers/authProvider';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const { call, isLoading } = useFetch();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, reloadUser } = useAuth();
 
   const handleLogin = async (data: loginDto) => {
     const res = await call<loginDto, null>({
@@ -32,14 +32,19 @@ export default function ClientPageLogin() {
       return;
     }
 
-    if (user?.role === AccessProfile.ADMIN) {
-      router.push('/admin');
-    } else {
-      router.push('/client');
-    }
-
+    await reloadUser();
     toast.success('Você será redirecionado...');
   };
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role === AccessProfile.ADMIN) {
+      router.replace('/admin');
+    } else {
+      router.replace('/client');
+    }
+  }, [user, router]);
 
   return (
     <section>
@@ -53,6 +58,7 @@ export default function ClientPageLogin() {
           label="Email"
           type="email"
           placeholder="Digite seu email"
+          disabled={isLoading}
         />
         <InputField
           name={'password'}
@@ -61,6 +67,7 @@ export default function ClientPageLogin() {
           placeholder="Digite sua senha"
           setShowPassword={setShowPassword}
           showPassword={showPassword}
+          disabled={isLoading}
         />
         <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
           Login

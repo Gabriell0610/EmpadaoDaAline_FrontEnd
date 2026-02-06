@@ -16,6 +16,8 @@ type AuthState = {
   isAuthenticated: boolean;
   user: AuthUser | null;
   isLoading: boolean;
+  logout: () => void;
+  reloadUser: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState | null>(null);
@@ -25,28 +27,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { call } = useFetch();
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const res = await call<null, AuthUser>({
-          method: StatusHttp.GET,
-          url: USER_ME,
-        });
+  const loadUser = async () => {
+    try {
+      const res = await call<null, AuthUser>({
+        method: StatusHttp.GET,
+        url: USER_ME,
+      });
 
-        if (res?.success) {
-          setUser(res.data);
-        } else {
-          setUser(null);
-        }
-      } catch {
+      if (res.success) {
+        setUser(res.data);
+      } else {
         setUser(null);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadUser();
   }, []);
+
+  function logout() {
+    setUser(null);
+  }
 
   return (
     <AuthContext.Provider
@@ -54,6 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading: loading,
+        reloadUser: loadUser, // 👈 importante
+        logout,
       }}
     >
       {children}

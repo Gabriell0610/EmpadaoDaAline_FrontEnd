@@ -40,6 +40,7 @@ export function useFetch() {
         });
 
         const response: ApiResponse<TResponse> = await request.json();
+        console.log('response:', response.data);
         if (response.code === 401 && !retry) {
           const refreshed = await refreshToken();
 
