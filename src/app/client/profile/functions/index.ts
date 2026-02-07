@@ -7,7 +7,7 @@ import { StatusHttp } from '@/constants/enums/StautsHttp';
 
 import { getSafeErrorMessage } from '@/utils/helpers';
 import toast from 'react-hot-toast';
-import { AddressUserData } from '@/utils/schemas/address.schema';
+import { EditAddressUserData } from '@/utils/schemas/address.schema';
 import { PersonalUserData } from '@/utils/schemas/personalUser.schema';
 
 export default function useProfileRequests() {
@@ -29,6 +29,7 @@ export default function useProfileRequests() {
 
     if (!res.success) {
       toast.error(getSafeErrorMessage(res.message));
+      return;
     }
 
     setDataUserLogged(res.data);
@@ -42,14 +43,15 @@ export default function useProfileRequests() {
     });
     if (!res.success) {
       toast.error(getSafeErrorMessage(res.message));
+      return;
     }
     await GetDataUser();
     closeModal();
   };
 
   const editAddressUserData = useCallback(
-    async (data: AddressUserData) => {
-      const res = await call<AddressUserData, null>({
+    async (data: EditAddressUserData) => {
+      const res = await call<EditAddressUserData, null>({
         method: StatusHttp.PUT,
         url: `${EDIT_USER_ADDRESS}${idAddress}`,
         body: data,
@@ -57,6 +59,7 @@ export default function useProfileRequests() {
 
       if (!res.success) {
         toast.error(getSafeErrorMessage(res.message));
+        return;
       }
 
       toast.success(res.message);

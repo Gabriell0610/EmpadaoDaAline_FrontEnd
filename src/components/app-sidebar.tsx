@@ -5,8 +5,6 @@ import {
   //Container,
   GalleryVerticalEnd,
   ShoppingBasketIcon,
-  TicketPercent,
-  MessageSquareWarning,
   HomeIcon,
   ChartNoAxesCombined,
 } from 'lucide-react';
@@ -56,21 +54,6 @@ export function AppSidebar({ ...props }: AppSidebarInterface) {
         url: '/admin/newItems',
         icon: ShoppingBasketIcon,
       },
-      {
-        title: 'Reclamações',
-        url: '/admin/complaints',
-        icon: MessageSquareWarning,
-      },
-      {
-        title: 'Cupons',
-        url: '/admin/coupons',
-        icon: TicketPercent,
-      },
-      // {
-      //   title: 'Frete',
-      //   url: '/freight',
-      //   icon: Container,
-      // },
     ],
   };
 

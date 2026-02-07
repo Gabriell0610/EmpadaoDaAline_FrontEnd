@@ -128,7 +128,7 @@ export default function ClientCheckoutPage() {
             />
           </div>
           <InputField
-            label="Observação"
+            label="Observação (opcional)"
             name="observation"
             type="text"
             placeholder="Ex: Sem coentro"

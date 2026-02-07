@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
-import { addressUserDataSchema } from '@/utils/schemas/address.schema';
+import { editAddressUserDataSchema } from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
@@ -182,6 +182,7 @@ export default function ProfilePageClient() {
               label="Celular"
               type="text"
               defaultValue={dataUserLogged?.telefone}
+              maxLength={11}
             />
             <ButtonDefault
               type="submit"
@@ -194,7 +195,7 @@ export default function ProfilePageClient() {
         ) : (
           <DefaultForm
             onSubmit={editAddressUserData}
-            schema={addressUserDataSchema}
+            schema={editAddressUserDataSchema}
             isLoading={isLoading}
           >
             <InputField
@@ -202,6 +203,7 @@ export default function ProfilePageClient() {
               label="Cep"
               defaultValue={selectAddress?.endereco.cep}
               type="text"
+              maxLength={8}
             />
             <InputField
               name="neighborhood"

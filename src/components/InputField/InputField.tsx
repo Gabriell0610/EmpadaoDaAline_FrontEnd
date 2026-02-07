@@ -95,7 +95,10 @@ export function InputField(props: InputsFieldsProps) {
         <div className="relative">
           <input
             id={name}
-            {...register(name)}
+            {...register(name, {
+              maxLength: maxLength,
+              minLength: minLength,
+            })}
             type={
               type === 'password' ? (showPassword ? 'text' : 'password') : type
             }
@@ -107,8 +110,6 @@ export function InputField(props: InputsFieldsProps) {
               type === 'password' && 'pr-10',
             )}
             disabled={disabled}
-            minLength={minLength}
-            maxLength={maxLength}
             onBlur={onBlur}
             step={step}
           />

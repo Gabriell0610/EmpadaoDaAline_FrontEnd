@@ -14,4 +14,18 @@ export const addressUserDataSchema = z.object({
   complement: z.string().nonempty('complemento é obrigatório'),
 });
 
+export const editAddressUserDataSchema = z.object({
+  zipCode: cepValidation.optional(),
+  neighborhood: z.string().optional(),
+  city: z.string().optional(),
+  street: z.string().optional(),
+  number: z.string().optional(),
+  state: z
+    .string()
+    .min(2, 'O estado deve ter no mínimo dois caracteres')
+    .optional(),
+  complement: z.string().optional(),
+});
+
 export type AddressUserData = z.infer<typeof addressUserDataSchema>;
+export type EditAddressUserData = z.infer<typeof editAddressUserDataSchema>;
