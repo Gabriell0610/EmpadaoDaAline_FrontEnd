@@ -6,15 +6,19 @@ import { Footer } from '@/components/Footer/Footer';
 
 export default async function HomePage() {
   const responseActiveItem = await listActiveItem();
-
+  let successRequest: boolean | null = null;
   if (!responseActiveItem.success) {
-    return;
+    successRequest = responseActiveItem.success;
+    return successRequest;
   }
 
   return (
     <>
       <Header />
-      <Home activeItems={responseActiveItem.data} />
+      <Home
+        activeItems={responseActiveItem.data}
+        successRequest={successRequest}
+      />
       <Footer />
     </>
   );
