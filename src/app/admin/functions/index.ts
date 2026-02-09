@@ -72,7 +72,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
 
     if (!response.success) {
       toast.error('Erro ao listar pedidos');
-      console.error(response.message);
+      return;
     }
 
     setOrders(response.data);
@@ -99,7 +99,6 @@ export function useAdminRequest({ id }: DetailsPageProps) {
   }
 
   async function adminEditOrder(data: OrderUpdateDto) {
-    console.log('editando esses dados', data);
     const result = await call<OrderUpdateDto, null>({
       method: StatusHttp.PUT,
       url: `${ADMIN_EDIT_OTDER}/${id}`,
@@ -108,6 +107,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);
@@ -131,9 +131,8 @@ export function useAdminRequest({ id }: DetailsPageProps) {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
-
-    console.log(result.data);
 
     setContentDashboardSummary(result.data);
   }
@@ -150,6 +149,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     setContentDashboardRevenue(result.data);
@@ -163,6 +163,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     setContentDashboardQuickStats(result.data[0]);

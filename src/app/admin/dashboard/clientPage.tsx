@@ -20,7 +20,6 @@ import {
 } from 'recharts';
 import { useAdminRequest } from '../functions';
 import { twMerge } from 'tailwind-merge';
-import { useEffect } from 'react';
 import { DashboardRevenueInterface } from '@/utils/types/dashboard.type';
 
 export default function DashboardAdmin() {
@@ -30,14 +29,6 @@ export default function DashboardAdmin() {
     dashboardPeriod,
     contentDashboardRevenue,
   } = useAdminRequest({});
-
-  useEffect(() => {
-    console.log(
-      'Revenue:',
-      contentDashboardRevenue,
-      Array.isArray(contentDashboardRevenue),
-    );
-  });
 
   const revenueData: DashboardRevenueInterface[] = Array.isArray(
     contentDashboardRevenue,

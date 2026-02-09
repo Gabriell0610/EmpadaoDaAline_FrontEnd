@@ -47,7 +47,7 @@ export function useClientOrder({ id }: DetailsPageProps) {
         toast.error(getSafeErrorMessage(response.message));
         return;
       }
-      console.log(response.data);
+
       setContentOrderByClientId(response.data);
     },
     [call],
@@ -115,7 +115,6 @@ export function useClientOrder({ id }: DetailsPageProps) {
   }, [user?.id]);
 
   async function editOrder(data: OrderUpdateDto) {
-    console.log('editando esses dados', data);
     const result = await call<OrderUpdateDto, null>({
       method: StatusHttp.PUT,
       url: `${ORDER}/${id}`,
@@ -124,6 +123,7 @@ export function useClientOrder({ id }: DetailsPageProps) {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);

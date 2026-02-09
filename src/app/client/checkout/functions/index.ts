@@ -62,7 +62,6 @@ export default function useClientCheckout() {
   }, []);
 
   async function addAddress(addressDto: AddressUserData) {
-    console.log('testando envio de endereco', addressDto);
     const res = await call<AddressUserData, null>({
       method: StatusHttp.POST,
       url: `${ADD_ADDRESS}`,
@@ -74,12 +73,10 @@ export default function useClientCheckout() {
       return;
     }
 
-    console.log('dados: ', res.data);
     await listAddressByUserId();
   }
 
   async function calculateShipping(idAddress: string) {
-    console.log(idAddress);
     const res = await call<PostShippingInterface, null>({
       method: StatusHttp.POST,
       url: `${SHIPPING}`,
@@ -91,7 +88,6 @@ export default function useClientCheckout() {
       return;
     }
 
-    console.log('frete ao selecionar endereco: ', res.data);
     setShipping(res.data);
   }
 

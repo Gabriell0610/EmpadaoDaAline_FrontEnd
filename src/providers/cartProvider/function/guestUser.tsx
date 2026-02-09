@@ -27,7 +27,6 @@ export const AuxiliarCartGuestUserProvider = ({
       });
 
       if (!response.success) {
-        console.log(response.message);
         toast.error(getSafeErrorMessage(response.message));
         return;
       }

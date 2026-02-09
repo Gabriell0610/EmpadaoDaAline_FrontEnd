@@ -23,8 +23,6 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
   const { addItemInCart } = useCart();
 
   function handleOpenCart(itemId: string) {
-    console.log('itens ativos', activeItems);
-    console.log('item id', itemId);
     setOpenCart(true);
     addItemInCart(itemId);
   }

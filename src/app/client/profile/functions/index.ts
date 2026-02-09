@@ -53,7 +53,7 @@ export default function useProfileRequests() {
     async (data: EditAddressUserData) => {
       const res = await call<EditAddressUserData, null>({
         method: StatusHttp.PUT,
-        url: `${EDIT_USER_ADDRESS}${idAddress}`,
+        url: `${EDIT_USER_ADDRESS}/${idAddress}`,
         body: data,
       });
 

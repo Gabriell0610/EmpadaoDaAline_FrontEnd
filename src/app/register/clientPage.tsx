@@ -14,7 +14,6 @@ export default function ClientPageRegister() {
   const route = useRouter();
   const { call, isLoading } = useFetch();
   const handleRegister = async (data: RegisterData) => {
-    console.log(data);
     const res = await call<RegisterData, null>({
       method: StatusHttp.POST,
       url: AUTH_REGISTER,

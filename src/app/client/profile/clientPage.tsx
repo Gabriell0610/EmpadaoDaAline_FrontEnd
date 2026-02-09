@@ -5,7 +5,10 @@ import { useState } from 'react';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
-import { editAddressUserDataSchema } from '@/utils/schemas/address.schema';
+import {
+  EditAddressUserData,
+  editAddressUserDataSchema,
+} from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
@@ -15,6 +18,7 @@ import { useFetch } from '@/hooks/useFetch/useFetch';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { AUTH_LOGOUT } from '@/constants';
 import { useRouter } from 'next/navigation';
+import { UseFormReturn } from 'react-hook-form';
 
 export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
@@ -33,6 +37,26 @@ export default function ProfilePageClient() {
     selectAddress,
     editAddressUserData,
   } = useProfileRequests();
+
+  const handleEditAddressUserData = async (
+    data: EditAddressUserData,
+    methods: UseFormReturn<EditAddressUserData>,
+  ) => {
+    // enviando apenas dados alterados para o payload do back via react-hook-form
+    const { dirtyFields } = methods.formState;
+
+    const editedData = Object.fromEntries(
+      Object.keys(dirtyFields).map((key) => [
+        key,
+        data[key as keyof EditAddressUserData],
+      ]),
+    );
+
+    if (Object.keys(editedData).length === 0) {
+      return;
+    }
+    await editAddressUserData(editedData);
+  };
 
   const prepareAddressEdit = (idAddress: string) => {
     setTitleModal('Editar Endereço');
@@ -194,7 +218,7 @@ export default function ProfilePageClient() {
           </DefaultForm>
         ) : (
           <DefaultForm
-            onSubmit={editAddressUserData}
+            onSubmit={handleEditAddressUserData}
             schema={editAddressUserDataSchema}
             isLoading={isLoading}
           >
