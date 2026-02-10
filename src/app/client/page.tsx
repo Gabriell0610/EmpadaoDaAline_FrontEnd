@@ -2,7 +2,7 @@ import { Header } from '@/components/Header/Header';
 import ClientPage from './clientPage';
 import { listActiveItem } from '@/services/itemService';
 import { Footer } from '@/components/Footer/Footer';
-
+export const dynamic = 'force-dynamic';
 export default async function ClientDefaultPage() {
   const responseActiveItem = await listActiveItem();
 

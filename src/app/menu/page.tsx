@@ -3,6 +3,8 @@ import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import MenuClient from './clientPage';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
+
+export const dynamic = 'force-dynamic';
 export default async function HomeMenu() {
   const res = await listActiveItem();
 
