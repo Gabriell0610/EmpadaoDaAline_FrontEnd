@@ -6,7 +6,8 @@ import { SessionProvider } from '@/providers/sessionProvider';
 import { LoadingProvider } from '@/providers/loadingProvider/loadingProvider';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from '@/components/ui/provider';
-import { CartProvider } from '@/providers/cartContext/cartProvider';
+import { AuthProvider } from '@/providers/authProvider';
+import { CartProvider } from '@/providers/cartProvider/cartProvider';
 
 //import { AuthProvider } from '@/providers/refresh';
 
@@ -23,14 +24,15 @@ export default async function RootLayout({ children }: SomeChildrenInterface) {
         className="flex min-h-screen flex-col antialiased"
       >
         <SessionProvider>
-          <LoadingProvider>
-            {/* <SessionWatcher /> */}
-            <CartProvider>
-              <Provider>
-                <main className="flex-grow">{children}</main>
-              </Provider>
-            </CartProvider>
-          </LoadingProvider>
+          <AuthProvider>
+            <LoadingProvider>
+              <CartProvider>
+                <Provider>
+                  <main className="flex-grow">{children}</main>
+                </Provider>
+              </CartProvider>
+            </LoadingProvider>
+          </AuthProvider>
         </SessionProvider>
         <Toaster position="top-right" reverseOrder={false} />
       </body>

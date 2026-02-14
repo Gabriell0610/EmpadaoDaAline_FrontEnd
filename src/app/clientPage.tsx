@@ -3,33 +3,30 @@
 import Image from 'next/image';
 import ImageChef from '../../public/image_chef.png';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
-import { useCart } from '@/providers/cartContext/cartProvider';
-import { Card } from '@/components/Card/card';
+import { Card } from '@/components/CardItens/card';
 import { useRouter } from 'next/navigation';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { ButtonDefault } from '@/components/Button/Button';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 
 /* eslint-disable prettier/prettier */
-export default function Home({ data }: ClientPageProps) {
+export default function Home({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const navigate = useRouter();
 
-  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
+  const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
 
   function handleOpenCart(itemId: string) {
+    console.log("id do item", itemId)
     setOpenCart(true);
     addItemInCart(itemId);
   }
 
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
   return (
-    <main className="mx-auto w-full">
+    <main className="container-custom">
       <section className="w-full px-8 py-10">
         <article className="flex flex-col items-center gap-6 md:flex-row md:gap-8">
           <div className="flex flex-col gap-4">

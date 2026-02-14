@@ -1,0 +1,80 @@
+'use client';
+
+import * as React from 'react';
+import {
+  //Container,
+  GalleryVerticalEnd,
+  ShoppingBasketIcon,
+  MessageSquareWarning,
+  HomeIcon,
+  ChartNoAxesCombined,
+} from 'lucide-react';
+
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { TeamSwitcher } from '@/components/team-switcher';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '@/components/ui/sidebar';
+import { Session } from 'next-auth';
+
+interface AppSidebarInterface extends React.ComponentProps<typeof Sidebar> {
+  session: Session | null;
+}
+
+export function AppSidebar({ session, ...props }: AppSidebarInterface) {
+  const data = {
+    user: {
+      name: session?.user.role.toUpperCase(),
+      email: session?.user.email || 'Error',
+      avatar: 'A',
+    },
+    teams: [
+      {
+        name: 'Empadão da Aline',
+        logo: GalleryVerticalEnd,
+      },
+    ],
+    navMain: [
+      {
+        title: 'Home',
+        url: '/admin',
+        icon: HomeIcon,
+      },
+      {
+        title: 'Dashboard',
+        url: '/admin/dashboard',
+        icon: ChartNoAxesCombined,
+      },
+      {
+        title: 'Itens',
+        url: '/admin/newItems',
+        icon: ShoppingBasketIcon,
+      },
+      {
+        title: 'Reclamações',
+        url: '/admin/complaints',
+        icon: MessageSquareWarning,
+      },
+    ],
+  };
+
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <TeamSwitcher teams={data.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
+}

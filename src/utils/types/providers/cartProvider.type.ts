@@ -11,12 +11,13 @@ export interface CartContextType {
   itemsWithGuestUser: CartItemLocal[];
   itemsWithLoggedUser: Carrinho | null;
   addItemInCart: (itemId: string) => Promise<void>;
-  incrementOrDecrementItem: (
+  incrementOrDecrementItemCart: (
     itemId: string,
     act: string,
   ) => Promise<void> | void;
-  removeItem: (itemId: string) => Promise<void> | void;
+  removeItemCart: (itemId: string) => Promise<void> | void;
   isLoading: boolean;
   quantity: number;
   session: Session | null;
+  clearCart: () => void;
 }

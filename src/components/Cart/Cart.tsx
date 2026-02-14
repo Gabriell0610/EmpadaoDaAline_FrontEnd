@@ -7,10 +7,10 @@ import Image from 'next/image';
 import ImageFood from '../../../public/image_food2.png';
 import { FaPlus } from 'react-icons/fa6';
 import { FaMinus } from 'react-icons/fa6';
-import { useCart } from '@/providers/cartContext/cartProvider';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCart } from '@/providers/cartProvider/cartProvider';
+import { twMerge } from 'tailwind-merge';
 
 interface CartProps {
   openCart: boolean;
@@ -23,12 +23,22 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     itemsWithLoggedUser,
     isLoading,
     quantity,
-    incrementOrDecrementItem,
-    removeItem,
+    incrementOrDecrementItemCart,
+    removeItemCart,
     session,
   } = useCart();
 
   const navigation = useRouter();
+
+  function handleSubmitForm() {
+    setOpenCart(false); // <-- fecha o drawer
+
+    if (!session?.user.accessToken) {
+      navigation.push('/login');
+    } else {
+      navigation.push('/client/checkout');
+    }
+  }
 
   const getTotalPrice = () => {
     if (!session?.user.accessToken) {
@@ -53,13 +63,6 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
     (session?.user.accessToken &&
       (!itemsWithLoggedUser?.carrinhoItens ||
         itemsWithLoggedUser.carrinhoItens.length === 0));
-
-  useEffect(() => {
-    console.log('dados carrinho', itemsWithLoggedUser);
-  }, [itemsWithLoggedUser]);
-  useEffect(() => {
-    console.log('dados carrinho', itemsWithGuestUser);
-  }, [itemsWithLoggedUser]);
   return (
     <Drawer.Root
       size={'sm'}
@@ -109,7 +112,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                         <div className="flex items-center gap-4">
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'decrement',
                                 content.item?.id,
                               )
@@ -126,7 +129,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           </span>
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'increment',
                                 content.item?.id,
                               )
@@ -135,7 +138,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                             <FaPlus />
                           </ButtonDefault>
                           <ButtonDefault
-                            onClick={() => removeItem(content.item?.id)}
+                            onClick={() => removeItemCart(content.item?.id)}
                           >
                             <FaRegTrashAlt />
                           </ButtonDefault>
@@ -168,13 +171,13 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                         <div className="flex items-center gap-4">
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'decrement',
                                 content.itemId,
                               )
                             }
                           >
-                            <FaMinus />
+                            <FaMinus size={15} />
                           </ButtonDefault>
                           <span className="font-semibold">
                             {content.item.unidades != null
@@ -185,19 +188,19 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                           </span>
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItem(
+                              incrementOrDecrementItemCart(
                                 'increment',
                                 content.itemId,
                               )
                             }
                           >
-                            <FaPlus />
+                            <FaPlus size={15} />
                           </ButtonDefault>
 
                           <ButtonDefault
-                            onClick={() => removeItem(content.itemId)}
+                            onClick={() => removeItemCart(content.itemId)}
                           >
-                            <FaRegTrashAlt />
+                            <FaRegTrashAlt size={15} />
                           </ButtonDefault>
                         </div>
                       </div>
@@ -218,13 +221,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
               </div>
               <ButtonDefault
                 variant="primary"
-                className="w-full py-3"
+                className={twMerge('w-full py-3')}
                 isLoading={isLoading}
-                onClick={() =>
-                  !session?.user.accessToken
-                    ? navigation.push('/login')
-                    : navigation.push('/checkout')
-                }
+                onClick={() => handleSubmitForm()}
+                disabled={isCartEmpty ? isCartEmpty : false}
               >
                 {!session?.user.accessToken
                   ? 'Login / Cadastro'

@@ -1,10 +1,9 @@
 'use client';
-import { Card } from '@/components/Card/card';
+import { Card } from '@/components/CardItens/card';
 import { Cart } from '@/components/Cart/Cart';
 import { TitleH1 } from '@/components/Titles/Titles';
-import { useCart } from '@/providers/cartContext/cartProvider';
+import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { Navigation } from 'swiper/modules';
@@ -13,33 +12,46 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import { FaChevronRight } from 'react-icons/fa6';
-import { FaChevronLeft } from 'react-icons/fa6';
-
 import { IconButton } from '@chakra-ui/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import EmptyContent from '@/components/EmptyContent/emptyContent';
 
-export default function MenuClient({ data }: ClientPageProps) {
-  const { data: session } = useSession();
+import ImageContentEmptyError from '../../../public/assets/erro_list_items.png';
+
+export default function MenuClient({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
 
   function handleOpenCart(itemId: string) {
+    console.log('itens ativos', activeItems);
+    console.log('item id', itemId);
     setOpenCart(true);
     addItemInCart(itemId);
-    console.log(session?.user.accessToken);
   }
 
   // separa os itens por tipo
-  const empadoes = data.filter((item) => item.tipo === 'EMPADAO');
-  const panquecas = data.filter((item) => item.tipo === 'PANQUECA');
-  const almondegas = data.filter((item) => item.tipo === 'ALMONDEGA');
+  const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
+  const panquecas = activeItems.filter((item) => item.tipo === 'PANQUECA');
+  const almondegas = activeItems.filter((item) => item.tipo === 'ALMONDEGA');
 
-  // helper para renderizar seção
-  const renderSection = (title: string, items: typeof data, id: string) => {
-    if (items.length === 0) return null;
+  const renderSection = (
+    title: string,
+    items: typeof activeItems,
+    id: string,
+  ) => {
+    if (items.length === 0) {
+      return (
+        <EmptyContent
+          title="Ocorreu algum erro e estamos tentando resolver..."
+          description="aguarde alguns instantes e renicie a página"
+          image={ImageContentEmptyError}
+          alt="conteúdo vazio na tela por conta do servidor"
+        />
+      );
+    }
 
     return (
-      <section className="relative w-full px-8 py-10">
+      <section className="relative mt-3">
         <TitleH1>{title}</TitleH1>
 
         <div className="relative">
@@ -87,7 +99,7 @@ export default function MenuClient({ data }: ClientPageProps) {
             zIndex={10}
             _hover={{ bg: 'gray.100' }}
           >
-            <FaChevronLeft className="size-4" />
+            <ChevronLeft className="size-4" />
           </IconButton>
 
           {/* Next */}
@@ -110,7 +122,7 @@ export default function MenuClient({ data }: ClientPageProps) {
             zIndex={10}
             _hover={{ bg: 'gray.100' }}
           >
-            <FaChevronRight className="size-3" />
+            <ChevronRight className="size-3" />
           </IconButton>
         </div>
       </section>
@@ -118,7 +130,7 @@ export default function MenuClient({ data }: ClientPageProps) {
   };
 
   return (
-    <main className="mx-auto w-full">
+    <main className="container-custom">
       {renderSection('Empadões', empadoes, 'empadao')}
       {renderSection('Panquecas', panquecas, 'panqueca')}
       {renderSection('Almôndegas', almondegas, 'almondega')}

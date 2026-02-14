@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// authOptions.ts
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { jwtDecode } from 'jwt-decode';
 import { JWT } from 'next-auth/jwt';
 import { baseUrl } from '@/utils/helpers';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { AUTH_LOGIN, AUTH_REFRESH } from '@/constants';
 
 const login = async (credentials: any) => {
-  const res = await fetch(`${baseUrl()}/auth/login`, {
-    method: 'POST',
+  const res = await fetch(`${baseUrl()}/${AUTH_LOGIN}`, {
+    method: StatusHttp.POST,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: credentials?.email,
@@ -29,8 +30,8 @@ const login = async (credentials: any) => {
 const refreshAccessToken = async (token: JWT) => {
   console.log('Entrando no refreshToken');
   try {
-    const res = await fetch(`${baseUrl()}/auth/refresh`, {
-      method: 'POST',
+    const res = await fetch(`${baseUrl()}/${AUTH_REFRESH}`, {
+      method: StatusHttp.POST,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         refreshToken: token.refreshToken,

@@ -1,20 +1,24 @@
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
+import { InputField } from '@/components/InputField/InputField';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageLogin() {
   const router = useRouter();
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const handleLogin = async (data: loginDto) => {
+    console.log(data);
     try {
       setIsLoading(true);
       const res = await signIn('credentials', {
@@ -49,22 +53,25 @@ export default function ClientPageLogin() {
         schema={loginSchema}
         onSubmit={handleLogin}
         isLoading={isLoading}
-        fields={[
-          {
-            name: 'email',
-            label: 'Email',
-            type: 'email',
-            placeholder: 'Digite seu email',
-          },
-          {
-            name: 'password',
-            label: 'Senha',
-            type: 'password',
-            placeholder: 'Digite sua senha',
-          },
-        ]}
-        childrenButton="Entrar"
-      />
+      >
+        <InputField
+          name={'email'}
+          label="Email"
+          type="email"
+          placeholder="Digite seu email"
+        />
+        <InputField
+          name={'password'}
+          label="Senha"
+          type="password"
+          placeholder="Digite sua senha"
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
+        />
+        <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
+          Login
+        </ButtonDefault>
+      </DefaultForm>
       <div className="flex justify-end underline">
         <ButtonDefault
           href={'/forgetPassword'}

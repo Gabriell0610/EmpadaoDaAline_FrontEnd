@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Link from 'next/link';
 import { ComponentProps } from 'react';
-import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import { LoadingComponent } from '../Loading/LoadingComponent';
 
 type ButtonProps = ComponentProps<'button'>;
-type VariantButton = 'primary' | 'third' | 'link' | 'secondary';
+type VariantButton =
+  | 'primary'
+  | 'third'
+  | 'link'
+  | 'secondary'
+  | 'fourth'
+  | 'normal';
 
 interface ButtonInterface extends ButtonProps {
   variant?: VariantButton;
-  icon?: IconType;
   href?: string;
   isLoading?: boolean;
 }
@@ -19,7 +23,6 @@ export const ButtonDefault = ({
   type,
   children,
   href,
-  icon,
   variant,
   onClick = () => null,
   isLoading,
@@ -31,6 +34,8 @@ export const ButtonDefault = ({
   const isPrimary = variant === 'primary';
   const isSecondary = variant === 'secondary';
   const isThird = variant === 'third';
+  const isFourth = variant === 'fourth';
+  const isNormal = variant === 'normal';
 
   if (isLink) {
     return (
@@ -38,8 +43,8 @@ export const ButtonDefault = ({
         href={href || ''}
         className={twMerge(
           isLoading
-            ? 'pointer-events-none cursor-not-allowed text-primary-greenLight opacity-50'
-            : 'text-primary-greenLight hover:underline',
+            ? 'pointer-events-none cursor-not-allowed text-green_details-greenLight opacity-50'
+            : 'text-green_details-greenLight hover:underline',
           className,
         )}
       >
@@ -47,21 +52,29 @@ export const ButtonDefault = ({
       </Link>
     );
   }
+
   return (
     <button
       {...rest}
       type={type}
       disabled={disabled}
-      onClick={disabled ? undefined : onClick}
+      onClick={(event) => {
+        if (disabled) return;
+        onClick?.(event);
+      }}
       className={twMerge(
+        isNormal ? '' : 'rounded-md px-1 py-2 sm:px-4 sm:py-2 sm:text-base',
         isPrimary
-          ? 'rounded-md border bg-primary-greenLight px-1 py-2 text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover sm:px-4 sm:py-2 sm:text-base'
+          ? 'bg-green_details-greenLight text-center text-xs font-semibold text-neutral-white hover:bg-details-greenHover'
           : isSecondary
-            ? 'rounded-md border border-primary-greenLight bg-neutral-white px-1 py-2 text-xs font-semibold text-text-primary hover:opacity-80 sm:px-4 sm:py-2 sm:text-base'
+            ? 'border-green_details-greenLight bg-neutral-white text-xs font-semibold text-text-primary hover:opacity-80'
             : isThird
               ? 'w-full rounded border border-green-700 py-2 font-medium text-green-700 transition-colors duration-200 hover:bg-green-700 hover:text-white'
-              : '',
+              : isFourth
+                ? 'bg-red-500 text-center text-xs font-semibold text-neutral-white'
+                : '',
         className,
+        disabled ? 'opacity-50 hover:bg-none' : 'opacity-100',
       )}
     >
       {isLoading ? (

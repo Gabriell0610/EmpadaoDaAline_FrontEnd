@@ -1,3 +1,5 @@
+import { ITENS_ACTIVE } from '@/constants';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { baseUrl } from '@/utils/helpers';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { ListActiveItemsInterface } from '@/utils/types/items.type';
@@ -5,8 +7,8 @@ import { ListActiveItemsInterface } from '@/utils/types/items.type';
 export async function listActiveItem(): Promise<
   ApiResponse<ListActiveItemsInterface[]>
 > {
-  const req = await fetch(`${baseUrl()}/itens/active`, {
-    method: 'GET',
+  const req = await fetch(`${baseUrl()}/${ITENS_ACTIVE}`, {
+    method: StatusHttp.GET,
     cache: 'no-cache',
   });
 

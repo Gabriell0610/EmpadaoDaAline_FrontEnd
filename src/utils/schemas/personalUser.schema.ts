@@ -9,4 +9,4 @@ export const personalUserDataSchema = z.object({
     .max(11, 'O telefone possui mais de 11 caracteres'),
 });
 
-export type personalUserData = z.infer<typeof personalUserDataSchema>;
+export type PersonalUserData = z.infer<typeof personalUserDataSchema>;

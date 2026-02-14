@@ -1,4 +1,6 @@
+type TypeLayoytLoading = 'fullScreen' | 'normal';
+
 export interface LoadingComponentInterface {
   size?: number;
-  mode?: string;
+  mode?: TypeLayoytLoading;
 }

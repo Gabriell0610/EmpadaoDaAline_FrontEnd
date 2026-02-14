@@ -9,8 +9,9 @@ import { Session } from 'next-auth';
 import { Cart } from '../Cart/Cart';
 import { useState } from 'react';
 import { FaBagShopping } from 'react-icons/fa6';
-import { ProfileIcon } from './MenuHeader/ProfileHeader';
-import { useCart } from '@/providers/cartContext/cartProvider';
+import { ProfileHeader } from './MenuHeader/ProfileHeader';
+import { useCart } from '@/providers/cartProvider/cartProvider';
+import { ShoppingBag } from 'lucide-react';
 
 interface HeaderProps {
   session?: Session | null;
@@ -21,8 +22,8 @@ export function Header({ session }: HeaderProps) {
   const [openCart, setOpenCart] = useState(false);
   const {quantity} = useCart()
   return (
-    <header className="px-8 py-4">
-      <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-4 py-2">
+    <header className="py-8 px-8">
+      <nav className="mx-auto flex w-full max-w-screen-xl items-center justify-between">
         <div className="flex min-w-0 items-center">
           <Link href={session?.user.accessToken ? "/client" : "/"}>
             <Image
@@ -39,7 +40,7 @@ export function Header({ session }: HeaderProps) {
           {!session?.user.accessToken ? (
             <div className="flex items-center gap-4">
               <div className="relative">
-                <FaBagShopping 
+                <ShoppingBag 
                   className="cursor-pointer" 
                   size={22} 
                   onClick={() => setOpenCart(true)} 
@@ -65,7 +66,7 @@ export function Header({ session }: HeaderProps) {
             </div>
           ) : (
             <div className="flex gap-4 items-center">
-              <ProfileIcon/>
+              <ProfileHeader/>
               <ButtonDefault className='sm:py-2 sm:px-4 sm:bg-text-green sm:flex sm:items-center sm:gap-2 sm:text-neutral-white sm:rounded-md' onClick={() => setOpenCart(true)}>
                 <FaBagShopping size={20}/>
                 <span className='hidden sm:block'>Sua Sacola</span>

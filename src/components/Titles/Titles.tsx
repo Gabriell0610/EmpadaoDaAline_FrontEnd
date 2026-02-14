@@ -9,7 +9,7 @@ export const TitleH1 = ({ children, className }: TitlesInterface) => {
   return (
     <h1
       className={twMerge(
-        'mb-5 text-xl font-semibold text-text-primary sm:text-3xl lg:text-4xl',
+        'mb-5 text-xl font-semibold text-text-primary sm:text-2xl lg:text-3xl',
         className,
       )}
     >
@@ -21,10 +21,7 @@ export const TitleH1 = ({ children, className }: TitlesInterface) => {
 export const TitleH2 = ({ children, className }: TitlesInterface) => {
   return (
     <h2
-      className={twMerge(
-        'mb-2 text-xl font-semibold text-text-primary',
-        className,
-      )}
+      className={twMerge('text-xl font-semibold text-text-primary', className)}
     >
       {children}
     </h2>
@@ -55,4 +52,8 @@ export const TitleH4 = ({ children, className }: TitlesInterface) => {
       {children}
     </h3>
   );
+};
+
+export const TitleParagrapgy = ({ children, className }: TitlesInterface) => {
+  return <p className={twMerge('font-semibold', className)}>{children}</p>;
 };
