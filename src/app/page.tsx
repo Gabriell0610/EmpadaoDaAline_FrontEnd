@@ -2,22 +2,23 @@
 import Home from './clientPage';
 import { listActiveItem } from '@/services/itemService';
 import { Header } from '@/components/Header/Header';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/libs/auth';
 import { Footer } from '@/components/Footer/Footer';
-
+export const dynamic = 'force-dynamic';
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
   const responseActiveItem = await listActiveItem();
-
+  let successRequest: boolean | null = null;
   if (!responseActiveItem.success) {
-    console.error(responseActiveItem.message);
+    successRequest = responseActiveItem.success;
+    return successRequest;
   }
 
   return (
     <>
-      <Header session={session} />
-      <Home activeItems={responseActiveItem.data} />
+      <Header />
+      <Home
+        activeItems={responseActiveItem.data}
+        successRequest={successRequest}
+      />
       <Footer />
     </>
   );

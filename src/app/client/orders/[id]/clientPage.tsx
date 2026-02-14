@@ -31,24 +31,18 @@ import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import useClientCheckout from '../../checkout/functions';
 
-export default function ClientOrderDetailsPage({
-  id,
-  session,
-}: DetailsPageProps) {
+export default function ClientOrderDetailsPage({ id }: DetailsPageProps) {
   const {
     handleCancelOrderByClient,
     editOrder,
     contentOrderByClientId,
     isLoading,
   } = useClientOrder({
-    session,
     id,
   });
 
   const { paymentMethods, isLoading: loadingClientCheckout } =
-    useClientCheckout({
-      session,
-    });
+    useClientCheckout();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 

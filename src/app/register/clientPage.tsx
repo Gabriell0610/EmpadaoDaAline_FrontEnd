@@ -14,7 +14,6 @@ export default function ClientPageRegister() {
   const route = useRouter();
   const { call, isLoading } = useFetch();
   const handleRegister = async (data: RegisterData) => {
-    console.log(data);
     const res = await call<RegisterData, null>({
       method: StatusHttp.POST,
       url: AUTH_REGISTER,
@@ -36,14 +35,30 @@ export default function ClientPageRegister() {
         onSubmit={handleRegister}
         isLoading={isLoading}
       >
-        <InputField label="Nome Completo" name="name" type="text" />
-        <InputField label="Email" name="email" type="email" />
-        <InputField label="Senha" name="password" type="password" />
+        <InputField
+          label="Nome Completo"
+          name="name"
+          type="text"
+          placeholder="Ex: Joao Silva"
+        />
+        <InputField
+          label="Email"
+          name="email"
+          type="email"
+          placeholder="Ex: joao@gmail.com"
+        />
+        <InputField
+          label="Senha"
+          name="password"
+          type="password"
+          placeholder="Coloque sua melhor senha"
+        />
         <InputField
           label="Telefone"
           name="cellphone"
           type="text"
           maxLength={11}
+          placeholder="Ex: 21 987764432"
         />
         <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
           Cadastrar

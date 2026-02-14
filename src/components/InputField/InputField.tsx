@@ -49,7 +49,6 @@ export function InputField(props: InputsFieldsProps) {
     onBlur,
     setShowPassword,
     showPassword,
-    onChange,
     step,
   } = props;
 
@@ -80,7 +79,6 @@ export function InputField(props: InputsFieldsProps) {
           defaultValue={defaultValue}
           className={selectClass}
           disabled={disabled}
-          onChange={onChange}
         >
           <option value="" disabled>
             {placeholder}
@@ -95,7 +93,10 @@ export function InputField(props: InputsFieldsProps) {
         <div className="relative">
           <input
             id={name}
-            {...register(name)}
+            {...register(name, {
+              maxLength: maxLength,
+              minLength: minLength,
+            })}
             type={
               type === 'password' ? (showPassword ? 'text' : 'password') : type
             }
@@ -107,10 +108,10 @@ export function InputField(props: InputsFieldsProps) {
               type === 'password' && 'pr-10',
             )}
             disabled={disabled}
-            minLength={minLength}
-            maxLength={maxLength}
             onBlur={onBlur}
             step={step}
+            maxLength={maxLength}
+            minLength={minLength}
           />
           {type === 'password' && setShowPassword && (
             <ButtonDefault

@@ -5,18 +5,26 @@ import { useState } from 'react';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { personalUserDataSchema } from '@/utils/schemas/personalUser.schema';
-import { addressUserDataSchema } from '@/utils/schemas/address.schema';
+import {
+  EditAddressUserData,
+  editAddressUserDataSchema,
+} from '@/utils/schemas/address.schema';
 import { ButtonDefault } from '@/components/Button/Button';
-import { signOut } from 'next-auth/react';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
 import { InputField } from '@/components/InputField/InputField';
 import useProfileRequests from './functions';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { AUTH_LOGOUT } from '@/constants';
+import { useRouter } from 'next/navigation';
+import { UseFormReturn } from 'react-hook-form';
 
-export default function ProfilePageClient({ session }: ProfilePageProps) {
+export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
+  const { call } = useFetch();
+  const navigation = useRouter();
   const {
     dataUserLogged,
     openModal,
@@ -28,7 +36,27 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     editPersonalUserData,
     selectAddress,
     editAddressUserData,
-  } = useProfileRequests({ session });
+  } = useProfileRequests();
+
+  const handleEditAddressUserData = async (
+    data: EditAddressUserData,
+    methods: UseFormReturn<EditAddressUserData>,
+  ) => {
+    // enviando apenas dados alterados para o payload do back via react-hook-form
+    const { dirtyFields } = methods.formState;
+
+    const editedData = Object.fromEntries(
+      Object.keys(dirtyFields).map((key) => [
+        key,
+        data[key as keyof EditAddressUserData],
+      ]),
+    );
+
+    if (Object.keys(editedData).length === 0) {
+      return;
+    }
+    await editAddressUserData(editedData);
+  };
 
   const prepareAddressEdit = (idAddress: string) => {
     setTitleModal('Editar Endereço');
@@ -51,6 +79,15 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
     'Nome Completo: ': dataUserLogged?.nome,
     'Email: ': dataUserLogged?.email,
     'Celular: ': normalizeCellphoneNumber(dataUserLogged?.telefone || ''),
+  };
+
+  const handleLogout = async () => {
+    await call({
+      method: StatusHttp.POST,
+      url: AUTH_LOGOUT,
+    });
+
+    navigation.push('/login');
   };
 
   return (
@@ -136,7 +173,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
         <div className="mt-10 flex justify-center">
           <ButtonDefault
             variant="primary"
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={handleLogout}
             className="px-8 py-2 text-base font-medium"
           >
             Sair da conta
@@ -169,6 +206,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
               label="Celular"
               type="text"
               defaultValue={dataUserLogged?.telefone}
+              maxLength={11}
             />
             <ButtonDefault
               type="submit"
@@ -180,8 +218,8 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
           </DefaultForm>
         ) : (
           <DefaultForm
-            onSubmit={editAddressUserData}
-            schema={addressUserDataSchema}
+            onSubmit={handleEditAddressUserData}
+            schema={editAddressUserDataSchema}
             isLoading={isLoading}
           >
             <InputField
@@ -189,6 +227,7 @@ export default function ProfilePageClient({ session }: ProfilePageProps) {
               label="Cep"
               defaultValue={selectAddress?.endereco.cep}
               type="text"
+              maxLength={8}
             />
             <InputField
               name="neighborhood"

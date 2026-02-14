@@ -2,6 +2,9 @@
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { useCallback, useContext } from 'react';
+import { useRouter } from 'next/navigation';
+import { forceLogout, refreshToken } from '@/services/refreshToken';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -9,45 +12,49 @@ interface RequestApi<TBody> {
   method: Method;
   url: string;
   body?: TBody;
-  token?: string;
 }
 
 export function useFetch() {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
+  const router = useRouter();
 
   const call = useCallback(
-    async <TBody, TResponse>({
-      method,
-      url,
-      body,
-      token,
-    }: RequestApi<TBody>) => {
+    async <TBody, TResponse>(
+      { method, url, body }: RequestApi<TBody>,
+      retry = false,
+    ): Promise<ApiResponse<TResponse>> => {
       try {
         setIsLoading(true);
 
         const request = await fetch('/api/server', {
-          method: 'POST',
+          method: StatusHttp.POST,
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             method,
             url,
             body,
-            token,
           }),
         });
 
         const response: ApiResponse<TResponse> = await request.json();
-        console.log(response);
-        return {
-          ...response,
-          success: response.success,
-        };
+        if (response.code === 401 && !retry) {
+          const refreshed = await refreshToken();
+
+          if (refreshed) {
+            return call<TBody, TResponse>({ method, url, body }, true);
+          }
+
+          await forceLogout(router);
+        }
+
+        return response;
       } catch (error) {
         console.error(error);
         return {
-          message: 'Erro de conexão com o servidor',
+          message: 'Erro inesperado aconteceu, entre em contato com suporte',
           success: false,
           code: 500,
           data: {} as TResponse,
@@ -56,7 +63,7 @@ export function useFetch() {
         setIsLoading(false);
       }
     },
-    [setIsLoading],
+    [setIsLoading, router],
   );
 
   return {

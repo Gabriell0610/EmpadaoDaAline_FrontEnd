@@ -5,6 +5,7 @@ export const AUTH_FORGOT_PASSWORD = `auth/forgot-password`;
 export const AUTH_VALIDATE_PASSOWRD = `auth/validate-token`;
 export const AUTH_LOGIN = `auth/login`;
 export const AUTH_REFRESH = `auth/refresh`;
+export const AUTH_LOGOUT = 'auth/logout';
 
 // ORDER
 export const ORDER_CANCEL = `order/cancel`;

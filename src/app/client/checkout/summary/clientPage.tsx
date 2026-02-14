@@ -1,5 +1,4 @@
 'use client';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import useClientCheckout from '../functions';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 import { useOrderStore } from '@/stores/orderDetails-store';
@@ -11,19 +10,24 @@ import {
 } from '@/utils/helpers';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
-import { addressUserDataSchema } from '@/utils/schemas/address.schema';
+import {
+  AddressUserData,
+  addressUserDataSchema,
+} from '@/utils/schemas/address.schema';
 import { InputField } from '@/components/InputField/InputField';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { OrderDto } from '@/utils/schemas/order.schema';
 import { AddressViaCepInterface } from '@/utils/types/address.type';
 import toast from 'react-hot-toast';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-//import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
+import { useAuth } from '@/providers/authProvider';
 import BackPageButton from '@/components/BackPageButton/backPageButton';
-export default function SummaryClientPage({ session }: ProfilePageProps) {
+import { WITHOUTCONTENT } from '@/constants';
+import { UseFormReturn } from 'react-hook-form';
+export default function SummaryClientPage() {
   const {
     isLoading,
     address,
@@ -33,7 +37,9 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
     addAddress,
     createOrder,
     removeAddress,
-  } = useClientCheckout({ session });
+  } = useClientCheckout();
+
+  const { user } = useAuth();
 
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
@@ -42,6 +48,10 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
 
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [addressId, setAddressId] = useState('');
+
+  const addressFormMethodsRef = useRef<UseFormReturn<AddressUserData> | null>(
+    null,
+  );
 
   const [addressSelected, setAddressSelected] = useState(false);
 
@@ -63,12 +73,12 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
     setAddressId(addressId);
     calculateShipping(addressId);
     setAddressSelected(true);
+    addressFormMethodsRef.current?.reset();
   };
 
   async function handleSubmitOrder() {
-    setIsLoading(true);
     const createOrderObj: OrderDto = {
-      idUser: session!.user.id,
+      idUser: user!.id,
       idCart: itemsWithLoggedUser!.id,
       idAddress: addressId,
       shipping: shipping!,
@@ -85,7 +95,6 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
       return;
     }
     navigate.push(`/client/orders/${order?.id}`);
-    setIsLoading(false);
   }
 
   return (
@@ -133,6 +142,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
           <div>
             <DefaultForm schema={addressUserDataSchema} onSubmit={addAddress}>
               {(methods) => {
+                addressFormMethodsRef.current = methods;
                 const consultaViaCep = async (cep: string) => {
                   try {
                     setIsLoading(true);
@@ -166,6 +176,7 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
                         type="text"
                         disabled={isLoading || loading}
                         placeholder="Digite seu cep"
+                        maxLength={8}
                         onBlur={(e) => consultaViaCep(e.target.value)}
                       />
                       <InputField
@@ -232,9 +243,9 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
           </div>
         </div>
       </section>
-      <section className="w-full md2:w-[40%] lg:w-[35%]">
+      <section className="mt-7 w-full md2:w-[40%] lg:w-[35%]">
         <TitleH1 className="mb-2">Resumo do pedido</TitleH1>
-        <TitleH4 className="mb-1">Produtos:</TitleH4>
+        <TitleH4 className="mb-1">Produtos</TitleH4>
         <div className="flex flex-col gap-2">
           {itemsWithLoggedUser?.carrinhoItens &&
             itemsWithLoggedUser?.carrinhoItens.map((item) => (
@@ -245,7 +256,6 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
               </div>
             ))}
           <hr />
-          <TitleH4 className="mb-1">Detalhes:</TitleH4>
           <p>
             {' '}
             <span className="font-semibold">Data de entrega: </span>{' '}
@@ -257,12 +267,17 @@ export default function SummaryClientPage({ session }: ProfilePageProps) {
           </p>
           <p>
             <span className="font-semibold">Método de pagamento: </span>
-            {paymentMethod?.nome ? paymentMethod.nome : 'Erro'}
+            {paymentMethod?.nome ? paymentMethod.nome : WITHOUTCONTENT}
+          </p>
+          <p>
+            <span className="font-semibold">Observação: </span>
+            {orderDetails?.observation
+              ? orderDetails.observation
+              : 'sem observação...'}
           </p>
           <hr />
-          <p>
-            {' '}
-            <span className="font-semibold">Subtotal</span>:{' '}
+          <p className="font-semibold">
+            Subtotal:{' '}
             {normalizeCurrency(
               itemsWithLoggedUser?.valorTotal
                 ? itemsWithLoggedUser?.valorTotal

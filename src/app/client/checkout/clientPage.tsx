@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import useClientCheckout from './functions';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
@@ -17,27 +16,35 @@ import { useCart } from '@/providers/cartProvider/cartProvider';
 import { ArrowLeft } from 'lucide-react';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { gerarHorarios } from '@/utils/helpers';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
-import { useContext } from 'react';
+import { useAuth } from '@/providers/authProvider';
+import toast from 'react-hot-toast';
 
-export default function ClientCheckoutPage({ session }: ProfilePageProps) {
+export default function ClientCheckoutPage() {
+  const { user } = useAuth();
+
   const navigate = useRouter();
-  const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
-  const { paymentMethods, isLoading } = useClientCheckout({
-    session,
-  });
+  const { paymentMethods, isLoading } = useClientCheckout();
 
   const { itemsWithLoggedUser } = useCart();
 
   const setOrder = useOrderStore((state) => state.setOrder);
 
   const handleDetailsOrder = (data: OrderDetailsDto) => {
-    setIsLoading(true);
     setOrder(data);
+    toast.success('Aguarde você será redirecionado...');
     navigate.push('/client/checkout/summary');
-    setIsLoading(false);
   };
+
+  function disabeldButton() {
+    if (
+      !itemsWithLoggedUser ||
+      itemsWithLoggedUser.carrinhoItens.length === 0
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   const horarios = gerarHorarios(7, 18, 30);
 
@@ -55,16 +62,16 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
         <DefaultForm
           schema={orderDetailsSchema}
           onSubmit={handleDetailsOrder}
-          isLoading={isLoading || loading}
+          isLoading={isLoading}
         >
-          {session?.user.role === AccessProfile.ADMIN && (
+          {user?.role === AccessProfile.ADMIN && (
             <div className="flex flex-col gap-4 md:flex-row">
               <InputField
                 label="Nome do cliente"
                 name="nameClient"
                 type="text"
                 placeholder="João Silva"
-                disabled={isLoading || loading}
+                disabled={isLoading}
               />
               <InputField
                 label="Telefone"
@@ -72,7 +79,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                 type="number"
                 placeholder="Ex: (21) 98665-3321"
                 maxLength={11}
-                disabled={isLoading || loading}
+                disabled={isLoading}
               />
             </div>
           )}
@@ -81,7 +88,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
               label="Data de entrega"
               name="schedulingDate"
               type="date"
-              disabled={isLoading || loading}
+              disabled={isLoading}
             />
 
             <InputField
@@ -94,7 +101,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                 label: p.nome,
                 value: p.id,
               }))}
-              disabled={isLoading || loading}
+              disabled={isLoading}
             />
           </div>
 
@@ -110,7 +117,7 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                   value: h,
                 })),
               ]}
-              disabled={isLoading || loading}
+              disabled={isLoading}
             />
 
             <InputField
@@ -124,27 +131,22 @@ export default function ClientCheckoutPage({ session }: ProfilePageProps) {
                   value: h,
                 })),
               ]}
-              disabled={isLoading || loading}
+              disabled={isLoading}
             />
           </div>
           <InputField
-            label="Observação"
+            label="Observação (opcional)"
             name="observation"
             type="text"
             placeholder="Ex: Sem coentro"
-            disabled={isLoading || loading}
+            disabled={isLoading}
           />
 
           <ButtonDefault
             type="submit"
             variant="primary"
-            isLoading={isLoading || loading}
-            disabled={
-              itemsWithLoggedUser &&
-              itemsWithLoggedUser.carrinhoItens.length === 0
-                ? true
-                : false
-            }
+            isLoading={isLoading}
+            disabled={disabeldButton()}
           >
             Continuar
           </ButtonDefault>

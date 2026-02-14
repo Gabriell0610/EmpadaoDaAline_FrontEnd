@@ -19,28 +19,16 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useAdminRequest } from '../functions';
-import { ProfilePageProps } from '@/utils/types/generics/layout.type';
 import { twMerge } from 'tailwind-merge';
-import { useEffect } from 'react';
 import { DashboardRevenueInterface } from '@/utils/types/dashboard.type';
 
-export default function DashboardAdmin({ session }: ProfilePageProps) {
+export default function DashboardAdmin() {
   const {
     contentDashboardSummary,
     setDashboardPeriod,
     dashboardPeriod,
     contentDashboardRevenue,
-  } = useAdminRequest({
-    session,
-  });
-
-  useEffect(() => {
-    console.log(
-      'Revenue:',
-      contentDashboardRevenue,
-      Array.isArray(contentDashboardRevenue),
-    );
-  });
+  } = useAdminRequest({});
 
   const revenueData: DashboardRevenueInterface[] = Array.isArray(
     contentDashboardRevenue,

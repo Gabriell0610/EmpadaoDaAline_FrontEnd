@@ -1,51 +1,50 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ButtonDefault } from '@/components/Button/Button';
 import { DefaultForm } from '@/components/DefaultForm/DefaultForm';
 import { InputField } from '@/components/InputField/InputField';
+import { AUTH_LOGIN } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
-import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
+import { StatusHttp } from '@/constants/enums/StautsHttp';
+import { useFetch } from '@/hooks/useFetch/useFetch';
+import { useAuth } from '@/providers/authProvider';
+import { getSafeErrorMessage } from '@/utils/helpers';
 import { loginDto, loginSchema } from '@/utils/schemas/login.schema';
-import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageLogin() {
-  const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
-
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
+  const { call, isLoading } = useFetch();
+  const router = useRouter();
+  const { user, reloadUser } = useAuth();
 
   const handleLogin = async (data: loginDto) => {
-    console.log(data);
-    try {
-      setIsLoading(true);
-      const res = await signIn('credentials', {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      });
+    const res = await call<loginDto, null>({
+      method: StatusHttp.POST,
+      url: AUTH_LOGIN,
+      body: data,
+    });
 
-      if (!res?.error) {
-        const session = await getSession(); // Pega a session atualizada do usuário logado
-
-        if (session?.user.role === AccessProfile.ADMIN) {
-          router.push('/admin');
-        } else {
-          router.push('/client');
-        }
-        toast.success('Login efetuado com sucesso');
-      } else {
-        console.error(res.error);
-        toast.error(res.error);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+    if (!res.success) {
+      toast.error(getSafeErrorMessage(res.message));
+      return;
     }
+
+    await reloadUser();
+    toast.success('Você será redirecionado...');
   };
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role === AccessProfile.ADMIN) {
+      router.replace('/admin');
+    } else {
+      router.replace('/client');
+    }
+  }, [user, router]);
 
   return (
     <section>
@@ -59,6 +58,7 @@ export default function ClientPageLogin() {
           label="Email"
           type="email"
           placeholder="Digite seu email"
+          disabled={isLoading}
         />
         <InputField
           name={'password'}
@@ -67,6 +67,7 @@ export default function ClientPageLogin() {
           placeholder="Digite sua senha"
           setShowPassword={setShowPassword}
           showPassword={showPassword}
+          disabled={isLoading}
         />
         <ButtonDefault type="submit" isLoading={isLoading} variant="primary">
           Login

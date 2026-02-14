@@ -25,17 +25,27 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { forceLogout } from '@/services/refreshToken';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/providers/authProvider';
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string;
-    email: string;
-    avatar: string;
+    name?: string;
+    email?: string;
+    avatar?: string;
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  async function handleForceLogin() {
+    logout();
+    await forceLogout(router);
+  }
 
   return (
     <SidebarMenu>
@@ -98,7 +108,10 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleForceLogin()}
+              className="cursor-pointer"
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>

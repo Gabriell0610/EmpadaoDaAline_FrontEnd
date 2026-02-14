@@ -1,8 +1,6 @@
-import { authOptions } from '@/libs/auth';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import DashboardClientPage from './clientPage';
-import { getServerSession } from 'next-auth';
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions);
-  return <DashboardClientPage session={session} />;
+  return <DashboardClientPage />;
 }

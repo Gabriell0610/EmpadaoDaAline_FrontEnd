@@ -10,6 +10,7 @@ import { ListOrderByClient } from '@/utils/types/orderClient';
 import { formatDate } from '@/utils/helpers';
 import { ButtonDefault } from '../Button/Button';
 import { PaymenMethodsInterface } from '@/utils/types/paymentMethods.type';
+import { UseFormReturn } from 'react-hook-form';
 
 export interface EditOrderModalInterface {
   content: ListOrderByClient;
@@ -33,8 +34,23 @@ export default function EditOrderModal({
   description,
   paymentMethods,
 }: EditOrderModalInterface) {
-  const handleSubmit = (data: OrderUpdateDto) => {
-    submit(data);
+  const handleSubmit = (
+    data: OrderUpdateDto,
+    methods: UseFormReturn<OrderUpdateDto>,
+  ) => {
+    const { dirtyFields } = methods.formState;
+    const editedData = Object.fromEntries(
+      Object.keys(dirtyFields).map((key) => [
+        key,
+        data[key as keyof OrderUpdateDto],
+      ]),
+    );
+
+    if (Object.keys(editedData).length === 0) {
+      return;
+    }
+
+    submit(editedData);
     closeModal();
   };
 
