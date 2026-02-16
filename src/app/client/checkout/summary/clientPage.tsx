@@ -23,7 +23,6 @@ import toast from 'react-hot-toast';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
-import { useAuth } from '@/providers/authProvider';
 import BackPageButton from '@/components/BackPageButton/backPageButton';
 import { WITHOUTCONTENT } from '@/constants';
 import { UseFormReturn } from 'react-hook-form';
@@ -38,8 +37,6 @@ export default function SummaryClientPage() {
     createOrder,
     removeAddress,
   } = useClientCheckout();
-
-  const { user } = useAuth();
 
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
 
@@ -78,8 +75,6 @@ export default function SummaryClientPage() {
 
   async function handleSubmitOrder() {
     const createOrderObj: OrderDto = {
-      idUser: user!.id,
-      idCart: itemsWithLoggedUser!.id,
       idAddress: addressId,
       shipping: shipping!,
       endTime: orderDetails!.endTime,
