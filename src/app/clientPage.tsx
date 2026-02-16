@@ -11,15 +11,7 @@ import { ClientPageProps } from '@/utils/types/components/listItemComponent.type
 import { ButtonDefault } from '@/components/Button/Button';
 import { useCart } from '@/providers/cartProvider/cartProvider';
 
-interface HomeInterfaceProps extends ClientPageProps {
-  successRequest: boolean | null;
-}
-
-/* eslint-disable prettier/prettier */
-export default function Home({
-  activeItems,
-  successRequest,
-}: HomeInterfaceProps) {
+export default function Home({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const navigate = useRouter();
@@ -60,10 +52,6 @@ export default function Home({
           </div>
         </article>
       </section>
-
-      {!successRequest && (
-        <div>Estamos enfrentando um problema técnico por favor aguarde...</div>
-      )}
 
       {empadoes.length > 0 && (
         <section className="w-full px-8 py-10">

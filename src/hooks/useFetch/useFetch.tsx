@@ -49,10 +49,13 @@ export function useFetch() {
 
           await forceLogout(router);
         }
-
         return response;
       } catch (error) {
-        console.error(error);
+        console.error('Erro na call:', {
+          error,
+          message: error instanceof Error ? error.message : null,
+          stack: error instanceof Error ? error.stack : null,
+        });
         return {
           message: 'Erro inesperado aconteceu, entre em contato com suporte',
           success: false,

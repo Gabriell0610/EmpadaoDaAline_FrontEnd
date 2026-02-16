@@ -1,19 +1,13 @@
-import { Header } from '@/components/Header/Header';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { redirect } from 'next/navigation';
 import ClientPage from './clientPage';
 import { listActiveItem } from '@/services/itemService';
-import { Footer } from '@/components/Footer/Footer';
 export const dynamic = 'force-dynamic';
 export default async function ClientDefaultPage() {
   const responseActiveItem = await listActiveItem();
 
   if (!responseActiveItem.success) {
-    return (
-      <>
-        <Header />
-        <div>Estamos enfretando um problema técnico, por favor aguarde...</div>
-        <Footer />
-      </>
-    );
+    return redirect('not-found');
   }
   return (
     <div>

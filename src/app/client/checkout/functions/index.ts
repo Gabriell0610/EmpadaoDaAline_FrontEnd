@@ -106,6 +106,7 @@ export default function useClientCheckout() {
 
     if (!res.success) {
       toast.error(getSafeErrorMessage(res.message));
+      console.error(res.message);
       return;
     }
 
