@@ -26,8 +26,6 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
 
   const methods = useForm<TypeOf<T>>({
     resolver: zodResolver(schema),
-    mode: 'onChange',
-    reValidateMode: 'onChange',
     defaultValues,
   });
 

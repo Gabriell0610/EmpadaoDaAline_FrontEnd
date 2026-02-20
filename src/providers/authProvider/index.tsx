@@ -1,5 +1,5 @@
 'use client';
-import { USER_ME } from '@/constants';
+import { AUTH_LOGOUT, USER_ME } from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
@@ -16,7 +16,7 @@ type AuthState = {
   isAuthenticated: boolean;
   user: AuthUser | null;
   isLoading: boolean;
-  logout: () => void;
+  logout: () => Promise<void>;
   reloadUser: () => Promise<void>;
 };
 
@@ -50,7 +50,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadUser();
   }, []);
 
-  function logout() {
+  async function logout() {
+    await call({
+      method: StatusHttp.POST,
+      url: AUTH_LOGOUT,
+      requiresAuth: true,
+    });
+
     setUser(null);
   }
 
@@ -60,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading: loading,
-        reloadUser: loadUser, // 👈 importante
+        reloadUser: loadUser,
         logout,
       }}
     >

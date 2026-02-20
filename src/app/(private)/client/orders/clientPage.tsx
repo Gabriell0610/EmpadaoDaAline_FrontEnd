@@ -3,7 +3,7 @@ import CardOrder from '@/components/CardOrder/cardOrder';
 import { LoadingComponent } from '@/components/Loading/LoadingComponent';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useClientOrder } from './functions';
-import ImageEmptyCart from '../../../../public/assets/empty_cart_doubt-2.png';
+import ImageEmptyCart from '../../../../../public/assets/empty_cart_doubt-2.png';
 import EmptyContent from '@/components/EmptyContent/emptyContent';
 
 export default function ClientOrderPage() {

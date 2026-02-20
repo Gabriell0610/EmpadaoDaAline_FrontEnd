@@ -57,7 +57,8 @@ export default function ClientCheckoutPage() {
         <TitleH1 className="mb-0">Detalhes do pedido</TitleH1>
         <p className="mb-3 text-text-secondary">
           Escolha a data de entrega, o método de pagamento e o melhor horário
-          para o pedido ser entregue!
+          para o pedido ser entregue (de preferência um horário que tenha alguém
+          em casa)!
         </p>
         <DefaultForm
           schema={orderDetailsSchema}

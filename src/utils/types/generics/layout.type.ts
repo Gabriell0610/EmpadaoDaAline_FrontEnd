@@ -11,9 +11,11 @@ export interface ProfilePageProps {
 export interface PageProps {
   params: {
     id: string;
+    action?: string[];
   };
 }
 
 export interface DetailsPageProps {
   id?: string;
+  confirm?: boolean;
 }

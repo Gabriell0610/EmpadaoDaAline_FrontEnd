@@ -178,14 +178,13 @@ export default function DashboardClientPage() {
                     {order.metodoPagamento.nome}
                   </span>
                 </div>
-                {isToday(order.dataAgendamento) && (
-                  <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
-                    <p>
-                      {order.status === StatusOrder.ENTREGUE ||
-                        (StatusOrder.CANCELADO ? '' : 'Entregar Hoje')}
-                    </p>
-                  </div>
-                )}
+                {isToday(order.dataAgendamento) &&
+                  order.status !== StatusOrder.CANCELADO &&
+                  order.status !== StatusOrder.ENTREGUE && (
+                    <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
+                      <p>Entregar Hoje</p>
+                    </div>
+                  )}
               </div>
             </div>
           ))}

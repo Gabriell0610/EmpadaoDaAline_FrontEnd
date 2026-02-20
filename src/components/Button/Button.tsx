@@ -47,6 +47,7 @@ export const ButtonDefault = ({
             : 'text-green_details-greenLight hover:underline',
           className,
         )}
+        target="_blank"
       >
         {children}
       </Link>

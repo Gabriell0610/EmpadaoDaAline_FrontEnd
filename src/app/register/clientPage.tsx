@@ -18,6 +18,7 @@ export default function ClientPageRegister() {
       method: StatusHttp.POST,
       url: AUTH_REGISTER,
       body: data,
+      requiresAuth: false,
     });
 
     if (!res.success) {

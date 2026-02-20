@@ -1,5 +1,5 @@
 'use client';
-import { useClientOrder } from '@/app/client/orders/functions';
+import { useClientOrder } from '@/app/(private)/client/orders/functions';
 import {
   ADMIN_EDIT_OTDER,
   CHANGE_STATUS_ORDER,

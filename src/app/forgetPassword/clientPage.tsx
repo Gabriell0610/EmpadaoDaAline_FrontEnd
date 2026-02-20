@@ -39,6 +39,7 @@ export default function ClientPageForgetPassword() {
       method: StatusHttp.POST,
       url: AUTH_FORGOT_PASSWORD,
       body: data,
+      requiresAuth: false,
     });
 
     if (!res.success) {
@@ -55,6 +56,7 @@ export default function ClientPageForgetPassword() {
       method: StatusHttp.POST,
       url: AUTH_VALIDATE_PASSOWRD,
       body: data,
+      requiresAuth: false,
     });
 
     if (!res.success) {

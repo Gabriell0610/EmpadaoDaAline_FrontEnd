@@ -22,19 +22,23 @@ import {
   EditIcon,
 } from 'lucide-react';
 
-import { useClientOrder } from '@/app/client/orders/functions/';
+import { useClientOrder } from '@/app/(private)/client/orders/functions';
 import { useRouter } from 'next/navigation';
 import StatusOrderComponent from '@/components/StatusOrder/statusOrderComponent';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useState } from 'react';
 import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
-import useClientCheckout from '../../checkout/functions';
+import useClientCheckout from '../../../checkout/functions';
 
-export default function ClientOrderDetailsPage({ id }: DetailsPageProps) {
+export default function ClientOrderDetailsPage({
+  id,
+  confirm,
+}: DetailsPageProps) {
   const {
     handleCancelOrderByClient,
     editOrder,
+    confirmOrder,
     contentOrderByClientId,
     isLoading,
   } = useClientOrder({
@@ -48,6 +52,11 @@ export default function ClientOrderDetailsPage({ id }: DetailsPageProps) {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const status = contentOrderByClientId?.status;
+
+  const isPreparing = status === StatusOrder.PREPARANDO;
+  const isCanceled = status === StatusOrder.CANCELADO;
 
   const navigate = useRouter();
   return (
@@ -183,28 +192,37 @@ export default function ClientOrderDetailsPage({ id }: DetailsPageProps) {
             </div>
           </div>
 
-          {/* Rodapé */}
-          {contentOrderByClientId?.status !== StatusOrder.PREPARANDO && (
-            <div className="flex justify-end bg-gray-50 p-6">
-              <ButtonDefault
-                variant="fourth"
-                className={twMerge(
-                  '!bg-red-500 text-white',
-                  contentOrderByClientId?.status === StatusOrder.CANCELADO
-                    ? 'opacity-75'
-                    : '',
-                )}
-                onClick={() =>
-                  handleCancelOrderByClient(contentOrderByClientId?.id || '')
-                }
-                disabled={
-                  contentOrderByClientId?.status === StatusOrder.CANCELADO
-                    ? true
-                    : false
-                }
-              >
-                Cancelar Pedido
-              </ButtonDefault>
+          {!isPreparing && (
+            <div className="flex justify-end gap-6 bg-gray-50 p-6">
+              {!confirm && (
+                <ButtonDefault
+                  variant="fourth"
+                  className={twMerge(
+                    '!bg-red-500 text-white',
+                    isCanceled ? 'opacity-75' : '',
+                  )}
+                  onClick={() =>
+                    handleCancelOrderByClient(contentOrderByClientId?.id || '')
+                  }
+                  disabled={isCanceled}
+                >
+                  Cancelar Pedido
+                </ButtonDefault>
+              )}
+
+              {confirm && (
+                <ButtonDefault
+                  variant="fourth"
+                  className={twMerge(
+                    '!bg-green-500 text-white',
+                    isCanceled ? 'opacity-75' : '',
+                  )}
+                  onClick={confirmOrder}
+                  disabled={isCanceled}
+                >
+                  Confirmar Pedido
+                </ButtonDefault>
+              )}
             </div>
           )}
 

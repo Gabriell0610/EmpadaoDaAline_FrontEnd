@@ -25,6 +25,7 @@ export default function ClientPageLogin() {
       method: StatusHttp.POST,
       url: AUTH_LOGIN,
       body: data,
+      requiresAuth: false,
     });
 
     if (!res.success) {

@@ -24,9 +24,9 @@ import EditOrderModal from '@/components/EditOrderModal/editOrderModal';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import React, { useState } from 'react';
 import { useAdminRequest } from '../../functions';
-import { TitleH2 } from '@/components/Titles/Titles';
+import { TitleH2, TitleH3 } from '@/components/Titles/Titles';
 import { twMerge } from 'tailwind-merge';
-import useClientCheckout from '@/app/client/checkout/functions';
+import useClientCheckout from '@/app/(private)/client/checkout/functions';
 import { DetailsPageProps } from '@/utils/types/generics/layout.type';
 
 export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
@@ -48,6 +48,18 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
   const closeModal = () => setIsModalOpen(false);
 
   if (isLoading) return <LoadingComponent mode="fullScreen" />;
+
+  function createWppLink() {
+    const replaceCellphone = contentOrderByClientId?.usuario.telefone.replace(
+      /\D/g,
+      '',
+    );
+    const message = encodeURIComponent(
+      `Olá, confirme seu pedido de amanhã às ${contentOrderByClientId?.horarioInicio} - ${contentOrderByClientId?.horarioFim} Clique no link para confirmar. Caso não confirme daremos como cancelado o pedido!! Desde já agradeço a compreensão:http://localhost:3000/client/order/${contentOrderByClientId?.id}/confirm`,
+    );
+
+    return `https://wa.me/55${replaceCellphone}?text=${message}`;
+  }
 
   return (
     <main className="p-6">
@@ -208,6 +220,13 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
           description="Editar"
         />
       )}
+
+      <div className="mt-5">
+        <TitleH3>Envie mensagem para o cliente para confirmar o pedido</TitleH3>
+        <ButtonDefault variant="link" href={createWppLink()}>
+          Enviar Mensagem
+        </ButtonDefault>
+      </div>
     </main>
   );
 }

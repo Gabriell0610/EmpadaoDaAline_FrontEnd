@@ -3,7 +3,7 @@ import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { ApiResponse } from '@/utils/types/generics/apiResponse';
 import { useCallback, useContext } from 'react';
 import { useRouter } from 'next/navigation';
-import { forceLogout, refreshToken } from '@/services/refreshToken';
+import { refreshToken } from '@/services/refreshToken';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -12,6 +12,7 @@ interface RequestApi<TBody> {
   method: Method;
   url: string;
   body?: TBody;
+  requiresAuth?: boolean;
 }
 
 export function useFetch() {
@@ -20,7 +21,7 @@ export function useFetch() {
 
   const call = useCallback(
     async <TBody, TResponse>(
-      { method, url, body }: RequestApi<TBody>,
+      { method, url, body, requiresAuth = true }: RequestApi<TBody>,
       retry = false,
     ): Promise<ApiResponse<TResponse>> => {
       try {
@@ -40,15 +41,22 @@ export function useFetch() {
         });
 
         const response: ApiResponse<TResponse> = await request.json();
-        if (response.code === 401 && !retry) {
-          const refreshed = await refreshToken();
+        if (response.code === 401 && requiresAuth) {
+          if (!retry) {
+            const refreshed = await refreshToken();
 
-          if (refreshed) {
-            return call<TBody, TResponse>({ method, url, body }, true);
+            if (refreshed) {
+              return call<TBody, TResponse>(
+                { method, url, body, requiresAuth },
+                true,
+              );
+            }
           }
 
-          await forceLogout(router);
+          // refresh falhou ou já tentou
+          return response;
         }
+
         return response;
       } catch (error) {
         console.error('Erro na call:', {

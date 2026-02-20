@@ -14,17 +14,16 @@ import { Mail, MapPinHouse, Phone, SquarePen, User } from 'lucide-react';
 import { Modal } from '@/components/Modal/ModalComponent';
 import { InputField } from '@/components/InputField/InputField';
 import useProfileRequests from './functions';
-import { useFetch } from '@/hooks/useFetch/useFetch';
-import { StatusHttp } from '@/constants/enums/StautsHttp';
-import { AUTH_LOGOUT } from '@/constants';
-import { useRouter } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
+import { useAuth } from '@/providers/authProvider';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
-  const { call } = useFetch();
-  const navigation = useRouter();
+  const { logout } = useAuth();
+  const router = useRouter();
+
   const {
     dataUserLogged,
     openModal,
@@ -82,12 +81,8 @@ export default function ProfilePageClient() {
   };
 
   const handleLogout = async () => {
-    await call({
-      method: StatusHttp.POST,
-      url: AUTH_LOGOUT,
-    });
-
-    navigation.push('/login');
+    await logout();
+    router.replace('/login');
   };
 
   return (

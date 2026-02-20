@@ -9,7 +9,6 @@ interface JwtCustomPayload extends JwtPayload {
 
 export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('access_token');
-
   const pathname = req.nextUrl.pathname;
 
   const publicRoutes = [
