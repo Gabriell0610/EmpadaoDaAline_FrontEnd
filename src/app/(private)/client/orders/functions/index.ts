@@ -1,4 +1,9 @@
-import { ORDER, ORDER_CANCEL, ORDER_ME } from '@/constants';
+import {
+  ORDER_CONFIRM_CLIENT,
+  ORDER,
+  ORDER_CANCEL,
+  ORDER_ME,
+} from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
@@ -138,8 +143,8 @@ export function useClientOrder({ id }: DetailsPageProps) {
 
   async function confirmOrder() {
     const result = await call<{ status: StatusOrder }, null>({
-      method: StatusHttp.PUT,
-      url: `${ORDER}/${id}`,
+      method: StatusHttp.PATCH,
+      url: `${ORDER_CONFIRM_CLIENT}/${id}`,
       body: { status: StatusOrder.CONFIRMADO_CLIENTE },
     });
 

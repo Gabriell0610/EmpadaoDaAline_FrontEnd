@@ -52,6 +52,8 @@ export default function SummaryClientPage() {
 
   const [addressSelected, setAddressSelected] = useState(false);
 
+  const [disableAddressButton, setDisableAddressButton] = useState(true);
+
   //zustand
   const orderDetails = useOrderStore((state) => state.order);
 
@@ -146,7 +148,7 @@ export default function SummaryClientPage() {
                         `https://viacep.com.br/ws/${cep}/json/`,
                       );
                       const data: AddressViaCepInterface = await result.json();
-
+                      setDisableAddressButton(cep ? false : true);
                       methods.setValue('street', data.logradouro);
                       methods.setValue('neighborhood', data.bairro);
                       methods.setValue('city', data.localidade);
@@ -228,6 +230,7 @@ export default function SummaryClientPage() {
                       type="submit"
                       variant="primary"
                       isLoading={isLoading || loading}
+                      disabled={disableAddressButton}
                     >
                       Salvar Endereço
                     </ButtonDefault>

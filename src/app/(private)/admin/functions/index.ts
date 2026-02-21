@@ -116,6 +116,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
       toast.error('Erro inesperado, por favor entre em contato com suporte');
     } else {
       await listOrderByClientId(id);
+      await listOrders();
     }
   }
 

@@ -28,5 +28,6 @@ export const projectColors = {
     canceled: '#EF4444',
     delivered: '#22C55E',
     accept: '#03300B',
+    confirmByClient: '#22F77F',
   },
 };

@@ -57,6 +57,7 @@ export default function ClientOrderDetailsPage({
 
   const isPreparing = status === StatusOrder.PREPARANDO;
   const isCanceled = status === StatusOrder.CANCELADO;
+  const isConfirmed = status === StatusOrder.CONFIRMADO_CLIENTE;
 
   const navigate = useRouter();
   return (
@@ -215,10 +216,10 @@ export default function ClientOrderDetailsPage({
                   variant="fourth"
                   className={twMerge(
                     '!bg-green-500 text-white',
-                    isCanceled ? 'opacity-75' : '',
+                    isCanceled ? 'opacity-75' : isConfirmed ? 'opacity-75' : '',
                   )}
                   onClick={confirmOrder}
-                  disabled={isCanceled}
+                  disabled={isCanceled || isConfirmed}
                 >
                   Confirmar Pedido
                 </ButtonDefault>

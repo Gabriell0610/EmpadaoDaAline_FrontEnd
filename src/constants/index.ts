@@ -13,6 +13,7 @@ export const ORDER_ME = `order/me`;
 export const ORDER = `order`;
 export const CHANGE_STATUS_ORDER = `changeStatus/order`;
 export const ADMIN_EDIT_OTDER = `order/admin`;
+export const ORDER_CONFIRM_CLIENT = `order/confirm`;
 
 //USER
 export const USER_ME = `users/me`;

@@ -26,6 +26,16 @@ export default function StatusOrderComponent({
     [StatusOrder.CANCELADO]: 'bg-details-canceled',
     [StatusOrder.ENTREGUE]: 'bg-details-delivered',
     [StatusOrder.ACEITO]: 'bg-green_details-greenLight',
+    [StatusOrder.CONFIRMADO_CLIENTE]: 'bg-details-confirmByClient',
+  };
+
+  const STATUS_LABEL_MAP: Record<StatusOrder, string> = {
+    [StatusOrder.PENDENTE]: 'Pendente',
+    [StatusOrder.PREPARANDO]: 'Preparando',
+    [StatusOrder.CANCELADO]: 'Cancelado',
+    [StatusOrder.ENTREGUE]: 'Entregue',
+    [StatusOrder.ACEITO]: 'Aceito',
+    [StatusOrder.CONFIRMADO_CLIENTE]: 'Confirmado',
   };
 
   function getStatusColor(status?: StatusOrder) {
@@ -70,7 +80,7 @@ export default function StatusOrderComponent({
         >
           {Object.values(StatusOrder).map((status) => (
             <option key={status} value={status}>
-              {status}
+              {STATUS_LABEL_MAP[status]}
             </option>
           ))}
         </select>

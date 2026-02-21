@@ -55,7 +55,7 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
       '',
     );
     const message = encodeURIComponent(
-      `Olá, confirme seu pedido de amanhã às ${contentOrderByClientId?.horarioInicio} - ${contentOrderByClientId?.horarioFim} Clique no link para confirmar. Caso não confirme daremos como cancelado o pedido!! Desde já agradeço a compreensão:http://localhost:3000/client/order/${contentOrderByClientId?.id}/confirm`,
+      `Olá, confirme seu pedido de amanhã às ${contentOrderByClientId?.horarioInicio} - ${contentOrderByClientId?.horarioFim} Clique no link para confirmar. Caso não confirme daremos como cancelado o pedido!! Desde já agradeço a compreensão:http://localhost:3000/client/orders/${contentOrderByClientId?.id}/confirm`,
     );
 
     return `https://wa.me/55${replaceCellphone}?text=${message}`;
