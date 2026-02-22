@@ -30,12 +30,12 @@ export default function StatusOrderComponent({
   };
 
   const STATUS_LABEL_MAP: Record<StatusOrder, string> = {
-    [StatusOrder.PENDENTE]: 'Pendente',
-    [StatusOrder.PREPARANDO]: 'Preparando',
-    [StatusOrder.CANCELADO]: 'Cancelado',
-    [StatusOrder.ENTREGUE]: 'Entregue',
-    [StatusOrder.ACEITO]: 'Aceito',
-    [StatusOrder.CONFIRMADO_CLIENTE]: 'Confirmado',
+    [StatusOrder.PENDENTE]: 'PENDENTE',
+    [StatusOrder.PREPARANDO]: 'PREPARABNDO',
+    [StatusOrder.CANCELADO]: 'CANCELADO',
+    [StatusOrder.ENTREGUE]: 'ENTREGUE',
+    [StatusOrder.ACEITO]: 'ACEITO',
+    [StatusOrder.CONFIRMADO_CLIENTE]: 'CONFIRMADO',
   };
 
   function getStatusColor(status?: StatusOrder) {
@@ -63,7 +63,6 @@ export default function StatusOrderComponent({
     onChange?.(newStatus);
   }
 
-  // DMIN MODE
   if (mode === 'admin') {
     return (
       <div className="flex items-center gap-2">
@@ -88,7 +87,6 @@ export default function StatusOrderComponent({
     );
   }
 
-  // DESCRIPTION MODE
   if (description) {
     return (
       <p className="mt-1 text-sm opacity-90">
@@ -99,17 +97,16 @@ export default function StatusOrderComponent({
             getStatusColor(status),
           )}
         >
-          {status}
+          {STATUS_LABEL_MAP[status]}
         </span>
       </p>
     );
   }
 
-  //DEFAULT VIEW
   return (
     <div className="flex items-center gap-2">
       <StatusDot status={status} />
-      <p className="sm:text-base">{status}</p>
+      <p className="sm:text-base">{STATUS_LABEL_MAP[status]}</p>
     </div>
   );
 }

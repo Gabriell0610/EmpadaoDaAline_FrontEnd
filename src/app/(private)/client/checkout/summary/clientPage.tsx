@@ -22,10 +22,21 @@ import { AddressViaCepInterface } from '@/utils/types/address.type';
 import toast from 'react-hot-toast';
 import { LoadingContext } from '@/providers/loadingProvider/loadingProvider';
 import { useRouter } from 'next/navigation';
-import { Trash2 } from 'lucide-react';
+import {
+  CalendarDays,
+  CircleDollarSign,
+  Clock3,
+  CreditCard,
+  MapPinHouse,
+  MessageSquareText,
+  PackageCheck,
+  Trash2,
+  Truck,
+} from 'lucide-react';
 import BackPageButton from '@/components/BackPageButton/backPageButton';
 import { WITHOUTCONTENT } from '@/constants';
 import { UseFormReturn } from 'react-hook-form';
+
 export default function SummaryClientPage() {
   const {
     isLoading,
@@ -36,6 +47,7 @@ export default function SummaryClientPage() {
     addAddress,
     createOrder,
     removeAddress,
+    setShipping,
   } = useClientCheckout();
 
   const { isLoading: loading, setIsLoading } = useContext(LoadingContext);
@@ -49,13 +61,14 @@ export default function SummaryClientPage() {
   const addressFormMethodsRef = useRef<UseFormReturn<AddressUserData> | null>(
     null,
   );
+  const isFinishingOrderRef = useRef(false);
 
   const [addressSelected, setAddressSelected] = useState(false);
-
   const [disableAddressButton, setDisableAddressButton] = useState(true);
 
   //zustand
   const orderDetails = useOrderStore((state) => state.order);
+  const clearOrder = useOrderStore((state) => state.clearOrder);
 
   useEffect(() => {
     if (!itemsWithLoggedUser) return;
@@ -64,15 +77,36 @@ export default function SummaryClientPage() {
     setTotalPrice(total);
   }, [shipping, itemsWithLoggedUser]);
 
+  useEffect(() => {
+    if (!orderDetails && !isFinishingOrderRef.current) {
+      navigate.push('/client/checkout');
+    }
+  }, [orderDetails]);
+
   const paymentMethod = paymentMethods?.find(
     (data) => data.id === orderDetails?.idPaymentMethod,
   );
 
-  const calculateTotalPrice = (addressId: string) => {
-    setAddressId(addressId);
-    calculateShipping(addressId);
+  const calculateTotalPrice = (newAddressId: string) => {
+    setAddressId(newAddressId);
+    calculateShipping(newAddressId);
     setAddressSelected(true);
     addressFormMethodsRef.current?.reset();
+  };
+
+  const handleRemoveAddress = async (
+    currentEnderecoId: string,
+    currentAddressId: string,
+  ) => {
+    const removed = await removeAddress(currentEnderecoId);
+    if (!removed) return;
+
+    if (addressId === currentAddressId) {
+      setAddressId('');
+      setAddressSelected(false);
+      setTotalPrice(Number(itemsWithLoggedUser?.valorTotal) || 0);
+      setShipping(null);
+    }
   };
 
   async function handleSubmitOrder() {
@@ -87,220 +121,302 @@ export default function SummaryClientPage() {
       observation: orderDetails!.observation,
       schedulingDate: orderDetails!.schedulingDate,
     };
+
     const order = await createOrder(createOrderObj);
     if (order?.id == null) {
       return;
     }
-    navigate.push(`/client/orders/${order?.id}`);
+
+    isFinishingOrderRef.current = true;
+    clearOrder();
+    navigate.push(`/client/orders/${order.id}`);
   }
 
   return (
-    <main className="flex flex-col gap-10 md2:flex-row md2:items-start md2:gap-12 lg:gap-20">
-      <section className="w-full md2:w-[60%] lg:w-[55%]">
-        <BackPageButton />
-        <TitleH1 className="mb-2">Endereço de entrega</TitleH1>
-        <div>
-          <div className="mb-4 flex flex-col gap-2 rounded-md border border-text-secondary p-3">
-            <p className="mb-1 font-semibold">Selecione um endereço:</p>
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 md2:flex-row md2:items-start md2:gap-8">
+      <section className="w-full md2:w-[62%] lg:w-[60%]">
+        <div className="mb-5">
+          <BackPageButton />
+        </div>
 
+        <header className="mb-5 rounded-3xl border border-text-primary/10 bg-gradient-to-br from-green_details-greenFooter/30 via-neutral-white to-neutral-white p-6 shadow-sm">
+          <TitleH1 className="mb-2">Endereço de entrega</TitleH1>
+          <p className="text-sm text-text-secondary sm:text-base">
+            Selecione um endereço existente ou cadastre um novo para calcular o
+            frete e concluir seu pedido.
+          </p>
+        </header>
+
+        <article className="rounded-2xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm sm:p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <MapPinHouse className="h-5 w-5 text-text-green" />
+            <TitleH4 className="mb-0">Selecione um endereço</TitleH4>
+          </div>
+
+          <div className="space-y-3">
             {address && address.length > 0 ? (
-              address.map((address) => (
-                <div className="flex justify-between" key={address.endereco.id}>
-                  <label className="flex cursor-pointer items-center gap-2">
+              address.map((currentAddress) => (
+                <div
+                  key={currentAddress.endereco.id}
+                  className="group flex items-start justify-between gap-3 rounded-xl border border-text-primary/10 bg-neutral-offWhite px-4 py-3 transition-colors hover:border-green_details-greenLight/30 hover:bg-neutral-white"
+                >
+                  <label className="flex cursor-pointer items-start gap-3">
                     <input
                       type="radio"
                       name="selectedAddress"
-                      value={address.endereco.id}
-                      className="h-4 w-4"
-                      onClick={() => calculateTotalPrice(address.endereco.id)}
+                      value={currentAddress.endereco.id}
+                      checked={addressId === currentAddress.endereco.id}
+                      className="mt-1 h-4 w-4 accent-text-green"
+                      onChange={() =>
+                        calculateTotalPrice(currentAddress.endereco.id)
+                      }
                     />
-                    <span className="text-sm text-text-secondary">
-                      {address.endereco.rua}, {address.endereco.numero} -{' '}
-                      {address.endereco.bairro}, {address.endereco.cidade} -{' '}
-                      {address.endereco.estado} (CEP {address.endereco.cep})
+                    <span className="text-sm leading-relaxed text-text-secondary">
+                      {currentAddress.endereco.rua},{' '}
+                      {currentAddress.endereco.numero}
+                      {' - '}
+                      {currentAddress.endereco.bairro},{' '}
+                      {currentAddress.endereco.cidade}
+                      {' - '}
+                      {currentAddress.endereco.estado} (CEP{' '}
+                      {currentAddress.endereco.cep})
                     </span>
                   </label>
-                  <Trash2
-                    size={18}
-                    color="#b81414"
-                    className="cursor-pointer"
-                    onClick={() => removeAddress(address.enderecoId)}
-                  />
+
+                  <button
+                    type="button"
+                    className="rounded-md p-1.5 text-details-error transition-colors hover:bg-details-error/10"
+                    onClick={() =>
+                      handleRemoveAddress(
+                        currentAddress.enderecoId,
+                        currentAddress.endereco.id,
+                      )
+                    }
+                    aria-label="Remover endereço"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               ))
             ) : (
-              <div>
-                <p className="mb-1 font-semibold text-blue-600">
-                  Adicione um novo endereço para prosseguir
-                </p>
+              <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700">
+                Adicione um novo endereço para prosseguir
               </div>
             )}
           </div>
-          <div>
-            <DefaultForm schema={addressUserDataSchema} onSubmit={addAddress}>
-              {(methods) => {
-                addressFormMethodsRef.current = methods;
-                const consultaViaCep = async (cep: string) => {
-                  try {
-                    setIsLoading(true);
-                    if (cep != '') {
-                      const result = await fetch(
-                        `https://viacep.com.br/ws/${cep}/json/`,
-                      );
-                      const data: AddressViaCepInterface = await result.json();
-                      setDisableAddressButton(cep ? false : true);
-                      methods.setValue('street', data.logradouro);
-                      methods.setValue('neighborhood', data.bairro);
-                      methods.setValue('city', data.localidade);
-                      methods.setValue('state', data.uf);
-                    } else {
-                      methods.reset();
-                    }
-                  } catch (error) {
-                    console.error(error);
-                    toast.error('Erro ao pesquisar CEP, informe um cep válido');
-                  } finally {
-                    setIsLoading(false);
+        </article>
+
+        <article className="mt-5 rounded-2xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm sm:p-6">
+          <TitleH4 className="mb-3">Novo endereço</TitleH4>
+
+          <DefaultForm schema={addressUserDataSchema} onSubmit={addAddress}>
+            {(methods) => {
+              addressFormMethodsRef.current = methods;
+
+              const consultaViaCep = async (cep: string) => {
+                try {
+                  setIsLoading(true);
+                  if (cep != '') {
+                    const result = await fetch(
+                      `https://viacep.com.br/ws/${cep}/json/`,
+                    );
+                    const data: AddressViaCepInterface = await result.json();
+                    setDisableAddressButton(cep ? false : true);
+                    methods.setValue('street', data.logradouro);
+                    methods.setValue('neighborhood', data.bairro);
+                    methods.setValue('city', data.localidade);
+                    methods.setValue('state', data.uf);
+                  } else {
+                    methods.reset();
                   }
-                };
+                } catch (error) {
+                  console.error(error);
+                  toast.error('Erro ao pesquisar CEP, informe um cep válido');
+                } finally {
+                  setIsLoading(false);
+                }
+              };
 
-                return (
-                  <>
-                    <div className="class-form-checkout-summary">
-                      <InputField
-                        label="CEP"
-                        name="zipCode"
-                        type="text"
-                        disabled={isLoading || loading}
-                        placeholder="Digite seu cep"
-                        maxLength={8}
-                        onBlur={(e) => consultaViaCep(e.target.value)}
-                      />
-                      <InputField
-                        label="Rua"
-                        name="street"
-                        type="text"
-                        disabled={isLoading || loading}
-                        placeholder="Ex: Roberto Silveira"
-                      />
-                    </div>
-
-                    <div className="class-form-checkout-summary">
-                      <InputField
-                        label="Bairro"
-                        name="neighborhood"
-                        type="text"
-                        placeholder="Ex: Fonseca"
-                        disabled={isLoading || loading}
-                      />
-                      <InputField
-                        label="Cidade"
-                        name="city"
-                        type="text"
-                        placeholder="Ex: Niterói"
-                        disabled={isLoading || loading}
-                      />
-                    </div>
-
-                    <div className="class-form-checkout-summary">
-                      <InputField
-                        label="Estado"
-                        name="state"
-                        type="text"
-                        placeholder="Ex: RJ"
-                        disabled={isLoading || loading}
-                      />
-                      <InputField
-                        label="Número"
-                        name="number"
-                        type="number"
-                        placeholder="Ex: 33"
-                        disabled={isLoading || loading}
-                      />
-                    </div>
-
+              return (
+                <>
+                  <div className="class-form-checkout-summary">
                     <InputField
-                      label="Complemento (obrigatório)"
-                      name="complement"
+                      label="CEP"
+                      name="zipCode"
                       type="text"
-                      placeholder="Ex: Bloco2/apto:402"
+                      disabled={isLoading || loading}
+                      placeholder="Digite seu cep"
+                      maxLength={8}
+                      onBlur={(e) => consultaViaCep(e.target.value)}
+                    />
+                    <InputField
+                      label="Rua"
+                      name="street"
+                      type="text"
+                      disabled={isLoading || loading}
+                      placeholder="Ex: Roberto Silveira"
+                    />
+                  </div>
+
+                  <div className="class-form-checkout-summary">
+                    <InputField
+                      label="Bairro"
+                      name="neighborhood"
+                      type="text"
+                      placeholder="Ex: Fonseca"
                       disabled={isLoading || loading}
                     />
-                    <ButtonDefault
-                      type="submit"
-                      variant="primary"
-                      isLoading={isLoading || loading}
-                      disabled={disableAddressButton}
-                    >
-                      Salvar Endereço
-                    </ButtonDefault>
-                  </>
-                );
-              }}
-            </DefaultForm>
+                    <InputField
+                      label="Cidade"
+                      name="city"
+                      type="text"
+                      placeholder="Ex: Niterói"
+                      disabled={isLoading || loading}
+                    />
+                  </div>
+
+                  <div className="class-form-checkout-summary">
+                    <InputField
+                      label="Estado"
+                      name="state"
+                      type="text"
+                      placeholder="Ex: RJ"
+                      disabled={isLoading || loading}
+                    />
+                    <InputField
+                      label="Número"
+                      name="number"
+                      type="text"
+                      placeholder="Ex: 33"
+                      disabled={isLoading || loading}
+                    />
+                  </div>
+
+                  <InputField
+                    label="Complemento (obrigatório)"
+                    name="complement"
+                    type="text"
+                    placeholder="Ex: Bloco2/apto:402"
+                    disabled={isLoading || loading}
+                  />
+
+                  <ButtonDefault
+                    type="submit"
+                    variant="primary"
+                    isLoading={isLoading || loading}
+                    disabled={disableAddressButton || addressSelected}
+                    className="mt-2"
+                  >
+                    Salvar Endereço
+                  </ButtonDefault>
+                </>
+              );
+            }}
+          </DefaultForm>
+        </article>
+      </section>
+
+      <section className="w-full md2:sticky md2:top-6 md2:w-[38%] lg:w-[36%]">
+        <article className="rounded-2xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm sm:p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <PackageCheck className="h-5 w-5 text-text-green" />
+            <TitleH1 className="mb-0 text-xl sm:text-2xl">
+              Resumo do pedido
+            </TitleH1>
           </div>
-        </div>
+
+          <div className="space-y-3">
+            <TitleH4 className="mb-0">Produtos</TitleH4>
+
+            <div className="space-y-2 rounded-xl border border-text-primary/10 bg-neutral-offWhite p-3">
+              {itemsWithLoggedUser?.carrinhoItens &&
+                itemsWithLoggedUser.carrinhoItens.map((item) => (
+                  <p key={item.id} className="text-sm text-text-primary">
+                    {formartQuantityItem(item)}x{' '}
+                    {item.item.itemDescription.nome}
+                  </p>
+                ))}
+            </div>
+
+            <div className="space-y-2 rounded-xl border border-text-primary/10 bg-neutral-offWhite p-3 text-sm">
+              <p className="class-container-icons-text text-text-secondary">
+                <CalendarDays className="h-4 w-4 text-text-green" />
+                <span className="font-semibold text-text-primary">
+                  Data de entrega:
+                </span>
+                {formatDatePtBr(orderDetails?.schedulingDate || '')}
+              </p>
+
+              <p className="class-container-icons-text text-text-secondary">
+                <Clock3 className="h-4 w-4 text-text-green" />
+                <span className="font-semibold text-text-primary">
+                  Horário de entrega:
+                </span>
+                {orderDetails?.startTime} - {orderDetails?.endTime}
+              </p>
+
+              <p className="class-container-icons-text text-text-secondary">
+                <CreditCard className="h-4 w-4 text-text-green" />
+                <span className="font-semibold text-text-primary">
+                  Método de pagamento:
+                </span>
+                {paymentMethod?.nome ? paymentMethod.nome : WITHOUTCONTENT}
+              </p>
+
+              <p className="class-container-icons-text items-start text-text-secondary">
+                <MessageSquareText className="mt-0.5 h-4 w-4 text-text-green" />
+                <span className="font-semibold text-text-primary">
+                  Observação:
+                </span>
+                {orderDetails?.observation
+                  ? orderDetails.observation
+                  : 'sem observação...'}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-text-primary/10 bg-neutral-offWhite p-3">
+              <p className="mb-2 flex items-center justify-between text-sm">
+                <span className="class-container-icons-text">
+                  <CircleDollarSign className="h-4 w-4 text-text-green" />
+                  <span className="font-semibold text-text-primary">
+                    Subtotal
+                  </span>
+                </span>
+                <span className="font-semibold text-text-primary">
+                  {normalizeCurrency(itemsWithLoggedUser?.valorTotal || '0')}
+                </span>
+              </p>
+
+              <p className="mb-2 flex items-center justify-between text-sm">
+                <span className="class-container-icons-text">
+                  <Truck className="h-4 w-4 text-text-green" />
+                  <span className="font-semibold text-text-primary">Frete</span>
+                </span>
+                <span className="font-semibold text-text-primary">
+                  {shipping ? normalizeCurrency(shipping) : '0.00'}
+                </span>
+              </p>
+
+              <div className="h-px bg-text-primary/10" />
+
+              <p className="mt-2 flex items-center justify-between text-base font-bold text-text-primary">
+                <span>Total</span>
+                <span>{normalizeCurrency(totalPrice)}</span>
+              </p>
+            </div>
+
+            <ButtonDefault
+              onClick={() => handleSubmitOrder()}
+              className="mt-2 w-full"
+              variant="primary"
+              disabled={address?.length === 0 || addressSelected === false}
+            >
+              Fazer Pedido
+            </ButtonDefault>
+          </div>
+        </article>
       </section>
-      <section className="mt-7 w-full md2:w-[40%] lg:w-[35%]">
-        <TitleH1 className="mb-2">Resumo do pedido</TitleH1>
-        <TitleH4 className="mb-1">Produtos</TitleH4>
-        <div className="flex flex-col gap-2">
-          {itemsWithLoggedUser?.carrinhoItens &&
-            itemsWithLoggedUser?.carrinhoItens.map((item) => (
-              <div key={item.id}>
-                <p>
-                  {formartQuantityItem(item)}x {item.item.itemDescription.nome}
-                </p>
-              </div>
-            ))}
-          <hr />
-          <p>
-            {' '}
-            <span className="font-semibold">Data de entrega: </span>{' '}
-            {formatDatePtBr(orderDetails?.schedulingDate || '')}
-          </p>
-          <p>
-            <span className="font-semibold"> Horário de entrega entre: </span>{' '}
-            {orderDetails?.startTime} - {orderDetails?.endTime}
-          </p>
-          <p>
-            <span className="font-semibold">Método de pagamento: </span>
-            {paymentMethod?.nome ? paymentMethod.nome : WITHOUTCONTENT}
-          </p>
-          <p>
-            <span className="font-semibold">Observação: </span>
-            {orderDetails?.observation
-              ? orderDetails.observation
-              : 'sem observação...'}
-          </p>
-          <hr />
-          <p className="font-semibold">
-            Subtotal:{' '}
-            {normalizeCurrency(
-              itemsWithLoggedUser?.valorTotal
-                ? itemsWithLoggedUser?.valorTotal
-                : '0',
-            )}
-          </p>
-          <p>
-            <span className="font-semibold">
-              Frete: {shipping ? normalizeCurrency(shipping) : '0.00'}
-            </span>
-          </p>
-          <p className="font-semibold">
-            Total: {normalizeCurrency(totalPrice)}
-          </p>
-          <hr />
-          <ButtonDefault
-            onClick={() => handleSubmitOrder()}
-            className="mt-4"
-            variant="primary"
-            disabled={address?.length === 0 || addressSelected === false}
-          >
-            Fazer Pedido
-          </ButtonDefault>
-        </div>
-      </section>
+
       {(isLoading || loading) && <LoadingComponent mode="fullScreen" />}
     </main>
   );

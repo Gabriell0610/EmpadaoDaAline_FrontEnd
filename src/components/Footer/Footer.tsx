@@ -26,6 +26,9 @@ export const Footer = () => {
           <CustomLink type="footer" href="/doubt">
             Dúvidas
           </CustomLink>
+          <CustomLink type="footer" href="/termos">
+            Política de privacidade
+          </CustomLink>
           <p>Entre em contato: (21) 98464-6995</p>
         </div>
 
