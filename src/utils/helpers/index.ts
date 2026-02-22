@@ -54,7 +54,7 @@ export const formatCep = (cep: string) => {
 };
 
 export const baseUrl = () => {
-  const url = 'http://localhost:1338/api';
+  const url = process.env.BASE_URL;
   if (!url) throw new Error('API base URL não definida!');
   return url;
 };
