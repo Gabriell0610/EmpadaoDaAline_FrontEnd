@@ -90,7 +90,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                 <div className="px-4 text-center">
                   <TitleH2>Seu carrinho está vazio!</TitleH2>
                   <p className="text-base">
-                    Navegue pelo site e adicine itens para realizar sua compra!
+                    Navegue pelo site e adicione itens para realizar sua compra!
                   </p>
                 </div>
               ) : !isAuthenticated ? (

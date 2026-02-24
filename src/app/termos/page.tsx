@@ -15,8 +15,9 @@ export default function TermsPage() {
 
           <p className="mb-4 leading-relaxed text-text-primary">
             Esta Política de Privacidade descreve como os dados pessoais são
-            coletados, utilizados e protegidos por meio da plataforma [NOME DO
-            SITE], destinada à realização de pedidos de alimentos para entrega.
+            coletados, utilizados e protegidos por meio da plataforma [EMPADÃO
+            DA ALINE], destinada à realização de pedidos de alimentos para
+            entrega.
           </p>
 
           <p className="mb-4 leading-relaxed text-text-primary">
