@@ -94,8 +94,6 @@ export const orderDetailsSchema = orderDetailsBaseSchema
   );
 
 export const orderSchema = orderDetailsBaseSchema.extend({
-  idCart: z.string(),
-  idUser: z.string(),
   idAddress: z.string(),
   shipping: z.string(),
 });

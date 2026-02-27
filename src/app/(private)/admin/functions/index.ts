@@ -1,5 +1,5 @@
 'use client';
-import { useClientOrder } from '@/app/client/orders/functions';
+import { useClientOrder } from '@/app/(private)/client/orders/functions';
 import {
   ADMIN_EDIT_OTDER,
   CHANGE_STATUS_ORDER,
@@ -116,6 +116,7 @@ export function useAdminRequest({ id }: DetailsPageProps) {
       toast.error('Erro inesperado, por favor entre em contato com suporte');
     } else {
       await listOrderByClientId(id);
+      await listOrders();
     }
   }
 

@@ -26,6 +26,16 @@ export default function StatusOrderComponent({
     [StatusOrder.CANCELADO]: 'bg-details-canceled',
     [StatusOrder.ENTREGUE]: 'bg-details-delivered',
     [StatusOrder.ACEITO]: 'bg-green_details-greenLight',
+    [StatusOrder.CONFIRMADO_CLIENTE]: 'bg-details-confirmByClient',
+  };
+
+  const STATUS_LABEL_MAP: Record<StatusOrder, string> = {
+    [StatusOrder.PENDENTE]: 'PENDENTE',
+    [StatusOrder.PREPARANDO]: 'PREPARABNDO',
+    [StatusOrder.CANCELADO]: 'CANCELADO',
+    [StatusOrder.ENTREGUE]: 'ENTREGUE',
+    [StatusOrder.ACEITO]: 'ACEITO',
+    [StatusOrder.CONFIRMADO_CLIENTE]: 'CONFIRMADO',
   };
 
   function getStatusColor(status?: StatusOrder) {
@@ -53,7 +63,6 @@ export default function StatusOrderComponent({
     onChange?.(newStatus);
   }
 
-  // DMIN MODE
   if (mode === 'admin') {
     return (
       <div className="flex items-center gap-2">
@@ -70,7 +79,7 @@ export default function StatusOrderComponent({
         >
           {Object.values(StatusOrder).map((status) => (
             <option key={status} value={status}>
-              {status}
+              {STATUS_LABEL_MAP[status]}
             </option>
           ))}
         </select>
@@ -78,7 +87,6 @@ export default function StatusOrderComponent({
     );
   }
 
-  // DESCRIPTION MODE
   if (description) {
     return (
       <p className="mt-1 text-sm opacity-90">
@@ -89,17 +97,16 @@ export default function StatusOrderComponent({
             getStatusColor(status),
           )}
         >
-          {status}
+          {STATUS_LABEL_MAP[status]}
         </span>
       </p>
     );
   }
 
-  //DEFAULT VIEW
   return (
     <div className="flex items-center gap-2">
       <StatusDot status={status} />
-      <p className="sm:text-base">{status}</p>
+      <p className="sm:text-base">{STATUS_LABEL_MAP[status]}</p>
     </div>
   );
 }

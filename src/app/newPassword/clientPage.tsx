@@ -39,6 +39,7 @@ export default function ClientPageNewPassword() {
       method: StatusHttp.POST,
       url: AUTH_RESET_PASSWORD,
       body: dataToSend,
+      requiresAuth: false,
     });
 
     if (!res.success) {

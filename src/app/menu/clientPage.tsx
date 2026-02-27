@@ -32,22 +32,22 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
   const panquecas = activeItems.filter((item) => item.tipo === 'PANQUECA');
   const almondegas = activeItems.filter((item) => item.tipo === 'ALMONDEGA');
 
+  if (activeItems.length === 0) {
+    return (
+      <EmptyContent
+        title="Ocorreu algum erro e estamos tentando resolver..."
+        description="aguarde alguns instantes ou renicie a página"
+        image={ImageContentEmptyError}
+        alt="conteúdo vazio na tela por conta do servidor"
+      />
+    );
+  }
+
   const renderSection = (
     title: string,
     items: typeof activeItems,
     id: string,
   ) => {
-    if (items.length === 0) {
-      return (
-        <EmptyContent
-          title="Ocorreu algum erro e estamos tentando resolver..."
-          description="aguarde alguns instantes e renicie a página"
-          image={ImageContentEmptyError}
-          alt="conteúdo vazio na tela por conta do servidor"
-        />
-      );
-    }
-
     return (
       <section className="relative mt-3">
         <TitleH1>{title}</TitleH1>
@@ -65,7 +65,6 @@ export default function MenuClient({ activeItems }: ClientPageProps) {
               580: { slidesPerView: 2 },
               1024: { slidesPerView: 3 },
             }}
-            // Garante atualização quando o layout muda
             observer
             observeParents
             resizeObserver

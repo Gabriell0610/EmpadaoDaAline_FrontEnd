@@ -9,7 +9,6 @@ interface JwtCustomPayload extends JwtPayload {
 
 export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('access_token');
-
   const pathname = req.nextUrl.pathname;
 
   const publicRoutes = [
@@ -18,10 +17,19 @@ export async function middleware(req: NextRequest) {
     '/register',
     '/forgetPassword',
     '/newPassword',
+    '/menu',
   ];
 
   if (accessToken) {
     const decoded = decode(accessToken.value) as JwtCustomPayload | null;
+
+    if (pathname === '/login' || pathname === '/register') {
+      if (decoded?.role === AccessProfile.ADMIN) {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
+      return NextResponse.redirect(new URL('/client', req.url));
+    }
+
     if (
       decoded?.role !== AccessProfile.ADMIN &&
       pathname.startsWith('/admin')
@@ -30,8 +38,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  if (publicRoutes.includes(pathname)) {
-    return NextResponse.next();
+  if (!accessToken && !publicRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
   return NextResponse.next();

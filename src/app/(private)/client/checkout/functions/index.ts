@@ -106,6 +106,7 @@ export default function useClientCheckout() {
 
     if (!res.success) {
       toast.error(getSafeErrorMessage(res.message));
+      console.error(res.message);
       return;
     }
 
@@ -115,18 +116,23 @@ export default function useClientCheckout() {
   }
 
   async function removeAddress(addressId: string) {
+    const previousAddress = address;
+    setAddress((prev) => prev?.filter((item) => item.enderecoId !== addressId));
+
     const res = await call({
       method: StatusHttp.DELETE,
       url: `${USER}/${addressId}/address`,
     });
 
     if (!res.success) {
+      setAddress(previousAddress);
       toast.error(getSafeErrorMessage(res.message));
-      return;
+      return false;
     }
 
     toast.success(res.message);
     await listAddressByUserId();
+    return true;
   }
 
   return {

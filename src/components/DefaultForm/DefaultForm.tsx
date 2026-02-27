@@ -26,8 +26,6 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
 
   const methods = useForm<TypeOf<T>>({
     resolver: zodResolver(schema),
-    mode: 'onChange',
-    reValidateMode: 'onChange',
     defaultValues,
   });
 
@@ -39,11 +37,15 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
     }
   }, [defaultValues, reset]);
 
+  console.log('schema', schema);
+  console.log(methods.formState.errors);
+
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit((data) => onSubmit(data, methods))}
         className={className}
+        noValidate
       >
         <div className="flex flex-col gap-4">
           {typeof children === 'function' ? children(methods) : children}

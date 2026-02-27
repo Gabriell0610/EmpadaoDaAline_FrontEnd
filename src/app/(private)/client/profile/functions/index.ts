@@ -45,6 +45,9 @@ export default function useProfileRequests() {
       toast.error(getSafeErrorMessage(res.message));
       return;
     }
+
+    toast.success('Usuário editado!');
+
     await GetDataUser();
     closeModal();
   };

@@ -25,8 +25,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { forceLogout } from '@/services/refreshToken';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/authProvider';
 
 export function NavUser({
@@ -39,12 +37,11 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const router = useRouter();
+  //const router = useRouter();
   const { logout } = useAuth();
 
   async function handleForceLogin() {
-    logout();
-    await forceLogout(router);
+    await logout();
   }
 
   return (

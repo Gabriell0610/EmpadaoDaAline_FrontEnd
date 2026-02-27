@@ -17,6 +17,7 @@ interface ButtonInterface extends ButtonProps {
   variant?: VariantButton;
   href?: string;
   isLoading?: boolean;
+  target?: string;
 }
 
 export const ButtonDefault = ({
@@ -28,6 +29,7 @@ export const ButtonDefault = ({
   isLoading,
   disabled,
   className,
+  target,
   ...rest
 }: ButtonInterface) => {
   const isLink = variant === 'link';
@@ -47,6 +49,7 @@ export const ButtonDefault = ({
             : 'text-green_details-greenLight hover:underline',
           className,
         )}
+        target={target}
       >
         {children}
       </Link>

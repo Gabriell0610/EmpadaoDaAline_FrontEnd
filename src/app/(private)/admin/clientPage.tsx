@@ -44,12 +44,15 @@ export default function DashboardClientPage() {
   } = useAdminRequest({});
   const navigate = useRouter();
 
+  console.log(orders);
+
   function submitFilterOrderByPeriod(data: DashboardFilterByPeriodData) {
     setStartDatePeriod(data.startDate || null);
     setEndDatePeriod(data.endDate || null);
   }
 
   const isToday = (isoDate?: string | null) => {
+    console.log('data: ', isoDate);
     if (!isoDate) return false;
 
     const dateOnly = isoDate.split('T')[0]; // YYYY-MM-DD
@@ -178,14 +181,13 @@ export default function DashboardClientPage() {
                     {order.metodoPagamento.nome}
                   </span>
                 </div>
-                {isToday(order.dataAgendamento) && (
-                  <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
-                    <p>
-                      {order.status === StatusOrder.ENTREGUE ||
-                        (StatusOrder.CANCELADO ? '' : 'Entregar Hoje')}
-                    </p>
-                  </div>
-                )}
+                {isToday(order.dataAgendamento) &&
+                  order.status !== StatusOrder.CANCELADO &&
+                  order.status !== StatusOrder.ENTREGUE && (
+                    <div className="mt-3 w-28 rounded-md border bg-orange-500 text-center text-neutral-white">
+                      <p>Entregar Hoje</p>
+                    </div>
+                  )}
               </div>
             </div>
           ))}

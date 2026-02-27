@@ -3,15 +3,38 @@ import { cepValidation } from '../validators';
 
 export const addressUserDataSchema = z.object({
   zipCode: cepValidation,
-  neighborhood: z.string().nonempty('O bairro é obrigatório'),
-  city: z.string().nonempty('A cidade é obrigatória'),
-  street: z.string().nonempty('A rua é obrigatório'),
-  number: z.string().nonempty('O número é obrigatório'),
+  neighborhood: z
+    .string({
+      required_error: 'Bairro é obrigatório',
+    })
+    .nonempty('Bairro é obrigatório'),
+  city: z
+    .string({
+      required_error: 'Cidade é obrigatório',
+    })
+    .nonempty('Cidade é obrigatóri é obrigatório'),
+  street: z
+    .string({
+      required_error: 'Rua é obrigatório',
+    })
+    .nonempty('Rua é obrigatório'),
+  number: z
+    .string({
+      required_error: 'O número é obrigatório',
+    })
+    .nonempty('O número é obrigatório'),
+
+  complement: z
+    .string({
+      required_error: 'Complemento é obrigatório',
+    })
+    .nonempty('Complemento é obrigatório'),
   state: z
-    .string()
-    .nonempty('O Estado é obrigatório')
-    .min(2, 'O estado deve ter no mínimo dois caracteres'),
-  complement: z.string().nonempty('complemento é obrigatório'),
+    .string({
+      required_error: 'Estado é obrigatório',
+    })
+    .nonempty('Estado é obrigatório')
+    .min(2, 'Estado deve ter no mínimo dois caracteres'),
 });
 
 export const editAddressUserDataSchema = z.object({

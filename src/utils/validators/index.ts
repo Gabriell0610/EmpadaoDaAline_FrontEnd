@@ -13,7 +13,10 @@ export const passwordValidation = z
   .regex(/[\W_]/, 'A senha deve conter pelo menos um caractere especial');
 
 export const cepValidation = z
-  .string()
+  .string({
+    required_error: 'CEP é obrigatório',
+  })
+  .nonempty('CEP é obrigatório')
   .transform((value) => value.replace(/\D/g, ''))
   .refine((value) => value.length === 8, {
     message: 'CEP inválido',

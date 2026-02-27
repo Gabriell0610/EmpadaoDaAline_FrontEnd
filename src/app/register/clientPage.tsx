@@ -8,9 +8,11 @@ import { useFetch } from '@/hooks/useFetch/useFetch';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { RegisterData, registerSchema } from '@/utils/schemas/register.schema';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ClientPageRegister() {
+  const [showPassword, setShowPassword] = useState(false);
   const route = useRouter();
   const { call, isLoading } = useFetch();
   const handleRegister = async (data: RegisterData) => {
@@ -18,6 +20,7 @@ export default function ClientPageRegister() {
       method: StatusHttp.POST,
       url: AUTH_REGISTER,
       body: data,
+      requiresAuth: false,
     });
 
     if (!res.success) {
@@ -51,6 +54,8 @@ export default function ClientPageRegister() {
           label="Senha"
           name="password"
           type="password"
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
           placeholder="Coloque sua melhor senha"
         />
         <InputField

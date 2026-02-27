@@ -1,5 +1,11 @@
-import { ORDER, ORDER_CANCEL, ORDER_ME } from '@/constants';
+import {
+  ORDER_CONFIRM_CLIENT,
+  ORDER,
+  ORDER_CANCEL,
+  ORDER_ME,
+} from '@/constants';
 import { AccessProfile } from '@/constants/enums/AccessProfile';
+import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { useAuth } from '@/providers/authProvider';
@@ -135,12 +141,28 @@ export function useClientOrder({ id }: DetailsPageProps) {
     }
   }
 
+  async function confirmOrder() {
+    const result = await call<{ status: StatusOrder }, null>({
+      method: StatusHttp.PATCH,
+      url: `${ORDER_CONFIRM_CLIENT}/${id}`,
+      body: { status: StatusOrder.CONFIRMADO_CLIENTE },
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
+
+    toast.success(result.message);
+  }
+
   return {
     handleCancelOrderByClient,
     listOrderByClientId,
     getOrderClient,
     setContentOrderByClientId,
     editOrder,
+    confirmOrder,
     isLoading,
     contentOrderByClientId,
     listOrder,
