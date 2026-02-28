@@ -31,7 +31,7 @@ export default function StatusOrderComponent({
 
   const STATUS_LABEL_MAP: Record<StatusOrder, string> = {
     [StatusOrder.PENDENTE]: 'PENDENTE',
-    [StatusOrder.PREPARANDO]: 'PREPARABNDO',
+    [StatusOrder.PREPARANDO]: 'PREPARANDO',
     [StatusOrder.CANCELADO]: 'CANCELADO',
     [StatusOrder.ENTREGUE]: 'ENTREGUE',
     [StatusOrder.ACEITO]: 'ACEITO',
@@ -77,11 +77,13 @@ export default function StatusOrderComponent({
           }}
           className="w-38 rounded-none border-0 border-b border-black bg-transparent px-0 py-1 outline-none focus:ring-0 lg:w-full"
         >
-          {Object.values(StatusOrder).map((status) => (
-            <option key={status} value={status}>
-              {STATUS_LABEL_MAP[status]}
-            </option>
-          ))}
+          {Object.values(StatusOrder)
+            .filter((status) => status !== StatusOrder.CONFIRMADO_CLIENTE)
+            .map((status) => (
+              <option key={status} value={status}>
+                {STATUS_LABEL_MAP[status]}
+              </option>
+            ))}
         </select>
       </div>
     );

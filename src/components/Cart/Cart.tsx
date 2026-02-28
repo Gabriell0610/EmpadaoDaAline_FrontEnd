@@ -164,7 +164,8 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                     />
                     <div className="flex flex-col gap-1">
                       <TitleH4 className="mb-0">
-                        {content.item.itemDescription.nome}
+                        {content.item.itemDescription.nome} -{' '}
+                        {content.item.tamanho}
                       </TitleH4>
                       <p>{content.item.itemDescription.descricao}</p>
                       <div className="flex items-center justify-between">

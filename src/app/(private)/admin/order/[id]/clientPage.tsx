@@ -139,7 +139,8 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
                 {contentOrderByClientId?.carrinho.carrinhoItens.map(
                   (item, index) => (
                     <li key={index}>
-                      {item.quantidade}x {item.item?.itemDescription?.nome}
+                      {item.quantidade}x {item.item?.itemDescription?.nome} -{' '}
+                      {item.item.tamanho}
                     </li>
                   ),
                 )}
@@ -176,34 +177,36 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
           </h3>
 
           <div className="space-y-3">
-            {Object.values(StatusOrder).map((status) => (
-              <ButtonDefault
-                key={status}
-                variant="third"
-                className={twMerge(
-                  'w-full justify-start',
-                  status === StatusOrder.PREPARANDO
-                    ? 'border-details-inProgress text-details-inProgress opacity-100 hover:bg-details-inProgress'
-                    : status === StatusOrder.CANCELADO
-                      ? 'border-details-canceled text-details-canceled hover:bg-details-canceled'
-                      : status === StatusOrder.ENTREGUE
-                        ? 'border-details-delivered text-details-delivered hover:bg-details-delivered'
-                        : status === StatusOrder.PENDENTE
-                          ? 'border-details-pending text-details-pending hover:bg-details-pending'
-                          : status === StatusOrder.ACEITO
-                            ? 'border-green_details-greenLight text-green_details-greenLight hover:bg-green_details-greenLight'
-                            : '',
-                )}
-                disabled={contentOrderByClientId?.status === status}
-                onClick={() =>
-                  updateStatusOrder(contentOrderByClientId!.id, {
-                    status: status,
-                  })
-                }
-              >
-                Marcar como {status}
-              </ButtonDefault>
-            ))}
+            {Object.values(StatusOrder)
+              .filter((status) => status !== StatusOrder.CONFIRMADO_CLIENTE)
+              .map((status) => (
+                <ButtonDefault
+                  key={status}
+                  variant="third"
+                  className={twMerge(
+                    'w-full justify-start',
+                    status === StatusOrder.PREPARANDO
+                      ? 'border-details-inProgress text-details-inProgress opacity-100 hover:bg-details-inProgress'
+                      : status === StatusOrder.CANCELADO
+                        ? 'border-details-canceled text-details-canceled hover:bg-details-canceled'
+                        : status === StatusOrder.ENTREGUE
+                          ? 'border-details-delivered text-details-delivered hover:bg-details-delivered'
+                          : status === StatusOrder.PENDENTE
+                            ? 'border-details-pending text-details-pending hover:bg-details-pending'
+                            : status === StatusOrder.ACEITO
+                              ? 'border-green_details-greenLight text-green_details-greenLight hover:bg-green_details-greenLight'
+                              : '',
+                  )}
+                  disabled={contentOrderByClientId?.status === status}
+                  onClick={() =>
+                    updateStatusOrder(contentOrderByClientId!.id, {
+                      status: status,
+                    })
+                  }
+                >
+                  Marcar como {status}
+                </ButtonDefault>
+              ))}
           </div>
         </aside>
       </div>

@@ -333,7 +333,7 @@ export default function SummaryClientPage() {
                 itemsWithLoggedUser.carrinhoItens.map((item) => (
                   <p key={item.id} className="text-sm text-text-primary">
                     {formartQuantityItem(item)}x{' '}
-                    {item.item.itemDescription.nome}
+                    {item.item.itemDescription.nome} - {item.item.tamanho}
                   </p>
                 ))}
             </div>
