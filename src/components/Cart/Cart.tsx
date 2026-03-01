@@ -106,7 +106,10 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                       className="h-25 w-28 flex-shrink-0 rounded-sm object-cover"
                     />
                     <div className="flex flex-col gap-3">
-                      <TitleH4>{content.item.itemDescription.nome}</TitleH4>
+                      <TitleH4>
+                        {content.item.itemDescription.nome}{' '}
+                        {content.item.tamanho}
+                      </TitleH4>
                       <p>{content.item.itemDescription.descricao}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">
@@ -164,7 +167,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                     />
                     <div className="flex flex-col gap-1">
                       <TitleH4 className="mb-0">
-                        {content.item.itemDescription.nome} -{' '}
+                        {content.item.itemDescription.nome}{' '}
                         {content.item.tamanho}
                       </TitleH4>
                       <p>{content.item.itemDescription.descricao}</p>

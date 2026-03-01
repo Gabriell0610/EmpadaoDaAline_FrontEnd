@@ -24,12 +24,14 @@ import useProfileRequests from './functions';
 import { UseFormReturn } from 'react-hook-form';
 import { useAuth } from '@/providers/authProvider';
 import { useRouter } from 'next/navigation';
+import { AccessProfile } from '@/constants/enums/AccessProfile';
 
 export default function ProfilePageClient() {
   const [titleModal, setTitleModal] = useState('');
   const [modeModal, setModeModal] = useState('');
   const { logout } = useAuth();
   const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
 
   const {
     dataUserLogged,
@@ -218,6 +220,17 @@ export default function ProfilePageClient() {
             <LogOut size={17} />
             Sair da conta
           </ButtonDefault>
+          {isAuthenticated && user?.role === AccessProfile.ADMIN && (
+            <ButtonDefault
+              variant="link"
+              href="/admin"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 px-6 py-2 text-sm font-semibold sm:text-base"
+            >
+              <LogOut size={17} />
+              Ir para Dashboard
+            </ButtonDefault>
+          )}
         </div>
       </article>
 

@@ -160,7 +160,7 @@ export default function ClientOrderDetailsPage({
                   (item, index) => (
                     <li key={index}>
                       {formartQuantityItem(item)}x{' '}
-                      {item.item?.itemDescription?.nome} - {item.item?.tamanho}
+                      {item.item?.itemDescription?.nome} {item.item?.tamanho}
                     </li>
                   ),
                 )}

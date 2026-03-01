@@ -139,7 +139,7 @@ export default function AdminOrderDetailsPage({ id }: DetailsPageProps) {
                 {contentOrderByClientId?.carrinho.carrinhoItens.map(
                   (item, index) => (
                     <li key={index}>
-                      {item.quantidade}x {item.item?.itemDescription?.nome} -{' '}
+                      {item.quantidade}x {item.item?.itemDescription?.nome}{' '}
                       {item.item.tamanho}
                     </li>
                   ),

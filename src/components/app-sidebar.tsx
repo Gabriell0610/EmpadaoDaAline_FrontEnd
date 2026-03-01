@@ -7,6 +7,7 @@ import {
   ShoppingBasketIcon,
   HomeIcon,
   ChartNoAxesCombined,
+  CircleUserRound,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -53,6 +54,11 @@ export function AppSidebar({ ...props }: AppSidebarInterface) {
         title: 'Itens',
         url: '/admin/newItems',
         icon: ShoppingBasketIcon,
+      },
+      {
+        title: 'Client',
+        url: '/client',
+        icon: CircleUserRound,
       },
     ],
   };

@@ -56,7 +56,7 @@ export default function SummaryClientPage() {
   const navigate = useRouter();
 
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [addressId, setAddressId] = useState('');
+  const [addressId, setAddressId] = useState<string | undefined>(undefined);
 
   const addressFormMethodsRef = useRef<UseFormReturn<AddressUserData> | null>(
     null,
@@ -111,7 +111,7 @@ export default function SummaryClientPage() {
 
   async function handleSubmitOrder() {
     const createOrderObj: OrderDto = {
-      idAddress: addressId,
+      idAddress: addressId!,
       shipping: shipping!,
       endTime: orderDetails!.endTime,
       startTime: orderDetails!.startTime,
@@ -158,18 +158,24 @@ export default function SummaryClientPage() {
               address.map((currentAddress) => (
                 <div
                   key={currentAddress.endereco.id}
-                  className="group flex items-start justify-between gap-3 rounded-xl border border-text-primary/10 bg-neutral-offWhite px-4 py-3 transition-colors hover:border-green_details-greenLight/30 hover:bg-neutral-white"
+                  className="group flex items-center justify-between gap-3 rounded-xl border border-text-primary/10 bg-neutral-offWhite px-4 py-3 transition-colors hover:border-green_details-greenLight/30 hover:bg-neutral-white"
                 >
                   <label className="flex cursor-pointer items-start gap-3">
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="selectedAddress"
                       value={currentAddress.endereco.id}
                       checked={addressId === currentAddress.endereco.id}
                       className="mt-1 h-4 w-4 accent-text-green"
-                      onChange={() =>
-                        calculateTotalPrice(currentAddress.endereco.id)
-                      }
+                      onChange={() => {
+                        if (addressId === currentAddress.endereco.id) {
+                          setAddressId(undefined);
+                          setAddressSelected(false);
+                          setShipping(null);
+                        } else {
+                          calculateTotalPrice(currentAddress.endereco.id);
+                        }
+                      }}
                     />
                     <span className="text-sm leading-relaxed text-text-secondary">
                       {currentAddress.endereco.rua},{' '}
@@ -183,7 +189,7 @@ export default function SummaryClientPage() {
                     </span>
                   </label>
 
-                  <button
+                  <ButtonDefault
                     type="button"
                     className="rounded-md p-1.5 text-details-error transition-colors hover:bg-details-error/10"
                     onClick={() =>
@@ -195,7 +201,7 @@ export default function SummaryClientPage() {
                     aria-label="Remover endereço"
                   >
                     <Trash2 size={18} />
-                  </button>
+                  </ButtonDefault>
                 </div>
               ))
             ) : (
@@ -333,7 +339,7 @@ export default function SummaryClientPage() {
                 itemsWithLoggedUser.carrinhoItens.map((item) => (
                   <p key={item.id} className="text-sm text-text-primary">
                     {formartQuantityItem(item)}x{' '}
-                    {item.item.itemDescription.nome} - {item.item.tamanho}
+                    {item.item.itemDescription.nome} {item.item.tamanho}
                   </p>
                 ))}
             </div>

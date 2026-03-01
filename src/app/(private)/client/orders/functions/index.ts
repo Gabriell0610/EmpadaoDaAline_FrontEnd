@@ -4,7 +4,6 @@ import {
   ORDER_CANCEL,
   ORDER_ME,
 } from '@/constants';
-import { AccessProfile } from '@/constants/enums/AccessProfile';
 import { StatusOrder } from '@/constants/enums/StatusOrder';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
@@ -80,14 +79,11 @@ export function useClientOrder({ id }: DetailsPageProps) {
     }
 
     setListOrder(resListOrdersByClient.data);
-  }, [call]);
+  }, [call, isAuthenticated]);
 
   useEffect(() => {
-    if (user?.role == AccessProfile.ADMIN) {
-      return;
-    }
     getOrderClient();
-  }, [getOrderClient, user?.role]);
+  }, [getOrderClient]);
 
   // cria o socket apenas uma vez
   useEffect(() => {
