@@ -87,7 +87,7 @@ export function useClientOrder({ id }: DetailsPageProps) {
 
   // cria o socket apenas uma vez
   useEffect(() => {
-    const socket = io('http://localhost:1338', {
+    const socket = io(process.env.NEXT_PUBLIC_BASE_URL, {
       query: {
         userId: user?.id,
       },
