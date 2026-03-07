@@ -57,6 +57,7 @@ export default function ClientOrderDetailsPage({
 
   const isPreparing = status === StatusOrder.PREPARANDO;
   const isCanceled = status === StatusOrder.CANCELADO;
+  const isDelivered = status === StatusOrder.ENTREGUE;
   const isConfirmed = status === StatusOrder.CONFIRMADO_CLIENTE;
 
   const navigate = useRouter();
@@ -65,7 +66,7 @@ export default function ClientOrderDetailsPage({
       <div className="w-full max-w-lg">
         <p
           className="class-container-icons-text cursor-pointer"
-          onClick={() => navigate.push('/client')}
+          onClick={() => navigate.push('/client/orders')}
         >
           {' '}
           <ArrowLeft /> Voltar
@@ -193,7 +194,7 @@ export default function ClientOrderDetailsPage({
             </div>
           </div>
 
-          {!isPreparing && (
+          {!isPreparing && !isDelivered && (
             <div className="flex justify-end gap-6 bg-gray-50 p-6">
               {!confirm && (
                 <ButtonDefault
