@@ -1,0 +1,14 @@
+import { Dispatch, SetStateAction } from 'react';
+import { CartItemLocal } from './cartProvider.type';
+import { Carrinho } from '../cart.type';
+
+export interface AuxiliarCartGuestUserProviderInterface {
+  itemsWithGuestUser: CartItemLocal[];
+  setItemsWithGuestUser: Dispatch<SetStateAction<CartItemLocal[]>>;
+}
+
+export interface AuxiliarCartLoggedUserProviderInterface {
+  setItemsWithLoggedUser?: Dispatch<SetStateAction<Carrinho | null>>;
+  itemsWithLoggedUser?: Carrinho | null;
+  listCart: () => Promise<void>;
+}
