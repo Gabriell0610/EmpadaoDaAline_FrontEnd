@@ -88,7 +88,7 @@ export function formartQuantityItem(
 export const DEFAULTMESSAGEERROAPI =
   'Erro inesperado entre em contato com o suporte!';
 
-export function gerarHorarios(inicio = 7, fim = 18, intervalo = 30) {
+export function gerarHorarios(inicio = 11, fim = 18, intervalo = 30) {
   const horarios: string[] = [];
 
   for (let h = inicio; h <= fim; h++) {

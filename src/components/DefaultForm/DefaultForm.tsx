@@ -37,9 +37,6 @@ export function DefaultForm<T extends ZodSchema<any>>(props: FormProps<T>) {
     }
   }, [defaultValues, reset]);
 
-  console.log('schema', schema);
-  console.log(methods.formState.errors);
-
   return (
     <FormProvider {...methods}>
       <form

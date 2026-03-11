@@ -42,6 +42,5 @@ export async function forceLogout(router: AppRouterInstance) {
     }),
   });
 
-  console.log('caiu aqui também');
   router.push('/');
 }

@@ -20,26 +20,28 @@ export async function middleware(req: NextRequest) {
     '/menu',
   ];
 
-  if (accessToken) {
-    const decoded = decode(accessToken.value) as JwtCustomPayload | null;
+  const decoded = accessToken
+    ? (decode(accessToken.value) as JwtCustomPayload | null)
+    : null;
 
-    if (pathname === '/login' || pathname === '/register') {
-      if (decoded?.role === AccessProfile.ADMIN) {
-        return NextResponse.redirect(new URL('/admin', req.url));
-      }
-      return NextResponse.redirect(new URL('/client', req.url));
-    }
+  const isAuthPage = pathname === '/login' || pathname === '/register';
 
-    if (
-      decoded?.role !== AccessProfile.ADMIN &&
-      pathname.startsWith('/admin')
-    ) {
-      return NextResponse.redirect(new URL('/client', req.url));
-    }
+  // usuário autenticado tentando acessar login/register
+  if (decoded && isAuthPage) {
+    return NextResponse.redirect(
+      new URL(
+        decoded.role === AccessProfile.ADMIN ? '/admin' : '/client',
+        req.url,
+      ),
+    );
   }
 
-  if (!accessToken && !publicRoutes.includes(pathname)) {
+  if (!decoded && !publicRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  if (decoded?.role !== AccessProfile.ADMIN && pathname.startsWith('/admin')) {
+    return NextResponse.redirect(new URL('/client', req.url));
   }
 
   return NextResponse.next();

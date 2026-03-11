@@ -53,7 +53,6 @@ export function useFetch() {
             }
           }
 
-          // refresh falhou ou já tentou
           return response;
         }
 
