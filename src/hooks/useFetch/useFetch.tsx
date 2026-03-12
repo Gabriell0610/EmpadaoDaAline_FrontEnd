@@ -51,6 +51,10 @@ export function useFetch() {
                 true,
               );
             }
+
+            if (!refreshed) {
+              router.push('/');
+            }
           }
 
           return response;

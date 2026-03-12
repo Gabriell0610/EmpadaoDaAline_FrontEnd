@@ -14,18 +14,24 @@ export async function refreshToken(): Promise<boolean> {
   isRefreshing = true;
 
   refreshPromise = (async () => {
-    const res = await fetch('/api/server', {
-      method: StatusHttp.POST,
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
+    try {
+      const res = await fetch('/api/server', {
         method: StatusHttp.POST,
-        url: AUTH_REFRESH,
-      }),
-    });
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          method: StatusHttp.POST,
+          url: AUTH_REFRESH,
+        }),
+      });
 
-    isRefreshing = false;
-    return res.ok;
+      return res.ok;
+    } catch {
+      return false;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
   })();
 
   return refreshPromise;
