@@ -21,17 +21,6 @@ export async function POST(request: Request) {
 
   const response = await req.json();
 
-  if (req.status >= 400) {
-    return NextResponse.json(
-      {
-        ...response,
-        success: false,
-        code: req.status,
-      },
-      { status: req.status },
-    );
-  }
-
   const res = NextResponse.json(
     {
       ...response,
@@ -42,7 +31,6 @@ export async function POST(request: Request) {
     { status: req.status },
   );
 
-  // 🔑 sempre repassa cookies, mesmo em erro
   const setCookies = req.headers.getSetCookie();
 
   if (setCookies.length > 0) {

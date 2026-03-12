@@ -87,7 +87,9 @@ export function useClientOrder({ id }: DetailsPageProps) {
 
   // cria o socket apenas uma vez
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_BASE_URL, {
+    const socket = io(process.env.NEXT_PUBLIC_BASE_URL_SOCKET, {
+      path: '/api/socket.io',
+      transports: ['websocket'],
       query: {
         userId: user?.id,
       },

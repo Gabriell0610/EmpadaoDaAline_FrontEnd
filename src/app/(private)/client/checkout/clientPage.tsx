@@ -46,7 +46,7 @@ export default function ClientCheckoutPage() {
     return false;
   }
 
-  const horarios = gerarHorarios(7, 18, 30);
+  const horarios = gerarHorarios(11, 18, 30);
 
   return (
     <main className="flex items-center justify-center">
