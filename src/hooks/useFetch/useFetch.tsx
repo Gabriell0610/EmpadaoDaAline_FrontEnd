@@ -46,6 +46,7 @@ export function useFetch() {
             const refreshed = await refreshToken();
 
             if (refreshed) {
+              window.dispatchEvent(new Event('auth:refresh'));
               return call<TBody, TResponse>(
                 { method, url, body, requiresAuth },
                 true,
