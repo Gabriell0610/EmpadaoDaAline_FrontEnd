@@ -48,6 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     loadUser();
+    const handleRefresh = () => {
+      loadUser();
+    };
+
+    window.addEventListener('auth:refresh', handleRefresh);
+
+    return () => {
+      window.removeEventListener('auth:refresh', handleRefresh);
+    };
   }, []);
 
   async function logout() {
