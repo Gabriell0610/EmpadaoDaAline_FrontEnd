@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 'use client';
 import Image from 'next/image';
-import ImageChef from '../../public/image_home_Page.png';
+import ImageChef from '../../public/image_home_page.png';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
