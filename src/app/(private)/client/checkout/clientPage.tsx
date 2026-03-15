@@ -77,7 +77,7 @@ export default function ClientCheckoutPage() {
               <InputField
                 label="Telefone"
                 name="cellphoneClient"
-                type="number"
+                type="string"
                 placeholder="Ex: (21) 98665-3321"
                 maxLength={11}
                 disabled={isLoading}
