@@ -55,7 +55,8 @@ export function ClientItensPage() {
             {listAllItens?.map((itemDescription) =>
               itemDescription.item.map((data) => (
                 <option value={data.id} key={data.id}>
-                  {itemDescription.nome} - {data.pesoReal}
+                  {itemDescription.nome}{' '}
+                  {data.pesoReal ? '-' + data.pesoReal : ''}
                 </option>
               )),
             )}

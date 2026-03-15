@@ -5,11 +5,13 @@ const ITEM_SIZES = ['P', 'M', 'G', 'GG'] as const;
 const sizeSchema = z.preprocess(
   (val) =>
     typeof val === 'string' ? val.trim().toUpperCase() || undefined : undefined,
-  z.enum(ITEM_SIZES, {
-    errorMap: () => ({
-      message: 'Tamanho inválido. Use apenas: P, M, G ou GG.',
-    }),
-  }),
+  z
+    .enum(ITEM_SIZES, {
+      errorMap: () => ({
+        message: 'Tamanho inválido. Use apenas: P, M, G ou GG.',
+      }),
+    })
+    .optional(),
 );
 
 const ITEM_TYPES = ['EMPADAO', 'PANQUECA', 'ALMODENGA'] as const;
