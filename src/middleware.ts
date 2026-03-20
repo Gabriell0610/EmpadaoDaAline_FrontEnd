@@ -18,6 +18,8 @@ export async function middleware(req: NextRequest) {
     '/forgetPassword',
     '/newPassword',
     '/menu',
+    '/doubt',
+    '/terms',
   ];
 
   const decoded = accessToken

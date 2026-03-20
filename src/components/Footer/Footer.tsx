@@ -39,7 +39,7 @@ export const Footer = () => {
               </CustomLink>
               <CustomLink
                 type="footer"
-                href="/termos"
+                href="/terms"
                 className="text-text-primary decoration-text-secondary/60 transition-colors hover:text-text-green"
               >
                 Política de privacidade
