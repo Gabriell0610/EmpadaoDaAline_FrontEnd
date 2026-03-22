@@ -10,12 +10,21 @@ import { FaMinus } from 'react-icons/fa6';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/providers/cartProvider/cartProvider';
-import { twMerge } from 'tailwind-merge';
 import toast from 'react-hot-toast';
 
 interface CartProps {
   openCart: boolean;
   setOpenCart: (open: boolean) => void;
+}
+interface NormalizedCartItem {
+  id: string;
+  image: string | null;
+  nome: string;
+  tamanho: string;
+  descricao: string;
+  preco: string;
+  unidades: number | null;
+  quantidade: number;
 }
 
 const Cart = ({ openCart, setOpenCart }: CartProps) => {
@@ -32,43 +41,60 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
   const navigation = useRouter();
 
   function handleSubmitForm() {
-    setOpenCart(false); // <-- fecha o drawer
-
-    if (!isAuthenticated) {
-      navigation.push('/login');
-    } else {
-      navigation.push('/client/checkout');
-    }
-
+    setOpenCart(false);
+    navigation.push(isAuthenticated ? '/client/checkout' : '/login');
     toast.success('Aguarde você sera redirecionado...');
   }
 
   const getTotalPrice = () => {
     if (!isAuthenticated) {
-      const totalPrice = itemsWithGuestUser
+      return itemsWithGuestUser
         .map((item) => {
-          const newQuantity = item.item.unidades!
+          const newQuantity = item.item.unidades
             ? Number(item.item.unidades) + item.quantity! - 1
             : item.quantity;
-          return item.item.unidades!
+          return item.item.unidades
             ? Number(item.item.precoUnitario) * newQuantity
             : newQuantity * Number(item.item.preco);
         })
         .reduce((acc, curr) => acc + curr, 0)
         .toFixed(2);
-      return totalPrice;
     }
     return itemsWithLoggedUser?.valorTotal || '0.00';
   };
 
-  const isCartEmpty =
-    (!isAuthenticated && itemsWithGuestUser.length === 0) ||
-    (isAuthenticated &&
-      (!itemsWithLoggedUser?.carrinhoItens ||
-        itemsWithLoggedUser.carrinhoItens.length === 0));
+  const normalizedItems: NormalizedCartItem[] = isAuthenticated
+    ? (itemsWithLoggedUser?.carrinhoItens ?? []).map((c) => ({
+        id: c.itemId,
+        image: c.item.itemDescription.image,
+        nome: c.item.itemDescription.nome,
+        tamanho: c.item.tamanho,
+        descricao: c.item.itemDescription.descricao,
+        preco: c.item.preco,
+        unidades: c.item.unidades ? Number(c.item.unidades) : null,
+        quantidade: c.quantidade,
+      }))
+    : itemsWithGuestUser.map((c) => ({
+        id: c.item.id,
+        image: c.item.itemDescription.image,
+        nome: c.item.itemDescription.nome,
+        tamanho: c.item.tamanho,
+        descricao: c.item.itemDescription.descricao,
+        preco: c.item.preco,
+        unidades: c.item.unidades ? Number(c.item.unidades) : null,
+        quantidade: c.quantity!,
+      }));
+
+  const isCartEmpty = normalizedItems.length === 0;
+
+  const getDisplayQuantity = (item: NormalizedCartItem) =>
+    item.unidades != null
+      ? item.quantidade + item.unidades - 1
+      : item.quantidade;
+
   return (
     <Drawer.Root
-      size={'sm'}
+      size="sm"
       open={openCart}
       onOpenChange={(details) => setOpenCart(details.open)}
     >
@@ -78,7 +104,7 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
           <Drawer.Content>
             <Drawer.Header className="px-3 py-5">
               <TitleH4 className="font-normal">
-                Sacola
+                Sacola{' '}
                 <span className="text-xs text-text-secondary">
                   ({isCartEmpty ? 0 : quantity})
                 </span>
@@ -93,119 +119,52 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
                     Navegue pelo site e adicione itens para realizar sua compra!
                   </p>
                 </div>
-              ) : !isAuthenticated ? (
-                itemsWithGuestUser.map((content) => (
-                  <div
-                    className="mb-5 flex gap-2 bg-white px-2 py-2"
-                    key={content.item.id}
-                  >
-                    <Image
-                      src={content.item.itemDescription.image || ImageFood}
-                      alt="imagem do produto"
-                      quality={100}
-                      className="h-25 w-28 flex-shrink-0 rounded-sm object-cover"
-                    />
-                    <div className="flex flex-col gap-3">
-                      <TitleH4>
-                        {content.item.itemDescription.nome}{' '}
-                        {content.item.tamanho}
-                      </TitleH4>
-                      <p>{content.item.itemDescription.descricao}</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold">
-                          {normalizeCurrency(content.item.preco)}
-                        </p>
-                        <div className="flex items-center gap-4">
-                          <ButtonDefault
-                            onClick={() =>
-                              incrementOrDecrementItemCart(
-                                'decrement',
-                                content.item?.id,
-                              )
-                            }
-                          >
-                            <FaMinus />
-                          </ButtonDefault>
-                          <span className="font-semibold">
-                            {content.item.unidades != null
-                              ? content.quantity +
-                                Number(content.item.unidades) -
-                                1
-                              : content.quantity}
-                          </span>
-                          <ButtonDefault
-                            onClick={() =>
-                              incrementOrDecrementItemCart(
-                                'increment',
-                                content.item?.id,
-                              )
-                            }
-                          >
-                            <FaPlus />
-                          </ButtonDefault>
-                          <ButtonDefault
-                            onClick={() => removeItemCart(content.item?.id)}
-                          >
-                            <FaRegTrashAlt />
-                          </ButtonDefault>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
               ) : (
-                itemsWithLoggedUser?.carrinhoItens.map((content) => (
+                normalizedItems.map((item) => (
                   <div
+                    key={item.id}
                     className="mb-5 flex gap-2 bg-white px-2 py-2"
-                    key={content.itemId}
                   >
-                    <Image
-                      src={content.item.itemDescription.image || ImageFood}
-                      alt="imagem do produto"
-                      quality={100}
-                      className="h-24 w-28 flex-shrink-0 rounded-sm object-cover"
-                    />
-                    <div className="flex flex-col gap-1">
+                    {/* Wrapper corrigido para o fill funcionar */}
+                    <div className="relative h-28 w-28 flex-shrink-0">
+                      <Image
+                        src={item.image || ImageFood}
+                        alt="imagem do produto"
+                        fill
+                        quality={100}
+                        className="rounded-sm object-cover"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
                       <TitleH4 className="mb-0">
-                        {content.item.itemDescription.nome}{' '}
-                        {content.item.tamanho}
+                        {item.nome} {item.tamanho}
                       </TitleH4>
-                      <p>{content.item.itemDescription.descricao}</p>
+                      <p>{item.descricao}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">
-                          {normalizeCurrency(content.item.preco)}
+                          {normalizeCurrency(item.preco)}
                         </p>
                         <div className="flex items-center gap-4">
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItemCart(
-                                'decrement',
-                                content.itemId,
-                              )
+                              incrementOrDecrementItemCart('decrement', item.id)
                             }
                           >
                             <FaMinus size={15} />
                           </ButtonDefault>
                           <span className="font-semibold">
-                            {content.item.unidades != null
-                              ? content.quantidade +
-                                Number(content.item.unidades) -
-                                1
-                              : content.quantidade}
+                            {getDisplayQuantity(item)}
                           </span>
                           <ButtonDefault
                             onClick={() =>
-                              incrementOrDecrementItemCart(
-                                'increment',
-                                content.itemId,
-                              )
+                              incrementOrDecrementItemCart('increment', item.id)
                             }
                           >
                             <FaPlus size={15} />
                           </ButtonDefault>
-
                           <ButtonDefault
-                            onClick={() => removeItemCart(content.itemId)}
+                            onClick={() => removeItemCart(item.id)}
                           >
                             <FaRegTrashAlt size={15} />
                           </ButtonDefault>
@@ -218,22 +177,20 @@ const Cart = ({ openCart, setOpenCart }: CartProps) => {
             </Drawer.Body>
 
             <Drawer.Footer className="flex flex-col border-t border-gray-200 px-4 py-5">
-              <div className="flex w-full flex-col">
-                <div className="mb-4 flex items-center justify-between">
-                  <TitleH4 className="font-semibold">Subtotal</TitleH4>
-                  <p className="font-semibold">
-                    {normalizeCurrency(getTotalPrice())}
-                  </p>
-                </div>
+              <div className="mb-4 flex w-full items-center justify-between">
+                <TitleH4 className="font-semibold">Subtotal</TitleH4>
+                <p className="font-semibold">
+                  {normalizeCurrency(getTotalPrice())}
+                </p>
               </div>
               <ButtonDefault
                 variant="primary"
-                className={twMerge('w-full py-3')}
+                className="w-full py-3"
                 isLoading={isLoading}
-                onClick={() => handleSubmitForm()}
-                disabled={isCartEmpty ? isCartEmpty : false}
+                onClick={handleSubmitForm}
+                disabled={isCartEmpty}
               >
-                {!isAuthenticated ? 'Login / Cadastro' : 'Finalizar Pedido'}
+                {isAuthenticated ? 'Finalizar Pedido' : 'Login / Cadastro'}
               </ButtonDefault>
             </Drawer.Footer>
 

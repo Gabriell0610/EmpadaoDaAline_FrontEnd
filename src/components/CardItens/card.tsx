@@ -18,11 +18,14 @@ export const Card = ({ content, handleOpenCart }: CardProps) => {
   return (
     <>
       <div className="flex h-full flex-col justify-between overflow-hidden rounded-lg bg-white">
-        <Image
-          src={ImageFood}
-          alt="Empadão"
-          className="h-40 w-full object-cover"
-        />
+        <div className="relative h-60 w-full flex-shrink-0 md:h-72">
+          <Image
+            src={content.image ? content.image : ImageFood}
+            alt="Empadão"
+            fill
+            className="object-cover"
+          />
+        </div>
         <div className="flex h-full flex-col justify-between p-4">
           <TitleH3 className="text-sm md:text-sm">{content.nome}</TitleH3>
           <p className="font mb-3 min-h-[72px] text-gray-700 md:text-sm lg:text-base">
