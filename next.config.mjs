@@ -1,4 +1,18 @@
 /** @type {import('next').NextConfig} */
+
+const isDev = process.env.NODE_ENV === 'development';
+
+const cspValue = isDev
+  ? ''
+  : [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
+      "font-src 'self' https://fonts.gstatic.com",
+      "connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co",
+    ].join('; ');
+
 const nextConfig = {
   experimental: {
     optimizePackageImports: ['@chakra-ui/react'],
@@ -28,17 +42,9 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
-              "font-src 'self'",
-              "connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co",
-            ].join('; '),
-          },
+          ...(cspValue
+            ? [{ key: 'Content-Security-Policy', value: cspValue }]
+            : []),
         ],
       },
     ];

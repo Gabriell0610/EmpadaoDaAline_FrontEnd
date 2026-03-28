@@ -9,10 +9,10 @@ export interface ProfilePageProps {
   session: Session | null;
 }
 export interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
     action?: string[];
-  };
+  }>;
 }
 
 export interface DetailsPageProps {
