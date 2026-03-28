@@ -9,13 +9,13 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { setCookie } from 'nookies';
 import { getSafeErrorMessage } from '@/utils/helpers';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { AUTH_FORGOT_PASSWORD, AUTH_VALIDATE_PASSOWRD } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { InputField } from '@/components/InputField/InputField';
 import { ButtonDefault } from '@/components/Button/Button';
+import Cookies from 'js-cookie';
 
 export default function ClientPageForgetPassword() {
   const [tokenNotGenerated, setTokenNotGenerated] = useState(true);
@@ -23,15 +23,8 @@ export default function ClientPageForgetPassword() {
   const router = useRouter();
 
   function saveDataInCookies(data: validateTokenDto) {
-    setCookie(null, 'userEmail', data.email, {
-      path: '/', // necessário para estar acessível em qualquer rota
-      maxAge: 60 * 10, // opcional: tempo de expiração em segundos (ex: 10 minutos)
-    });
-
-    setCookie(null, 'userToken', data.token, {
-      path: '/',
-      maxAge: 60 * 10,
-    });
+    Cookies.set('userEmail', data.email, { expires: 1 / 144 });
+    Cookies.set('userToken', data.token, { expires: 1 / 144 });
   }
 
   const handleGenerateToken = async (data: sendEmailDto) => {

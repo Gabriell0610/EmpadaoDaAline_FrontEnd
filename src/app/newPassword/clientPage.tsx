@@ -10,9 +10,9 @@ import {
   resetPasswordDto,
 } from '@/utils/schemas/forgetPassword';
 import { useRouter } from 'next/navigation';
-import { destroyCookie, parseCookies } from 'nookies';
 import { ButtonDefault } from '@/components/Button/Button';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 export interface NewPasswordData {
   newPassword: string;
@@ -24,9 +24,8 @@ export default function ClientPageNewPassword() {
   const { call, isLoading } = useFetch();
   const router = useRouter();
 
-  const cookies = parseCookies();
-  const userEmail = cookies['userEmail'];
-  const token = cookies['userToken'];
+  const userEmail = Cookies.get('userEmail');
+  const token = Cookies.get('userToken');
 
   const handleNewPassword = async (data: resetPasswordDto) => {
     const dataToSend: NewPasswordData = {
@@ -48,8 +47,8 @@ export default function ClientPageNewPassword() {
     }
 
     toast.success(getSafeErrorMessage(res.message));
-    destroyCookie(null, 'userEmail');
-    destroyCookie(null, 'userToken');
+    Cookies.remove('userEmail');
+    Cookies.remove('userToken');
     router.push('/login');
   };
 
