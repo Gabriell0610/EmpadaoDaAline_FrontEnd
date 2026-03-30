@@ -20,6 +20,7 @@ export async function middleware(req: NextRequest) {
     '/menu',
     '/doubt',
     '/terms',
+    '/not-found',
   ];
 
   const decoded = accessToken
