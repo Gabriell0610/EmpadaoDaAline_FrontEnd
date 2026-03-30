@@ -61,6 +61,10 @@ export function useFetch() {
           return response;
         }
 
+        if (response.code >= 500) {
+          return response;
+        }
+
         return response;
       } catch (error) {
         console.error('Erro na call:', {
