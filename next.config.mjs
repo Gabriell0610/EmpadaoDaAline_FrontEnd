@@ -10,7 +10,7 @@ const cspValue = isDev
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
       "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
       "font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net",
-      "connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co https://viacep.com.br",
+      `connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co https://viacep.com.br ${process.env.NEXT_PUBLIC_BASE_URL} ${process.env.NEXT_PUBLIC_BASE_URL_SCOKET?.replace('https://', 'wss://')}`,
     ].join('; ');
 
 const nextConfig = {
