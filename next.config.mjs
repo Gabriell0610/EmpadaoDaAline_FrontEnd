@@ -6,10 +6,10 @@ const cspValue = isDev
   ? ''
   : [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
       "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
-      "font-src 'self' https://fonts.gstatic.com",
+      "font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net",
       "connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co https://viacep.com.br",
     ].join('; ');
 
