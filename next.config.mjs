@@ -6,11 +6,11 @@ const cspValue = isDev
   ? ''
   : [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://*.vercel.live",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
       "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
       "font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net",
-      "connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co https://viacep.com.br",
+      `connect-src 'self' https://yfgbaqkohcpgvplginjy.supabase.co https://viacep.com.br ${process.env.NEXT_PUBLIC_BASE_URL} ${process.env.NEXT_PUBLIC_BASE_URL_SOCKET?.replace('https://', 'wss://')}`,
     ].join('; ');
 
 const nextConfig = {
