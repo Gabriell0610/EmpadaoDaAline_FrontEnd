@@ -6,7 +6,7 @@ const cspValue = isDev
   ? ''
   : [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://*.vercel.live",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
       "img-src 'self' data: https://yfgbaqkohcpgvplginjy.supabase.co",
       "font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net",
