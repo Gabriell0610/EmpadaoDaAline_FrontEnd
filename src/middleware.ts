@@ -9,6 +9,7 @@ interface JwtCustomPayload extends JwtPayload {
 
 export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('access_token');
+  const refreshToken = req.cookies.get('refresh_token');
   const pathname = req.nextUrl.pathname;
 
   const publicRoutes = [
@@ -27,6 +28,8 @@ export async function middleware(req: NextRequest) {
     ? (decode(accessToken.value) as JwtCustomPayload | null)
     : null;
 
+  const isTokenExpired = decoded?.exp ? decoded.exp * 1000 < Date.now() : true;
+
   const isAuthPage = pathname === '/login' || pathname === '/register';
 
   // usuário autenticado tentando acessar login/register
@@ -39,7 +42,12 @@ export async function middleware(req: NextRequest) {
     );
   }
 
-  if (!decoded && !publicRoutes.includes(pathname)) {
+  // token expirado mas tem refresh_token — deixa passar para o client fazer o refresh
+  if (isTokenExpired && refreshToken && !publicRoutes.includes(pathname)) {
+    return NextResponse.next(); // ← deixa o useFetch/AuthProvider lidar com o refresh
+  }
+
+  if ((!decoded || isTokenExpired) && !publicRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 

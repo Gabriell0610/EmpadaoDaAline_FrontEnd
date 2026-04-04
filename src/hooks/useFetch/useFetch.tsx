@@ -52,10 +52,7 @@ export function useFetch() {
                 true,
               );
             }
-
-            if (!refreshed) {
-              router.push('/');
-            }
+            router.push('/');
           }
 
           return response;
