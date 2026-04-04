@@ -42,9 +42,16 @@ export async function middleware(req: NextRequest) {
     );
   }
 
+  // proteção de admin (token precisa ser válido)
+  if (pathname.startsWith('/admin')) {
+    if (!decoded || isTokenExpired || decoded.role !== AccessProfile.ADMIN) {
+      return NextResponse.redirect(new URL('/client', req.url));
+    }
+  }
+
   // token expirado mas tem refresh_token — deixa passar para o client fazer o refresh
   if (isTokenExpired && refreshToken && !publicRoutes.includes(pathname)) {
-    return NextResponse.next(); // ← deixa o useFetch/AuthProvider lidar com o refresh
+    return NextResponse.next();
   }
 
   if ((!decoded || isTokenExpired) && !publicRoutes.includes(pathname)) {
