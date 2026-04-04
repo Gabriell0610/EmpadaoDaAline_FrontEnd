@@ -44,7 +44,24 @@ export async function middleware(req: NextRequest) {
 
   // proteção de admin (token precisa ser válido)
   if (pathname.startsWith('/admin')) {
-    if (!decoded || isTokenExpired || decoded.role !== AccessProfile.ADMIN) {
+    // sem token → bloqueia direto
+    if (!decoded) {
+      return NextResponse.redirect(new URL('/client', req.url));
+    }
+
+    // token expirado
+    if (isTokenExpired) {
+      // tem refresh → deixa seguir para renovar
+      if (refreshToken) {
+        return NextResponse.next();
+      }
+
+      // sem refresh → bloqueia
+      return NextResponse.redirect(new URL('/client', req.url));
+    }
+
+    // token válido → checa role
+    if (decoded.role !== AccessProfile.ADMIN) {
       return NextResponse.redirect(new URL('/client', req.url));
     }
   }
@@ -56,10 +73,6 @@ export async function middleware(req: NextRequest) {
 
   if ((!decoded || isTokenExpired) && !publicRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  if (decoded?.role !== AccessProfile.ADMIN && pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('/client', req.url));
   }
 
   return NextResponse.next();
