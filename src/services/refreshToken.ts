@@ -25,7 +25,8 @@ export async function refreshToken(): Promise<boolean> {
         }),
       });
 
-      return res.ok;
+      const data = await res.json();
+      return data.success === true;
     } catch {
       return false;
     } finally {
