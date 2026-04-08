@@ -52,8 +52,8 @@ export default function DashboardClientPage() {
   const isToday = (isoDate?: string | null) => {
     if (!isoDate) return false;
 
-    const dateOnly = isoDate.split('T')[0]; // YYYY-MM-DD
-    const today = new Date().toISOString().split('T')[0];
+    const dateOnly = isoDate.split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
 
     return dateOnly === today;
   };
