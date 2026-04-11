@@ -5,15 +5,14 @@ Este é o frontend do projeto de encomendas e agendamentos de pedidos de comida.
 - Next
 - Tailwind
 - React-hook-form
+- zustand
+- zod
 
 🧩 Funcionalidades principais
-Cadastro e login de clientes
-
-Realização de pedidos e/ou agendamentos
-
-Interface de administração para gerenciamento dos pedidos
-
-Navegação entre páginas de forma dinâmica
+- Cadastro e login de clientes
+- Realização de pedidos e/ou agendamentos
+- Interface de administração para gerenciamento dos pedidos
+- Navegação entre páginas de forma dinâmica
 
 💡 Objetivo do projeto
 Esse projeto foi criado como um sistema completo de gerenciamento de pedidos de comida. A ideia é entregar uma solução que atenda tanto os clientes finais, que fazem seus pedidos, quanto o dono do negócio, que acompanha os pedidos na área administrativa.
