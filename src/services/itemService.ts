@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ITENS_ACTIVE } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { baseUrl } from '@/utils/helpers';
@@ -7,19 +8,21 @@ import { ListActiveItemsInterface } from '@/utils/types/items.type';
 export async function listActiveItem(): Promise<
   ApiResponse<ListActiveItemsInterface[]>
 > {
-  const req = await fetch(`${baseUrl()}/${ITENS_ACTIVE}`, {
-    method: StatusHttp.GET,
-    next: { revalidate: 300 },
-  });
+  try {
+    const req = await fetch(`${baseUrl()}/${ITENS_ACTIVE}`, {
+      method: StatusHttp.GET,
+      next: { revalidate: 300 },
+    });
 
-  const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();
+    if (!req.ok) {
+      throw new Error(`Erro na API: ${req.status}`);
+    }
 
-  if (req.status >= 400) {
-    const error = { ...response, success: false };
-    return error;
+    const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();
+
+    return { ...response, success: true };
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  return {
-    ...response,
-    success: true,
-  };
 }
