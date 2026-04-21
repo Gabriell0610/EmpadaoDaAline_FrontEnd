@@ -3,7 +3,7 @@ import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import MenuClient from './clientPage';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
-import NotFound from '../not-found';
+import { notFound } from 'next/navigation';
 export default async function HomeMenu() {
   try {
     const responseActiveItem = await listActiveItem();
@@ -17,6 +17,6 @@ export default async function HomeMenu() {
       </>
     );
   } catch {
-    NotFound();
+    notFound();
   }
 }

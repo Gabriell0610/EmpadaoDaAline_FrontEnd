@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import ClientPage from './clientPage';
 import { listActiveItem } from '@/services/itemService';
-import NotFound from '@/app/not-found';
+import { notFound } from 'next/navigation';
 export default async function ClientDefaultPage() {
   try {
     const responseActiveItem = await listActiveItem();
@@ -12,6 +12,6 @@ export default async function ClientDefaultPage() {
       </div>
     );
   } catch {
-    NotFound();
+    notFound();
   }
 }

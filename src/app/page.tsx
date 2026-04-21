@@ -2,7 +2,7 @@ import Home from './clientPage';
 import { listActiveItem } from '@/services/itemService';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
-import NotFound from './not-found';
+import { notFound } from 'next/navigation';
 
 export default async function HomePage() {
   try {
@@ -16,6 +16,6 @@ export default async function HomePage() {
       </>
     );
   } catch {
-    NotFound();
+    notFound();
   }
 }
