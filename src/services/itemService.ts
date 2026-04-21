@@ -23,6 +23,11 @@ export async function listActiveItem(): Promise<
     return { ...response, success: true };
   } catch (error: any) {
     console.error(error);
-    return { success: false, data: [], message: 'Serviço indisponível' };
+    return {
+      success: false,
+      data: [],
+      message: 'Serviço indisponível',
+      code: 500,
+    };
   }
 }
