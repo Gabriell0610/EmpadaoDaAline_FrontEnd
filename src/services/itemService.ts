@@ -14,20 +14,15 @@ export async function listActiveItem(): Promise<
       next: { revalidate: 300 },
     });
 
-    const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();
-
-    if (req.status >= 400) {
-      return { ...response, success: false };
+    if (!req.ok) {
+      throw new Error(`Erro na API: ${req.status}`);
     }
 
+    const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();
+
     return { ...response, success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
-    return {
-      success: false,
-      data: [],
-      message: 'Serviço indisponível',
-      code: 500,
-    };
+    throw error;
   }
 }

@@ -2,19 +2,20 @@ import Home from './clientPage';
 import { listActiveItem } from '@/services/itemService';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
-import { redirect } from 'next/navigation';
+import NotFound from './not-found';
 
 export default async function HomePage() {
-  const responseActiveItem = await listActiveItem();
-  if (!responseActiveItem.success) {
-    return redirect('not-found');
-  }
+  try {
+    const responseActiveItem = await listActiveItem();
 
-  return (
-    <>
-      <Header />
-      <Home activeItems={responseActiveItem.data} />
-      <Footer />
-    </>
-  );
+    return (
+      <>
+        <Header />
+        <Home activeItems={responseActiveItem.data} />
+        <Footer />
+      </>
+    );
+  } catch {
+    NotFound();
+  }
 }
