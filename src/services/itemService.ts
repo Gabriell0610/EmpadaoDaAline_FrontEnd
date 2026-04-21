@@ -18,11 +18,13 @@ export async function listActiveItem(): Promise<
       throw new Error(`Erro na API: ${req.status}`);
     }
 
-    const response: ApiResponse<ListActiveItemsInterface[]> = await req.json();
+    const response = await req.json().catch(() => {
+      throw new Error('Invalid JSON');
+    });
 
     return { ...response, success: true };
   } catch (error) {
-    console.error(error);
+    console.error('HomePage error:', error);
     throw error;
   }
 }
