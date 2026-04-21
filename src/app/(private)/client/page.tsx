@@ -1,9 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { Header } from '@/components/Header/Header';
 import ClientPage from './clientPage';
 import { listActiveItem } from '@/services/itemService';
 import { notFound } from 'next/navigation';
-import { Footer } from '@/components/Footer/Footer';
 export default async function ClientDefaultPage() {
   try {
     const responseActiveItem = await listActiveItem();
@@ -20,7 +18,6 @@ export default async function ClientDefaultPage() {
   } catch {
     return (
       <>
-        <Header />
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
           <h1 className="mb-2 text-2xl font-semibold text-gray-800">
             Serviço temporariamente indisponível
@@ -31,7 +28,6 @@ export default async function ClientDefaultPage() {
             em alguns instantes.
           </p>
         </div>
-        <Footer />
       </>
     );
   }
