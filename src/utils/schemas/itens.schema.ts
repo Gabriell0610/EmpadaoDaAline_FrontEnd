@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const ITEM_SIZES = ['P', 'M', 'G', 'GG'] as const;
+export const ITEM_SIZES = ['P', 'M', 'G', 'GG'] as const;
 
 const sizeSchema = z.preprocess(
   (val) =>

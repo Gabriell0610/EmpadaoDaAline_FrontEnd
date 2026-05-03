@@ -38,6 +38,7 @@ export default function NewItemRequest() {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);
@@ -52,6 +53,7 @@ export default function NewItemRequest() {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);
