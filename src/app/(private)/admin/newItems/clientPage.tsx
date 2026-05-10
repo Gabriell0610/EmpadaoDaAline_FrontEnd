@@ -23,54 +23,23 @@ import {
 import { useMemo, useState } from 'react';
 import { DefaultValues, UseFormReturn } from 'react-hook-form';
 import NewItemRequest from './function';
+import Image from 'next/image';
+import { ItemType } from '@/constants/enums/ItemType';
+import { ItemSize } from '@/constants/enums/ItemSize';
+import { normalizeCurrency } from '@/utils/helpers';
+import { ItemStatus } from '@/constants/enums/ItemStatus';
 
 type ItemMode = 'edit' | 'create';
-type ItemType = 'EMPADAO' | 'PANQUECA' | 'ALMODENGA';
-type ItemSize = 'P' | 'M' | 'G' | 'GG';
 
 const INPUT_CLASSNAME =
   '[&>label]:mb-1 [&>label]:text-xs [&>label]:font-medium [&>label]:text-text-secondary [&_input]:h-11 [&_input]:rounded-xl [&_input]:border-text-primary/20 [&_input]:bg-neutral-white [&_input]:text-sm [&_input]:focus:border-green_details-greenLight [&_input]:focus:ring-2 [&_input]:focus:ring-green_details-greenLight/25 [&_input]:focus:outline-none [&_select]:h-11 [&_select]:rounded-xl [&_select]:border-text-primary/20 [&_select]:bg-neutral-white [&_select]:text-sm [&_select]:focus:border-green_details-greenLight [&_select]:focus:ring-2 [&_select]:focus:ring-green_details-greenLight/25 [&_select]:focus:outline-none';
-
-const ITEM_TYPES: ItemType[] = ['EMPADAO', 'PANQUECA', 'ALMODENGA'];
-const ITEM_SIZES: ItemSize[] = ['P', 'M', 'G', 'GG'];
-
-function parseToNumber(value?: string | number | null) {
-  if (value === undefined || value === null) return null;
-  if (typeof value === 'number') return value;
-
-  const parsed = Number.parseFloat(value.replace(',', '.'));
-  return Number.isNaN(parsed) ? null : parsed;
-}
-
-function formatMoney(value?: string | number | null) {
-  const parsed = parseToNumber(value);
-
-  if (parsed === null) return 'R$ 0,00';
-
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(parsed);
-}
-
-function normalizeItemType(value?: string | null): ItemType | undefined {
-  const parsed = value?.toUpperCase() as ItemType | undefined;
-  if (!parsed) return undefined;
-  return ITEM_TYPES.includes(parsed) ? parsed : undefined;
-}
-
-function normalizeItemSize(value?: string | null): ItemSize | undefined {
-  const parsed = value?.toUpperCase() as ItemSize | undefined;
-  if (!parsed) return undefined;
-  return ITEM_SIZES.includes(parsed) ? parsed : undefined;
-}
 
 export function ClientItensPage() {
   const {
     listAllItens,
     selectedItem,
     setSelectedItem,
-    inativeItem,
+    changeStatusItem,
     editItem,
     createItem,
     isLoading,
@@ -78,48 +47,23 @@ export function ClientItensPage() {
 
   const [activeMode, setActiveMode] = useState<ItemMode>('edit');
 
-  const selectedItemData = useMemo(
-    () =>
-      listAllItens?.find(
-        (item) =>
-          item.id === selectedItem ||
-          item.item.some((optionItem) => optionItem.id === selectedItem),
-      ),
-    [listAllItens, selectedItem],
+  const selectedItemData = listAllItens.find(
+    (item) =>
+      item.id === selectedItem ||
+      item.item.some((optionItem) => optionItem.id === selectedItem),
   );
 
-  const itemOptionData = useMemo(
-    () =>
-      selectedItemData?.item.find(
-        (optionItem) => optionItem.id === selectedItem,
-      ) || selectedItemData?.item?.[0],
-    [selectedItem, selectedItemData],
-  );
+  const itemOptionData =
+    selectedItemData?.item.find(
+      (optionItem) => optionItem.id === selectedItem,
+    ) || selectedItemData?.item?.[0];
+
   const isEditMode = activeMode === 'edit';
-  const isItemActive = selectedItemData?.status?.toUpperCase() === 'ATIVO';
+  const isItemActive = selectedItemData?.disponivel === ItemStatus.ATIVO;
 
   const formDefaultValues = useMemo<
     DefaultValues<ItensSchemaDto | EditItensSchemaDto>
   >(() => {
-    if (isEditMode && selectedItemData) {
-      const price = parseToNumber(itemOptionData?.preco);
-      const units = Number(itemOptionData?.unidades || 0);
-
-      return {
-        name: selectedItemData.nome || '',
-        price: itemOptionData?.preco || '',
-        image: selectedItemData.image || '',
-        size: normalizeItemSize(itemOptionData?.tamanho),
-        description: selectedItemData.descricao || '',
-        unitPrice:
-          price !== null && units > 0
-            ? Number((price / units).toFixed(2))
-            : undefined,
-        type: normalizeItemType(selectedItemData.tipo),
-        unity: itemOptionData?.unidades || undefined,
-      };
-    }
-
     return {
       name: '',
       price: '',
@@ -130,13 +74,7 @@ export function ClientItensPage() {
       type: undefined,
       unity: undefined,
     };
-  }, [
-    isEditMode,
-    itemOptionData?.preco,
-    itemOptionData?.tamanho,
-    itemOptionData?.unidades,
-    selectedItemData,
-  ]);
+  }, []);
 
   async function handleEditOrCreateItem(
     data: ItensSchemaDto | EditItensSchemaDto,
@@ -214,10 +152,7 @@ export function ClientItensPage() {
 
                   {listAllItens?.map((itemDescription) =>
                     itemDescription.item.map((data, index) => (
-                      <option
-                        value={itemDescription.id}
-                        key={`${itemDescription.id}-${index}`}
-                      >
+                      <option value={data.id} key={`${data.id}-${index}`}>
                         {itemDescription.nome}{' '}
                         {data.pesoReal ? `- ${data.pesoReal}` : ''}
                       </option>
@@ -228,14 +163,18 @@ export function ClientItensPage() {
                 {selectedItemData ? (
                   <div className="mb-4 rounded-xl border border-text-primary/10 bg-neutral-offWhite p-4">
                     <div className="flex items-start gap-3">
-                      <img
-                        src={
-                          selectedItemData.image ||
-                          'https://placehold.co/100x100/e5e7eb/6b7280?text=Item'
-                        }
-                        alt={selectedItemData.nome}
-                        className="h-24 w-24 rounded-lg border border-text-primary/10 object-cover"
-                      />
+                      <div className="relative h-28 w-28 flex-shrink-0">
+                        <Image
+                          src={
+                            selectedItemData.image ||
+                            'https://placehold.co/100x100/e5e7eb/6b7280?text=Item'
+                          }
+                          alt={selectedItemData.nome}
+                          className="h-24 w-24 rounded-lg border border-text-primary/10 object-cover"
+                          fill
+                          quality={100}
+                        />
+                      </div>
                       <div className="space-y-1">
                         <p className="text-lg font-semibold text-text-primary">
                           {selectedItemData.nome}
@@ -247,13 +186,13 @@ export function ClientItensPage() {
                               : 'border border-red-500/25 bg-red-500/10 text-red-600'
                           }`}
                         >
-                          {selectedItemData.status}
+                          {selectedItemData.disponivel}
                         </span>
                         <p className="text-sm text-text-secondary">
                           Tipo: {selectedItemData.tipo}
                         </p>
                         <p className="text-sm font-semibold text-text-primary">
-                          Preco: {formatMoney(itemOptionData?.preco)}
+                          Preço: {normalizeCurrency(itemOptionData?.preco)}
                         </p>
                       </div>
                     </div>
@@ -269,7 +208,9 @@ export function ClientItensPage() {
                   <ButtonDefault
                     type="button"
                     variant="normal"
-                    onClick={() => inativeItem(selectedItem)}
+                    onClick={() =>
+                      changeStatusItem(selectedItem, ItemStatus.INATIVO)
+                    }
                     disabled={!selectedItem}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-500 bg-red-50 px-4 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed"
                   >
@@ -279,12 +220,14 @@ export function ClientItensPage() {
                   <ButtonDefault
                     type="button"
                     variant="normal"
-                    onClick={() => setActiveMode('edit')}
+                    onClick={() =>
+                      changeStatusItem(selectedItem, ItemStatus.ATIVO)
+                    }
                     disabled={!selectedItem}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-text-primary/20 bg-neutral-white px-4 text-sm font-semibold text-text-primary transition hover:bg-neutral-offWhite disabled:cursor-not-allowed"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-green-500 bg-green-50 px-4 text-sm font-semibold text-green-600 transition hover:bg-green-100 disabled:cursor-not-allowed"
                   >
-                    <Pencil size={16} />
-                    Editar item
+                    <CircleSlash size={16} />
+                    Ativar item
                   </ButtonDefault>
                 </div>
               </>
@@ -297,7 +240,7 @@ export function ClientItensPage() {
                       Modo criacao ativo
                     </p>
                     <p className="text-sm text-text-secondary">
-                      O formulario ao lado sera enviado como novo item.
+                      O formulário ao lado será enviado como novo item.
                     </p>
                   </div>
                 </div>
@@ -309,8 +252,8 @@ export function ClientItensPage() {
             <TitleH3 className="mb-1">Dados do item</TitleH3>
             <p className="mb-4 text-sm text-text-secondary">
               {isEditMode
-                ? 'Preencha as informacoes do item selecionado.'
-                : 'Preencha as informacoes para cadastrar um novo item.'}
+                ? 'Preencha as informações do item selecionado.'
+                : 'Preencha as informações para cadastrar um novo item.'}
             </p>
 
             <DefaultForm
@@ -354,10 +297,10 @@ export function ClientItensPage() {
                   className={INPUT_CLASSNAME}
                   options={[
                     { label: 'Selecione um tamanho', value: '' },
-                    { label: 'Pequeno (P)', value: 'P' },
-                    { label: 'Medio (M)', value: 'M' },
-                    { label: 'Grande (G)', value: 'G' },
-                    { label: 'Extra grande (GG)', value: 'GG' },
+                    { label: 'Pequeno (P)', value: ItemSize.P },
+                    { label: 'Medio (M)', value: ItemSize.M },
+                    { label: 'Grande (G)', value: ItemSize.G },
+                    { label: 'Extra grande (GG)', value: ItemSize.GG },
                   ]}
                 />
                 <InputField
@@ -370,7 +313,9 @@ export function ClientItensPage() {
                 />
                 <InputField
                   type="number"
-                  disabled={isLoading}
+                  disabled={
+                    isLoading || selectedItemData?.tipo === ItemType.EMPADAO
+                  }
                   placeholder="ex: 3.88"
                   label="Preco unitario"
                   name="unitPrice"
@@ -386,14 +331,16 @@ export function ClientItensPage() {
                   className={INPUT_CLASSNAME}
                   options={[
                     { label: 'Selecione o tipo', value: '' },
-                    { label: 'EMPADAO', value: 'EMPADAO' },
-                    { label: 'PANQUECA', value: 'PANQUECA' },
-                    { label: 'ALMODENGA', value: 'ALMODENGA' },
+                    { label: 'EMPADAO', value: ItemType.EMPADAO },
+                    { label: 'PANQUECA', value: ItemType.PANQUECA },
+                    { label: 'ALMODENGA', value: ItemType.ALMODENGA },
                   ]}
                 />
                 <InputField
                   type="number"
-                  disabled={isLoading}
+                  disabled={
+                    isLoading || selectedItemData?.tipo === ItemType.EMPADAO
+                  }
                   placeholder="ex: 6"
                   label="Unidades"
                   name="unity"
@@ -404,9 +351,9 @@ export function ClientItensPage() {
 
               <ButtonDefault
                 type="submit"
-                variant="normal"
+                variant="primary"
                 disabled={isEditMode && !selectedItem}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green_details-greenLight text-sm font-semibold text-neutral-white transition hover:bg-details-greenHover disabled:cursor-not-allowed"
+                className="inline-flex h-12 w-full items-center justify-center gap-2"
               >
                 {isEditMode ? (
                   <>
@@ -430,8 +377,8 @@ export function ClientItensPage() {
             <div>
               <p className="text-sm font-semibold text-text-primary">Dica</p>
               <p className="text-sm text-text-secondary">
-                No modo editar, selecione um item para preencher o formulario
-                automaticamente.
+                No modo editar, selecione um item e envie apenas os campos que
+                deseja alterar.
               </p>
             </div>
           </div>
@@ -444,7 +391,7 @@ export function ClientItensPage() {
           <div>
             <TitleH3 className="mb-1">Adicione um cupom</TitleH3>
             <p className="text-sm text-text-secondary">
-              Sessao ainda em construcao...
+              Sessão ainda em construção...
             </p>
           </div>
         </div>
