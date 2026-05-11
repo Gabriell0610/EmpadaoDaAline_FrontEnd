@@ -13,7 +13,6 @@ import {
   ItensSchemaDto,
 } from '@/utils/schemas/itens.schema';
 import {
-  CircleSlash,
   PackagePlus,
   Pencil,
   PencilLine,
@@ -23,13 +22,14 @@ import {
 import { useMemo, useState } from 'react';
 import { DefaultValues, UseFormReturn } from 'react-hook-form';
 import NewItemRequest from './function';
-import Image from 'next/image';
 import { ItemType } from '@/constants/enums/ItemType';
 import { ItemSize } from '@/constants/enums/ItemSize';
-import { normalizeCurrency } from '@/utils/helpers';
 import { ItemStatus } from '@/constants/enums/ItemStatus';
+import { EditTab } from './tab/editTab';
+import { CreateTab } from './tab/createTab';
+import { CupomTab } from './tab/cupomTab';
 
-type ItemMode = 'edit' | 'create';
+type ItemMode = 'edit' | 'create' | 'cupom';
 
 const INPUT_CLASSNAME =
   '[&>label]:mb-1 [&>label]:text-xs [&>label]:font-medium [&>label]:text-text-secondary [&_input]:h-11 [&_input]:rounded-xl [&_input]:border-text-primary/20 [&_input]:bg-neutral-white [&_input]:text-sm [&_input]:focus:border-green_details-greenLight [&_input]:focus:ring-2 [&_input]:focus:ring-green_details-greenLight/25 [&_input]:focus:outline-none [&_select]:h-11 [&_select]:rounded-xl [&_select]:border-text-primary/20 [&_select]:bg-neutral-white [&_select]:text-sm [&_select]:focus:border-green_details-greenLight [&_select]:focus:ring-2 [&_select]:focus:ring-green_details-greenLight/25 [&_select]:focus:outline-none';
@@ -46,6 +46,7 @@ export function ClientItensPage() {
   } = NewItemRequest();
 
   const [activeMode, setActiveMode] = useState<ItemMode>('edit');
+  const [titleMode, setTitleMode] = useState<string>('');
 
   const selectedItemData = listAllItens.find(
     (item) =>
@@ -59,6 +60,8 @@ export function ClientItensPage() {
     ) || selectedItemData?.item?.[0];
 
   const isEditMode = activeMode === 'edit';
+  const createMode = activeMode === 'create';
+  const cupomMode = activeMode === 'cupom';
   const isItemActive = selectedItemData?.disponivel === ItemStatus.ATIVO;
 
   const formDefaultValues = useMemo<
@@ -103,7 +106,12 @@ export function ClientItensPage() {
         <div className="mb-6 flex gap-2 border-b border-text-primary/10 pb-0.5">
           <button
             type="button"
-            onClick={() => setActiveMode('edit')}
+            onClick={() => {
+              setActiveMode('edit');
+              setTitleMode(
+                'Escolha um item da lista para visualizar e editar os dados.',
+              );
+            }}
             className={`inline-flex items-center gap-2 rounded-t-xl border px-4 py-3 text-sm font-semibold transition ${
               isEditMode
                 ? 'border-green_details-greenLight/35 bg-green_details-greenLight/10 text-text-green'
@@ -118,9 +126,12 @@ export function ClientItensPage() {
             onClick={() => {
               setActiveMode('create');
               setSelectedItem('');
+              setTitleMode(
+                'Preencha o formulario para cadastrar um novo item.',
+              );
             }}
             className={`inline-flex items-center gap-2 rounded-t-xl border px-4 py-3 text-sm font-semibold transition ${
-              !isEditMode
+              createMode
                 ? 'border-green_details-greenLight/35 bg-green_details-greenLight/10 text-text-green'
                 : 'border-transparent bg-neutral-offWhite text-text-primary hover:bg-neutral-offWhite/80'
             }`}
@@ -128,133 +139,58 @@ export function ClientItensPage() {
             <PlusCircle size={16} />
             Novo item
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveMode('cupom');
+              setTitleMode('Adicine desconto em algum item');
+            }}
+            className={`inline-flex items-center gap-2 rounded-t-xl border px-4 py-3 text-sm font-semibold transition ${
+              cupomMode
+                ? 'border-green_details-greenLight/35 bg-green_details-greenLight/10 text-text-green'
+                : 'border-transparent bg-neutral-offWhite text-text-primary hover:bg-neutral-offWhite/80'
+            }`}
+          >
+            <PlusCircle size={16} />
+            Adicionar Cupom
+          </button>
         </div>
 
         <article className="grid gap-6 lg:grid-cols-[360px_1fr]">
           <section className="rounded-xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm">
             <TitleH3 className="mb-1">
-              {isEditMode ? 'Selecionar item para editar' : 'Criar novo item'}
+              {isEditMode && 'Selecionar item para editar'}
+              {activeMode === 'create' && 'Criar novo item'}
+              {activeMode === 'cupom' && 'Adicionar cupom'}
             </TitleH3>
             <p className="mb-4 text-sm text-text-secondary">
-              {isEditMode
-                ? 'Escolha um item da lista para visualizar e editar os dados.'
-                : 'Preencha o formulario para cadastrar um novo item.'}
+              {isEditMode &&
+                'Escolha um item da lista para visualizar e editar os dados.'}
+              {createMode &&
+                'Preencha o formulario para cadastrar um novo item.'}
+              {cupomMode && 'Escolha o tipo de cupom e o item'}
             </p>
 
-            {isEditMode ? (
-              <>
-                <select
-                  className="mb-4 h-11 w-full rounded-xl border border-text-primary/20 bg-neutral-white px-3 text-sm transition focus:border-green_details-greenLight focus:outline-none focus:ring-2 focus:ring-green_details-greenLight/25"
-                  value={selectedItem ?? ''}
-                  onChange={(e) => setSelectedItem(e.target.value)}
-                >
-                  <option value="">Selecione o item</option>
-
-                  {listAllItens?.map((itemDescription) =>
-                    itemDescription.item.map((data, index) => (
-                      <option value={data.id} key={`${data.id}-${index}`}>
-                        {itemDescription.nome}{' '}
-                        {data.pesoReal ? `- ${data.pesoReal}` : ''}
-                      </option>
-                    )),
-                  )}
-                </select>
-
-                {selectedItemData ? (
-                  <div className="mb-4 rounded-xl border border-text-primary/10 bg-neutral-offWhite p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="relative h-28 w-28 flex-shrink-0">
-                        <Image
-                          src={
-                            selectedItemData.image ||
-                            'https://placehold.co/100x100/e5e7eb/6b7280?text=Item'
-                          }
-                          alt={selectedItemData.nome}
-                          className="h-24 w-24 rounded-lg border border-text-primary/10 object-cover"
-                          fill
-                          quality={100}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-lg font-semibold text-text-primary">
-                          {selectedItemData.nome}
-                        </p>
-                        <span
-                          className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${
-                            isItemActive
-                              ? 'border border-green-600/25 bg-green-600/10 text-green-700'
-                              : 'border border-red-500/25 bg-red-500/10 text-red-600'
-                          }`}
-                        >
-                          {selectedItemData.disponivel}
-                        </span>
-                        <p className="text-sm text-text-secondary">
-                          Tipo: {selectedItemData.tipo}
-                        </p>
-                        <p className="text-sm font-semibold text-text-primary">
-                          Preço: {normalizeCurrency(itemOptionData?.preco)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mb-4 rounded-xl border border-dashed border-text-primary/20 bg-neutral-offWhite px-4 py-6 text-sm text-text-secondary">
-                    Selecione um item para carregar o preview e habilitar a
-                    edicao.
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <ButtonDefault
-                    type="button"
-                    variant="normal"
-                    onClick={() =>
-                      changeStatusItem(selectedItem, ItemStatus.INATIVO)
-                    }
-                    disabled={!selectedItem}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-500 bg-red-50 px-4 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed"
-                  >
-                    <CircleSlash size={16} />
-                    Inativar item
-                  </ButtonDefault>
-                  <ButtonDefault
-                    type="button"
-                    variant="normal"
-                    onClick={() =>
-                      changeStatusItem(selectedItem, ItemStatus.ATIVO)
-                    }
-                    disabled={!selectedItem}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-green-500 bg-green-50 px-4 text-sm font-semibold text-green-600 transition hover:bg-green-100 disabled:cursor-not-allowed"
-                  >
-                    <CircleSlash size={16} />
-                    Ativar item
-                  </ButtonDefault>
-                </div>
-              </>
-            ) : (
-              <div className="rounded-xl border border-green-600/20 bg-green-50 p-4">
-                <div className="flex items-start gap-3">
-                  <PackagePlus className="mt-0.5 text-green-700" size={18} />
-                  <div>
-                    <p className="text-sm font-semibold text-text-primary">
-                      Modo criacao ativo
-                    </p>
-                    <p className="text-sm text-text-secondary">
-                      O formulário ao lado será enviado como novo item.
-                    </p>
-                  </div>
-                </div>
-              </div>
+            {isEditMode && (
+              <EditTab
+                changeStatusItem={changeStatusItem}
+                isItemActive={isItemActive}
+                itemOptionData={itemOptionData}
+                listAllItens={listAllItens}
+                selectedItem={selectedItem}
+                selectedItemData={selectedItemData}
+                setSelectedItem={setSelectedItem}
+              />
             )}
+
+            {createMode && <CreateTab />}
+
+            {cupomMode && <CupomTab />}
           </section>
 
           <section className="rounded-xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm">
             <TitleH3 className="mb-1">Dados do item</TitleH3>
-            <p className="mb-4 text-sm text-text-secondary">
-              {isEditMode
-                ? 'Preencha as informações do item selecionado.'
-                : 'Preencha as informações para cadastrar um novo item.'}
-            </p>
+            <p className="mb-4 text-sm text-text-secondary">{titleMode}</p>
 
             <DefaultForm
               onSubmit={handleEditOrCreateItem}
@@ -384,20 +320,7 @@ export function ClientItensPage() {
           </div>
         </section>
       </div>
-
-      <section className="rounded-xl border border-text-primary/10 bg-neutral-white p-5 shadow-sm">
-        <div className="flex items-start gap-3">
-          <ShieldCheck className="mt-0.5 text-green-700" size={18} />
-          <div>
-            <TitleH3 className="mb-1">Adicione um cupom</TitleH3>
-            <p className="text-sm text-text-secondary">
-              Sessão ainda em construção...
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {isLoading && <LoadingComponent mode="fullScreen" />}
+      {isLoading && <LoadingComponent mode="fullScreen" />}{' '}
     </main>
   );
 }
