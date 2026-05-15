@@ -1,6 +1,18 @@
+import { ItemSize } from '@/constants/enums/ItemSize';
+import { ItemType } from '@/constants/enums/ItemType';
 import { z } from 'zod';
 
-const ITEM_SIZES = ['P', 'M', 'G', 'GG'] as const;
+export const ITEM_SIZES = [
+  ItemSize.P,
+  ItemSize.M,
+  ItemSize.G,
+  ItemSize.GG,
+] as const;
+export const ITEM_TYPES = [
+  ItemType.EMPADAO,
+  ItemType.PANQUECA,
+  ItemType.ALMODENGA,
+] as const;
 
 const sizeSchema = z.preprocess(
   (val) =>
@@ -13,8 +25,6 @@ const sizeSchema = z.preprocess(
     })
     .optional(),
 );
-
-const ITEM_TYPES = ['EMPADAO', 'PANQUECA', 'ALMODENGA'] as const;
 
 const typeSchema = z.preprocess(
   (val) => (typeof val === 'string' ? val || undefined : undefined),

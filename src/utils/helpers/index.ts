@@ -3,9 +3,23 @@ import { ItemCarrinhoInterface } from '../types/cart.type';
 import { ItemInCartItens } from '../types/orderClient';
 import { cellphoneNumberRegex, cepRegex } from '../validators';
 
-export const normalizeCurrency = (value: string | number) => {
-  return `R$ ${value}`;
-};
+export function parseToNumber(value?: string | number | null) {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'number') return value;
+
+  const parsed = Number.parseFloat(value.replace(',', '.'));
+  return Number.isNaN(parsed) ? null : parsed;
+}
+export function normalizeCurrency(value?: string | number | null) {
+  const parsed = parseToNumber(value);
+
+  if (parsed === null) return 'R$ 0,00';
+
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(parsed);
+}
 
 export const handleMessageWhenObservationIsNull = (
   observation: string | null | undefined,
