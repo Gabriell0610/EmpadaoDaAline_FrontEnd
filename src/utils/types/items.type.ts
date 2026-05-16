@@ -8,7 +8,10 @@ export interface ListActiveItemsInterface {
   image: string;
   nome: string;
   disponivel: string;
-  tipo: string;
+  itemType: {
+    id: string;
+    nome: string;
+  };
   item: {
     id: string;
     preco: string;
@@ -48,6 +51,15 @@ export interface ListActiveItemsByIdInterface {
     dataCriacao: Date;
     dataAtualizacao: Date;
     disponivel: string;
+    itemType: {
+      id: string;
+      nome: string;
+    };
   };
   pesoReal: string;
+}
+
+export interface TypeItem {
+  id: string;
+  nome: string;
 }

@@ -1,0 +1,107 @@
+'use client';
+
+import { Card } from '@/components/CardItens/card';
+import { TitleH1 } from '@/components/Titles/Titles';
+
+import { IconButton } from '@chakra-ui/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { ListActiveItemsInterface } from '@/utils/types/items.type';
+
+interface ItemsCarouselProps {
+  title: string;
+  id: string;
+  items: ListActiveItemsInterface[];
+  handleOpenCart: (itemId: string) => void;
+}
+
+export function ItemsCarousel({
+  title,
+  id,
+  items,
+  handleOpenCart,
+}: ItemsCarouselProps) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="relative mt-3">
+      <TitleH1>{title}</TitleH1>
+
+      <div className="relative">
+        <Swiper
+          modules={[Navigation]}
+          spaceBetween={20}
+          slidesPerView={1}
+          navigation={{
+            nextEl: `.swiper-button-next-${id}`,
+            prevEl: `.swiper-button-prev-${id}`,
+          }}
+          breakpoints={{
+            580: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          observer
+          observeParents
+          resizeObserver
+        >
+          {items.map((item) => (
+            <SwiperSlide key={item.id}>
+              <Card content={item} handleOpenCart={handleOpenCart} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        <IconButton
+          aria-label="prev"
+          className={`swiper-button-prev-${id}`}
+          variant="outline"
+          size="xs"
+          rounded="full"
+          w="24px"
+          h="24px"
+          minW="24px"
+          minH="24px"
+          bg="white"
+          shadow="sm"
+          position="absolute"
+          top="50%"
+          left="-12px"
+          transform="translateY(-50%)"
+          zIndex={10}
+          _hover={{ bg: 'gray.100' }}
+        >
+          <ChevronLeft className="size-4" />
+        </IconButton>
+
+        <IconButton
+          aria-label="next"
+          className={`swiper-button-next-${id}`}
+          variant="outline"
+          rounded="full"
+          size="xs"
+          bg="white"
+          shadow="sm"
+          w="24px"
+          h="24px"
+          minW="24px"
+          minH="24px"
+          position="absolute"
+          top="50%"
+          right="-12px"
+          transform="translateY(-50%)"
+          zIndex={10}
+          _hover={{ bg: 'gray.100' }}
+        >
+          <ChevronRight className="size-3" />
+        </IconButton>
+      </div>
+    </section>
+  );
+}
