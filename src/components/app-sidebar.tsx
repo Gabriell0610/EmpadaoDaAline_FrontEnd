@@ -52,7 +52,7 @@ export function AppSidebar({ ...props }: AppSidebarInterface) {
       },
       {
         title: 'Itens',
-        url: '/admin/newItems',
+        url: '/admin/products',
         icon: ShoppingBasketIcon,
       },
       {

@@ -43,6 +43,7 @@ export function ClientItensPage() {
     editItem,
     createItem,
     isLoading,
+    listTypeItemData,
   } = NewItemRequest();
 
   const [activeMode, setActiveMode] = useState<ItemMode>('edit');
@@ -263,14 +264,12 @@ export function ClientItensPage() {
                   disabled={isLoading}
                   label="Tipo do item"
                   placeholder="Selecione o Tipo"
-                  name="type"
+                  name="itemTypeId"
                   className={INPUT_CLASSNAME}
-                  options={[
-                    { label: 'Selecione o tipo', value: '' },
-                    { label: 'EMPADAO', value: ItemType.EMPADAO },
-                    { label: 'PANQUECA', value: ItemType.PANQUECA },
-                    { label: 'ALMODENGA', value: ItemType.ALMODENGA },
-                  ]}
+                  options={listTypeItemData?.map((p) => ({
+                    label: p.nome,
+                    value: p.id,
+                  }))}
                 />
                 <InputField
                   type="number"

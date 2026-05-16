@@ -1,5 +1,5 @@
 'use clien';
-import { ITENS } from '@/constants';
+import { ITENS, ITENS_TYPES } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { useAuth } from '@/providers/authProvider';
@@ -7,7 +7,7 @@ import {
   EditItensSchemaDto,
   ItensSchemaDto,
 } from '@/utils/schemas/itens.schema';
-import { ListItemsInterface } from '@/utils/types/items.type';
+import { ListItemsInterface, TypeItem } from '@/utils/types/items.type';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -16,6 +16,8 @@ export default function NewItemRequest() {
   const { call, isLoading } = useFetch();
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [listAllItens, setListAllItens] = useState<ListItemsInterface[]>([]);
+  const [listTypeItemData, setTypesItem] = useState<TypeItem[]>([]);
+
   async function getAllItens() {
     const result = await call<null, ListItemsInterface[]>({
       method: StatusHttp.GET,
@@ -27,6 +29,19 @@ export default function NewItemRequest() {
       return;
     }
     setListAllItens(result.data);
+  }
+
+  async function listTypeItems() {
+    const result = await call<null, TypeItem[]>({
+      method: StatusHttp.GET,
+      url: `${ITENS_TYPES}`,
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
+    setTypesItem(result.data);
   }
 
   async function changeStatusItem(itemId: string, status: string) {
@@ -90,6 +105,7 @@ export default function NewItemRequest() {
   useEffect(() => {
     if (!isAuthenticated) return;
     getAllItens();
+    listTypeItems();
   }, [isAuthenticated]);
 
   return {
@@ -100,5 +116,7 @@ export default function NewItemRequest() {
     listAllItens,
     selectedItem,
     setSelectedItem,
+    listTypeItems,
+    listTypeItemData,
   };
 }

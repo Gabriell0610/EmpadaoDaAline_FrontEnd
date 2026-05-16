@@ -5,18 +5,21 @@ import ImageChef from '../../public/image_home_page.png';
 import { TitleH1 } from '@/components/Titles/Titles';
 import { useState } from 'react';
 import { Cart } from '@/components/Cart/Cart';
-import { Card } from '@/components/CardItens/card';
 import { useRouter } from 'next/navigation';
 import { ClientPageProps } from '@/utils/types/components/listItemComponent.type';
 import { ButtonDefault } from '@/components/Button/Button';
 import { useCart } from '@/providers/cartProvider/cartProvider';
+import { ItemType } from '@/constants/enums/ItemType';
+import { ItemsCarousel } from '@/components/Swipper/ItemsCarousel';
 
 export default function Home({ activeItems }: ClientPageProps) {
   const [openCart, setOpenCart] = useState(false);
   const { addItemInCart } = useCart();
   const navigate = useRouter();
 
-  const empadoes = activeItems.filter((item) => item.tipo === 'EMPADAO');
+  const empadoes = activeItems.filter(
+    (item) => item.itemType.nome === ItemType.EMPADAO,
+  );
 
   function handleOpenCart(itemId: string) {
     setOpenCart(true);
@@ -55,16 +58,12 @@ export default function Home({ activeItems }: ClientPageProps) {
 
       {empadoes.length > 0 && (
         <section className="w-full px-8 py-10">
-          <TitleH1>Os mais pedidos</TitleH1>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-            {empadoes.map((value) => (
-              <Card
-                key={value.id}
-                content={value}
-                handleOpenCart={handleOpenCart}
-              />
-            ))}
-          </div>
+          <ItemsCarousel
+            title="Os mais pedidos"
+            items={empadoes}
+            id="mais-pedidos"
+            handleOpenCart={handleOpenCart}
+          />
         </section>
       )}
       {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}

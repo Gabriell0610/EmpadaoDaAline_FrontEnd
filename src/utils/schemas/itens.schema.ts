@@ -26,15 +26,6 @@ const sizeSchema = z.preprocess(
     .optional(),
 );
 
-const typeSchema = z.preprocess(
-  (val) => (typeof val === 'string' ? val || undefined : undefined),
-  z.enum(ITEM_TYPES, {
-    errorMap: () => ({
-      message: 'Tipo inválido.',
-    }),
-  }),
-);
-
 export const itensSchema = z.object({
   name: z.string().nonempty('Nome é obrigatório'),
   price: z.preprocess(
@@ -62,7 +53,10 @@ export const itensSchema = z.object({
     z.coerce.number().optional(),
   ),
 
-  type: typeSchema,
+  itemTypeId: z.preprocess(
+    (val) => (val === '' || val === null ? undefined : val),
+    z.string().uuid('Tipo do item inválido'),
+  ),
 });
 
 export const editItensSchema = z.object({
@@ -97,15 +91,9 @@ export const editItensSchema = z.object({
     z.coerce.number().optional(),
   ),
 
-  type: z.preprocess(
-    (val) => (typeof val === 'string' ? val || undefined : undefined),
-    z
-      .enum(ITEM_TYPES, {
-        errorMap: () => ({
-          message: 'Tipo inválido.',
-        }),
-      })
-      .optional(),
+  itemTypeId: z.preprocess(
+    (val) => (val === '' || val === null ? undefined : val),
+    z.string().uuid('Tipo do item inválido').optional(),
   ),
 });
 
