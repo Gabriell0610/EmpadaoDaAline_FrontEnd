@@ -28,6 +28,10 @@ export interface ListItemsInterface {
   nome: string;
   disponivel: string;
   tipo: string;
+  itemType: {
+    id: string;
+    nome: string;
+  };
   item: {
     id: string;
     preco: string;
