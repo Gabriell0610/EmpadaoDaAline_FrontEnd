@@ -17,13 +17,20 @@ export const ITEM_TYPES = [
 const sizeSchema = z.preprocess(
   (val) =>
     typeof val === 'string' ? val.trim().toUpperCase() || undefined : undefined,
-  z
-    .enum(ITEM_SIZES, {
-      errorMap: () => ({
+
+  z.enum(ITEM_SIZES, {
+    errorMap: (issue) => {
+      if (issue.code === 'invalid_type') {
+        return {
+          message: 'O tamanho é obrigatório',
+        };
+      }
+
+      return {
         message: 'Tamanho inválido. Use apenas: P, M, G ou GG.',
-      }),
-    })
-    .optional(),
+      };
+    },
+  }),
 );
 
 export const itensSchema = z.object({
@@ -55,7 +62,14 @@ export const itensSchema = z.object({
 
   itemTypeId: z.preprocess(
     (val) => (val === '' || val === null ? undefined : val),
-    z.string().uuid('Tipo do item inválido'),
+    z
+      .string({ required_error: 'Tipo de item é obrigatório' })
+      .uuid('Tipo do item inválido'),
+  ),
+
+  itemDescriptionId: z.preprocess(
+    (val) => (val === '' || val === null ? undefined : val),
+    z.string().uuid('Tipo do item inválido').optional(),
   ),
 });
 

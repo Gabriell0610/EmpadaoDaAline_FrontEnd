@@ -65,9 +65,28 @@ export function ClientItensPage() {
   const cupomMode = activeMode === 'cupom';
   const isItemActive = selectedItemData?.disponivel === ItemStatus.ATIVO;
 
+  const [selectedDescriptionId, setSelectedDescriptionId] =
+    useState<string>('');
+
+  const selectedBaseProduct =
+    listAllItens.find((i) => i.id === selectedDescriptionId) ?? null;
+  const isAddingToExisting = createMode && !!selectedBaseProduct;
+
   const formDefaultValues = useMemo<
     DefaultValues<ItensSchemaDto | EditItensSchemaDto>
   >(() => {
+    if (isAddingToExisting && selectedBaseProduct) {
+      return {
+        name: selectedBaseProduct.nome,
+        description: selectedBaseProduct.descricao,
+        image: selectedBaseProduct.image,
+        itemTypeId: selectedBaseProduct.itemType?.id ?? '',
+        price: '',
+        size: undefined,
+        unitPrice: undefined,
+        unity: undefined,
+      };
+    }
     return {
       name: '',
       price: '',
@@ -78,7 +97,7 @@ export function ClientItensPage() {
       type: undefined,
       unity: undefined,
     };
-  }, []);
+  }, [selectedDescriptionId]);
 
   async function handleEditOrCreateItem(
     data: ItensSchemaDto | EditItensSchemaDto,
@@ -90,8 +109,12 @@ export function ClientItensPage() {
       return;
     }
 
-    await createItem(data as ItensSchemaDto);
+    await createItem({
+      ...(data as ItensSchemaDto),
+      itemDescriptionId: selectedDescriptionId || undefined,
+    });
     reset();
+    setSelectedDescriptionId('');
   }
 
   return (
@@ -128,7 +151,7 @@ export function ClientItensPage() {
               setActiveMode('create');
               setSelectedItem('');
               setTitleMode(
-                'Preencha o formulario para cadastrar um novo item.',
+                'Após criar um item, selecione o mesmo para poder acrescentar outros tipos',
               );
             }}
             className={`inline-flex items-center gap-2 rounded-t-xl border px-4 py-3 text-sm font-semibold transition ${
@@ -167,8 +190,7 @@ export function ClientItensPage() {
             <p className="mb-4 text-sm text-text-secondary">
               {isEditMode &&
                 'Escolha um item da lista para visualizar e editar os dados.'}
-              {createMode &&
-                'Preencha o formulario para cadastrar um novo item.'}
+              {createMode && ''}
               {cupomMode && 'Escolha o tipo de cupom e o item'}
             </p>
 
@@ -184,7 +206,15 @@ export function ClientItensPage() {
               />
             )}
 
-            {createMode && <CreateTab />}
+            {createMode && (
+              <CreateTab
+                listAllItens={listAllItens}
+                selectedDescriptionId={selectedDescriptionId}
+                onSelectDescription={(id) => {
+                  setSelectedDescriptionId(id);
+                }}
+              />
+            )}
 
             {cupomMode && <CupomTab />}
           </section>
@@ -202,7 +232,7 @@ export function ClientItensPage() {
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <InputField
                   type="text"
-                  disabled={isLoading}
+                  disabled={isLoading || isAddingToExisting}
                   placeholder="ex: Empadao de frango"
                   label="Nome do item"
                   name="name"
@@ -219,7 +249,7 @@ export function ClientItensPage() {
                 />
                 <InputField
                   type="text"
-                  disabled={isLoading}
+                  disabled={isLoading || isAddingToExisting}
                   placeholder="ex: url da imagem"
                   label="URL da imagem"
                   name="image"
@@ -242,7 +272,7 @@ export function ClientItensPage() {
                 />
                 <InputField
                   type="text"
-                  disabled={isLoading}
+                  disabled={isLoading || isAddingToExisting}
                   placeholder="ex: Panqueca suculenta"
                   label="Descricao"
                   name="description"
@@ -261,7 +291,7 @@ export function ClientItensPage() {
                 />
                 <InputField
                   type="select"
-                  disabled={isLoading}
+                  disabled={isLoading || isAddingToExisting}
                   label="Tipo do item"
                   placeholder="Selecione o Tipo"
                   name="itemTypeId"
@@ -273,9 +303,7 @@ export function ClientItensPage() {
                 />
                 <InputField
                   type="number"
-                  disabled={
-                    isLoading || selectedItemData?.tipo === ItemType.EMPADAO
-                  }
+                  disabled={isLoading}
                   placeholder="ex: 6"
                   label="Unidades"
                   name="unity"
