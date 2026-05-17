@@ -5,6 +5,7 @@ import { normalizeCurrency } from '@/utils/helpers';
 import { TitleH3 } from '../Titles/Titles';
 import { ListActiveItemsInterface } from '@/utils/types/items.type';
 import { useState } from 'react';
+import { ItemType } from '@/constants/enums/ItemType';
 
 interface CardProps {
   content: ListActiveItemsInterface;
@@ -35,7 +36,8 @@ export const Card = ({ content, handleOpenCart }: CardProps) => {
             {selectedItem && (
               <span>{normalizeCurrency(selectedItem.preco)}</span>
             )}
-            {content.tipo === 'PANQUECA' || content.tipo === 'ALMONDEGA' ? (
+            {content.itemType.nome === ItemType.PANQUECA ||
+            content.itemType.nome === ItemType.ALMODENGA ? (
               <span>
                 {content.item.map((item) => (
                   <span key={item.id}>{item.unidades} unidades </span>

@@ -1,8 +1,3 @@
-enum EnumStatusItem {
-  ATIVO,
-  INATIVO,
-}
-
 export interface BodyItemInterface {
   itemId: string;
 }
@@ -12,12 +7,34 @@ export interface ListActiveItemsInterface {
   descricao: string;
   image: string;
   nome: string;
-  status: string;
-  tipo: string;
+  disponivel: string;
+  itemType: {
+    id: string;
+    nome: string;
+  };
   item: {
     id: string;
     preco: string;
-    disponivel: EnumStatusItem;
+    tamanho: string;
+    unidades: number;
+    pesoReal: string;
+  }[];
+}
+
+export interface ListItemsInterface {
+  id: string;
+  descricao: string;
+  image: string;
+  nome: string;
+  disponivel: string;
+  tipo: string;
+  itemType: {
+    id: string;
+    nome: string;
+  };
+  item: {
+    id: string;
+    preco: string;
     tamanho: string;
     unidades: number;
     pesoReal: string;
@@ -37,7 +54,16 @@ export interface ListActiveItemsByIdInterface {
     nome: string;
     dataCriacao: Date;
     dataAtualizacao: Date;
-    disponivel: EnumStatusItem;
+    disponivel: string;
+    itemType: {
+      id: string;
+      nome: string;
+    };
   };
   pesoReal: string;
+}
+
+export interface TypeItem {
+  id: string;
+  nome: string;
 }

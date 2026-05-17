@@ -1,5 +1,5 @@
 'use clien';
-import { ITENS, ITENS_ACTIVE } from '@/constants';
+import { ITENS, ITENS_TYPES } from '@/constants';
 import { StatusHttp } from '@/constants/enums/StautsHttp';
 import { useFetch } from '@/hooks/useFetch/useFetch';
 import { useAuth } from '@/providers/authProvider';
@@ -7,7 +7,7 @@ import {
   EditItensSchemaDto,
   ItensSchemaDto,
 } from '@/utils/schemas/itens.schema';
-import { ListActiveItemsInterface } from '@/utils/types/items.type';
+import { ListItemsInterface, TypeItem } from '@/utils/types/items.type';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -15,30 +15,57 @@ export default function NewItemRequest() {
   const { isAuthenticated } = useAuth();
   const { call, isLoading } = useFetch();
   const [selectedItem, setSelectedItem] = useState<string>('');
-  const [listAllItens, setListAllItens] = useState<
-    ListActiveItemsInterface[] | null
-  >(null);
+  const [listAllItens, setListAllItens] = useState<ListItemsInterface[]>([]);
+  const [listTypeItemData, setTypesItem] = useState<TypeItem[]>([]);
+
   async function getAllItens() {
-    const result = await call<null, ListActiveItemsInterface[]>({
+    const result = await call<null, ListItemsInterface[]>({
       method: StatusHttp.GET,
-      url: `${ITENS_ACTIVE}`,
+      url: `${ITENS}`,
     });
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
     setListAllItens(result.data);
   }
 
-  async function inativeItem(itemId: string) {
-    const result = await call<null, null>({
-      method: StatusHttp.PATCH,
-      url: `${ITENS}/${itemId}`,
+  async function listTypeItems() {
+    const result = await call<null, TypeItem[]>({
+      method: StatusHttp.GET,
+      url: `${ITENS_TYPES}`,
     });
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
+    setTypesItem(result.data);
+  }
+
+  async function changeStatusItem(itemId: string, status: string) {
+    const result = await call<{ status: string }, null>({
+      method: StatusHttp.PATCH,
+      url: `${ITENS}/${itemId}`,
+      body: { status: status },
+    });
+
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
+
+    setListAllItens((prev) =>
+      prev.map((item) =>
+        item.item.some((optionItem) => optionItem.id === itemId)
+          ? {
+              ...item,
+              disponivel: status,
+            }
+          : item,
+      ),
+    );
 
     toast.success(result.message);
   }
@@ -52,6 +79,7 @@ export default function NewItemRequest() {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);
@@ -67,6 +95,7 @@ export default function NewItemRequest() {
 
     if (!result.success) {
       toast.error(result.message);
+      return;
     }
 
     toast.success(result.message);
@@ -76,15 +105,18 @@ export default function NewItemRequest() {
   useEffect(() => {
     if (!isAuthenticated) return;
     getAllItens();
+    listTypeItems();
   }, [isAuthenticated]);
 
   return {
-    inativeItem,
+    changeStatusItem,
     editItem,
     createItem,
     isLoading,
     listAllItens,
     selectedItem,
     setSelectedItem,
+    listTypeItems,
+    listTypeItemData,
   };
 }
