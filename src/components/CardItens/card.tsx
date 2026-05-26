@@ -37,7 +37,7 @@ export const Card = ({ content, handleOpenCart }: CardProps) => {
               <span>{normalizeCurrency(selectedItem.preco)}</span>
             )}
             {content.itemType.nome === ItemType.PANQUECA ||
-            content.itemType.nome === ItemType.ALMODENGA ? (
+            content.itemType.nome === ItemType.ALMONDEGA ? (
               <span>
                 {content.item.map((item) => (
                   <span key={item.id}>{item.unidades} unidades </span>

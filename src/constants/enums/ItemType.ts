@@ -1,7 +1,7 @@
 export const ItemType = {
   EMPADAO: 'EMPADAO',
   PANQUECA: 'PANQUECA',
-  ALMODENGA: 'ALMODENGA',
+  ALMONDEGA: 'ALMONDEGA',
 } as const;
 
-export type ItemType = 'EMPADAO' | 'PANQUECA' | 'ALMODENGA';
+export type ItemType = 'EMPADAO' | 'PANQUECA' | 'ALMONDEGA';
